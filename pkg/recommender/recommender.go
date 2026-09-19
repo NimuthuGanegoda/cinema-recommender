@@ -66,6 +66,14 @@ func (e *Engine) CalculateBestDeal(cinema models.Cinema, items []models.Concessi
 		OriginalTotal: round(subtotal),
 	}
 
+	if len(items) == 0 {
+		result.DiscountAmount = 0
+		result.FinalTotal = 0
+		result.AppliedPromo = "NONE"
+		result.Message = "No concession items available for this cinema."
+		return result
+	}
+
 	promo, eligible := e.BestPromotion(subtotal)
 	if eligible {
 		discount := round(subtotal * promo.DiscountPct)
