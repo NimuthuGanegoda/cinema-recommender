@@ -32,30 +32,14 @@
       padding-bottom: calc(72px + env(safe-area-inset-bottom, 16px));
     }
 
-    /* iOS Top Status Area */
-    .ios-status-bar {
-      height: 44px;
-      padding: 0 1.2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #ffffff;
-      background: #000000;
-      position: sticky;
-      top: 0;
-      z-index: 60;
-    }
-
     /* iOS Dynamic Island Capsule */
     .ios-island-wrapper {
       display: flex;
       justify-content: center;
-      padding: 0.35rem 1rem 0.65rem;
+      padding: 0.5rem 1rem 0.65rem;
       background: #000000;
       position: sticky;
-      top: 44px;
+      top: 0;
       z-index: 55;
     }
 
@@ -92,7 +76,7 @@
       backdrop-filter: var(--apple-glass-blur);
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       position: sticky;
-      top: 96px;
+      top: 50px;
       z-index: 50;
     }
 
@@ -310,15 +294,6 @@
   </style>
 </head>
 <body>
-
-  <!-- iOS Status Bar -->
-  <div class="ios-status-bar">
-    <span id="ios-time-indicator">9:41</span>
-    <div style="display:flex; align-items:center; gap:0.4rem;">
-      <span>5G</span>
-      <span>100% 🔋</span>
-    </div>
-  </div>
 
   <!-- iOS Dynamic Island Capsule -->
   <div class="ios-island-wrapper">
@@ -628,18 +603,9 @@
     let mSeconds = 8;
 
     window.addEventListener('DOMContentLoaded', async () => {
-      updateClock();
-      setInterval(updateClock, 1000);
       await loadMobileCinemas();
       startMobileTicker();
     });
-
-    function updateClock() {
-      const now = new Date();
-      const hrs = now.getHours();
-      const mins = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('ios-time-indicator').textContent = `${hrs}:${mins}`;
-    }
 
     async function loadMobileCinemas() {
       try {
