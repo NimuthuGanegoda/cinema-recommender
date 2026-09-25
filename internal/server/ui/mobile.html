@@ -24,8 +24,7 @@
       --scope-red: #e50914;
       --scope-red-glow: rgba(229, 9, 20, 0.35);
       --accent-gold: #d4af37;
-      --accent-redopay: #d4af37;
-      --accent-redopay-hover: #b8860b;
+      --accent-gold-hover: #b8860b;
       --accent-green: #10b981;
       --accent-red: #e50914;
       --text-main: #f8fafc;
@@ -187,9 +186,9 @@
     }
 
     .hero-quick-btn {
-      background: linear-gradient(135deg, var(--accent-redopay), var(--accent-redopay-hover));
+      background: linear-gradient(135deg, var(--scope-gold), var(--accent-gold-hover));
       border: none;
-      color: #fff;
+      color: #000;
       font-weight: 700;
       font-size: 0.8rem;
       padding: 0.5rem 1rem;
@@ -228,10 +227,10 @@
     }
 
     .chip-btn.active {
-      background: var(--accent-redopay);
-      border-color: var(--accent-redopay);
-      color: #fff;
-      box-shadow: 0 0 10px rgba(99, 102, 241, 0.35);
+      background: var(--scope-gold);
+      border-color: var(--scope-gold);
+      color: #000;
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.35);
     }
 
     /* Concession Item Card (Mobile) */
@@ -294,8 +293,8 @@
     }
 
     .m-add-btn:active {
-      background: var(--accent-redopay);
-      color: #fff;
+      background: var(--scope-gold);
+      color: #000;
       transform: scale(0.92);
     }
 
@@ -332,10 +331,10 @@
     }
 
     .m-party-btn.active {
-      background: var(--accent-redopay);
-      color: #fff;
-      border-color: var(--accent-redopay);
-      box-shadow: 0 0 10px rgba(99, 102, 241, 0.35);
+      background: var(--scope-gold);
+      color: #000;
+      border-color: var(--scope-gold);
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.35);
     }
 
     .m-slider-box {
@@ -365,9 +364,9 @@
 
     .btn-calc-mobile {
       width: 100%;
-      background: linear-gradient(135deg, var(--accent-redopay), var(--accent-redopay-hover));
+      background: linear-gradient(135deg, var(--scope-gold), var(--accent-gold-hover));
       border: none;
-      color: #fff;
+      color: #000;
       padding: 0.8rem;
       border-radius: 10px;
       font-weight: 700;
@@ -377,7 +376,7 @@
       justify-content: center;
       align-items: center;
       gap: 0.4rem;
-      box-shadow: 0 6px 16px -2px rgba(99, 102, 241, 0.4);
+      box-shadow: 0 6px 16px -2px rgba(212, 175, 55, 0.35);
     }
 
     /* Result Card (Mobile) */
@@ -406,14 +405,14 @@
       font-size: 1.05rem;
     }
 
-    /* Redopay Digital Card (Wallet Screen) */
+    /* Scope Privilege VIP Card (Pass Screen) */
     .digital-card {
-      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
-      border: 1px solid rgba(165, 180, 252, 0.3);
+      background: linear-gradient(135deg, #181822 0%, #282215 50%, #0d0d12 100%);
+      border: 1px solid var(--border-gold);
       border-radius: 18px;
       padding: 1.4rem;
       color: #fff;
-      box-shadow: 0 15px 30px -10px rgba(99, 102, 241, 0.4);
+      box-shadow: 0 15px 30px -10px rgba(212, 175, 55, 0.25);
       margin-bottom: 1.3rem;
       position: relative;
       overflow: hidden;
@@ -784,6 +783,213 @@
       50% { border-color: #d4af37 !important; box-shadow: 0 0 12px rgba(212, 175, 55, 0.4) !important; }
       100% { border-color: var(--border-gold); }
     }
+
+    /* Mobile Cinema Ads Showcase */
+    .m-cinema-ads-showcase {
+      background: linear-gradient(135deg, rgba(20, 20, 28, 0.95) 0%, rgba(10, 10, 15, 0.98) 100%);
+      border: 1.5px solid var(--border-gold);
+      border-radius: 14px;
+      padding: 0.9rem;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .m-ads-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+      padding-bottom: 0.5rem;
+    }
+
+    .m-btn-ad-nav {
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid var(--border-gold);
+      color: var(--scope-gold-light);
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .m-btn-ad-nav:active {
+      background: var(--scope-gold);
+      color: #07070a;
+    }
+
+    .m-ad-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      transition: all 0.3s ease;
+    }
+
+    .m-ad-badge {
+      display: inline-block;
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      background: linear-gradient(135deg, var(--scope-red), #b91c1c);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(229, 9, 20, 0.4);
+      margin-bottom: 0.3rem;
+    }
+
+    .m-ad-badge.gold {
+      background: linear-gradient(135deg, var(--scope-gold), #b8860b);
+      color: #07070a;
+      box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
+    }
+
+    .m-ad-title {
+      font-size: 0.95rem;
+      font-weight: 900;
+      color: #ffffff;
+      font-family: 'Cinzel', serif;
+      letter-spacing: 0.02em;
+      line-height: 1.25;
+      margin-bottom: 0.2rem;
+    }
+
+    .m-ad-sub {
+      font-size: 0.72rem;
+      color: #cbd5e1;
+      line-height: 1.35;
+      margin-bottom: 0.4rem;
+    }
+
+    .m-ad-tags-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .m-ad-tag-pill {
+      font-size: 0.62rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+    }
+
+    .m-ad-pricing-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      border-radius: 8px;
+      padding: 0.5rem 0.7rem;
+    }
+
+    .m-ad-deal-price {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--scope-gold-light);
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .m-ad-retail-price {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      text-decoration: line-through;
+    }
+
+    .m-ad-discount-tag {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.18);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .m-btn-claim-ad {
+      width: 100%;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border: 1px solid #34d399;
+      color: #ffffff;
+      padding: 0.55rem 0.8rem;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+      transition: all 0.2s;
+    }
+
+    .m-btn-claim-ad:active {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      transform: scale(0.98);
+    }
+
+    .m-ad-dots-row {
+      display: flex;
+      justify-content: center;
+      gap: 0.35rem;
+      margin-top: 0.6rem;
+    }
+
+    .m-ad-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .m-ad-dot.active {
+      background: var(--scope-gold);
+      width: 18px;
+      border-radius: 4px;
+      box-shadow: 0 0 6px var(--scope-gold-glow);
+    }
+
+    .m-btn-ar-toggle {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #34d399;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      transition: all 0.2s;
+    }
+
+    .m-btn-ar-toggle.paused {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.35);
+      color: #f87171;
+    }
   </style>
 </head>
 <body>
@@ -847,20 +1053,48 @@
     <!-- Cinema Food & Refreshment Location Guide -->
     <div class="m-food-info-card" id="m-food-info-card" style="display:none;"></div>
 
+    <!-- Mobile Cinema Ads & Combo Showcase -->
+    <div class="m-cinema-ads-showcase" id="m-cinema-ads-section">
+      <div class="m-ads-header">
+        <div style="display:flex; align-items:center; gap:0.4rem;">
+          <span style="font-size:1.15rem; color:var(--scope-gold); filter:drop-shadow(0 0 6px var(--scope-gold-glow));">🎬</span>
+          <div>
+            <div style="font-size:0.8rem; font-weight:800; color:#fff; font-family:'Cinzel', serif; letter-spacing:0.04em;">THEATER LOBBY PROMO SCREEN</div>
+            <div style="font-size:0.65rem; color:var(--scope-gold);">Combos & Concession Discounts</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:0.3rem;">
+          <button type="button" class="m-btn-ad-nav" onclick="mPrevCinemaAd()" title="Previous Promo Ad">‹</button>
+          <span id="m-ad-counter" style="font-size:0.68rem; font-weight:700; color:var(--scope-gold); min-width:32px; text-align:center;">1 / 4</span>
+          <button type="button" class="m-btn-ad-nav" onclick="mNextCinemaAd()" title="Next Promo Ad">›</button>
+        </div>
+      </div>
+      <div id="m-ads-card-container">
+        <!-- Rendered via JS -->
+      </div>
+      <div class="m-ad-dots-row" id="m-ad-dots-container"></div>
+    </div>
+
     <!-- Mobile Live Dynamic Pricing Bar -->
     <div class="m-live-pricing-bar" id="m-live-pricing-bar">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.3rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.35rem;">
         <div style="display:flex; align-items:center; gap:0.4rem;">
           <span class="m-pulse-dot"></span>
           <span style="font-weight:800; font-size:0.78rem; color:#fff; font-family:'Cinzel', serif;">LIVE CANDY BAR FEED</span>
         </div>
-        <button type="button" class="m-btn-sync" onclick="mForceLiveSync()">
-          <span>🔄 Sync</span>
-        </button>
+        <div style="display:flex; align-items:center; gap:0.35rem;">
+          <button type="button" id="m-btn-auto-refresh-toggle" class="m-btn-ar-toggle" onclick="mToggleAutoRefresh()" title="Toggle built-in auto-refresh">
+            <span id="m-ar-dot">🟢</span>
+            <span id="m-ar-text">Auto (8s)</span>
+          </button>
+          <button type="button" class="m-btn-sync" onclick="mForceLiveSync()">
+            <span>🔄 Sync</span>
+          </button>
+        </div>
       </div>
       <div style="display:flex; justify-content:space-between; font-size:0.68rem; color:var(--text-muted);">
         <span id="m-live-updated-time">Updated: Just now</span>
-        <span>Auto-sync in <strong id="m-live-countdown" style="color:var(--scope-gold);">10</strong>s</span>
+        <span>Auto-sync in <strong id="m-live-countdown" style="color:var(--scope-gold);">8</strong>s</span>
       </div>
     </div>
 
@@ -904,7 +1138,7 @@
 
       <div style="margin-bottom:1.2rem;">
         <label style="display:block; font-size:0.78rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.4rem; font-weight:700;">
-          Redopay Card Tier
+          Scope Privilege Member Tier
         </label>
         <select id="m-tier-select" style="width:100%; background:#090d16; border:1px solid var(--border-subtle); color:#fff; padding:0.6rem; border-radius:8px; font-family:inherit;">
           <option value="Standard">Standard Account</option>
@@ -916,7 +1150,7 @@
       </div>
 
       <button class="btn-calc-mobile" id="btn-m-calc">
-        <span>✨ Optimize Deal with Redopay</span>
+        <span>👑 Optimize Deal with Scope Privilege</span>
       </button>
     </div>
 
@@ -926,27 +1160,27 @@
     </div>
   </section>
 
-  <!-- Screen 3: Redopay Wallet & Promos -->
-  <section class="screen-view" id="view-wallet">
+  <!-- Screen 3: Scope Privilege VIP Pass & Vouchers -->
+  <section class="screen-view" id="view-privilege">
     <div class="digital-card">
       <div class="card-top">
-        <span class="card-brand">REDOPAY CINEMA PASS</span>
+        <span class="card-brand" style="font-family:'Cinzel',serif; letter-spacing:0.06em; color:var(--scope-gold-light);">👑 SCOPE PRIVILEGE PASS</span>
         <span id="card-tier-label" style="text-transform:uppercase; font-size:0.75rem; font-weight:800; color:#fbbf24;">STANDARD</span>
       </div>
       <div class="card-num">&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 8824</div>
       <div class="card-bottom">
         <div>
           <div style="font-size:0.65rem; color:#94a3b8;">CARDHOLDER</div>
-          <div style="font-weight:700;">MOVIEGOER REWARDS</div>
+          <div style="font-weight:700;">CINEMA PRIVILEGE CLUB</div>
         </div>
         <div>
           <div style="font-size:0.65rem; color:#94a3b8;">VALID REGION</div>
-          <div style="font-weight:700;">OUTSTATION SL</div>
+          <div style="font-weight:700;">SRI LANKA (ALL THEATERS)</div>
         </div>
       </div>
     </div>
 
-    <h3 style="font-size:1.05rem; margin-bottom:0.8rem;">Active Redopay Vouchers</h3>
+    <h3 style="font-size:1.05rem; margin-bottom:0.8rem;">Active Scope Privilege Vouchers</h3>
     <div class="items-container" id="m-vouchers-list">
       <!-- Vouchers loaded dynamically -->
     </div>
@@ -972,7 +1206,7 @@
           <span style="text-decoration:line-through; color:#94a3b8;" id="m-subtotal-val">LKR 0.00</span>
         </div>
         <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem; color:var(--accent-green); font-size:0.88rem;">
-          <span id="m-applied-promo-label">Redopay Savings:</span>
+          <span id="m-applied-promo-label">Scope Privilege Savings:</span>
           <strong id="m-discount-val">-LKR 0.00</strong>
         </div>
         <div style="margin-top:0.8rem; padding-top:0.8rem; border-top:1px solid var(--border-subtle);">
@@ -1019,9 +1253,9 @@
       <span class="nav-icon">⚡</span>
       <span>Optimizer</span>
     </button>
-    <button class="nav-item" id="nav-wallet" onclick="switchNav('wallet')">
-      <span class="nav-icon">💳</span>
-      <span>Redopay</span>
+    <button class="nav-item" id="nav-privilege" onclick="switchNav('privilege')">
+      <span class="nav-icon">👑</span>
+      <span>VIP Pass</span>
     </button>
     <button class="nav-item" id="nav-cart" onclick="switchNav('cart')">
       <span class="nav-icon">🎟️</span>
@@ -1339,27 +1573,65 @@
     }
 
     // ==========================================================================
-    // MOBILE REAL-TIME CONSTANT CONCESSION PRICING ENGINE
+    // MOBILE REAL-TIME CONSTANT CONCESSION PRICING ENGINE & PROMO ADS
     // ==========================================================================
     let mLivePricingInterval = null;
-    let mLiveCountdownSeconds = 10;
+    let mLiveCountdownSeconds = 8;
+    let mIsAutoRefreshEnabled = true;
     const mPreviousPricesMap = new Map();
     const mChangedItemIds = new Set();
+    let mCurrentCinemaAds = [];
+    let mCurrentAdIndex = 0;
+    let mAdAutoRotateTimer = null;
+
+    function mShowToast(msg) {
+      const alertBox = document.getElementById('m-alert');
+      const alertText = document.getElementById('m-alert-text');
+      if (alertBox && alertText) {
+        alertText.innerText = msg;
+        alertBox.style.display = 'flex';
+        setTimeout(() => {
+          alertBox.style.display = 'none';
+        }, 4000);
+      }
+    }
+
+    function mToggleAutoRefresh() {
+      mIsAutoRefreshEnabled = !mIsAutoRefreshEnabled;
+      const btn = document.getElementById('m-btn-auto-refresh-toggle');
+      const dot = document.getElementById('m-ar-dot');
+      const text = document.getElementById('m-ar-text');
+
+      if (mIsAutoRefreshEnabled) {
+        if (btn) btn.classList.remove('paused');
+        if (dot) dot.innerText = '🟢';
+        if (text) text.innerText = 'Auto (8s)';
+        mLiveCountdownSeconds = 8;
+        mShowToast('🟢 Built-in Auto-Refresh ON: Concession prices update constantly every 8s.');
+      } else {
+        if (btn) btn.classList.add('paused');
+        if (dot) dot.innerText = '⏸️';
+        if (text) text.innerText = 'Paused';
+        mShowToast('⏸️ Auto-Refresh paused. Tap Sync to update prices manually.');
+      }
+    }
 
     function mStartLivePricingTicker(cinemaId) {
       if (mLivePricingInterval) clearInterval(mLivePricingInterval);
-      mLiveCountdownSeconds = 10;
+      mLiveCountdownSeconds = 8;
 
       const countdownEl = document.getElementById('m-live-countdown');
       if (countdownEl) countdownEl.innerText = mLiveCountdownSeconds;
 
       mLivePricingInterval = setInterval(async () => {
+        if (!mIsAutoRefreshEnabled) return;
+
         mLiveCountdownSeconds--;
         const cEl = document.getElementById('m-live-countdown');
         if (cEl) cEl.innerText = mLiveCountdownSeconds;
 
         if (mLiveCountdownSeconds <= 0) {
-          mLiveCountdownSeconds = 10;
+          mLiveCountdownSeconds = 8;
           if (cEl) cEl.innerText = mLiveCountdownSeconds;
           if (currentCinema) {
             await loadMenu(currentCinema.id, true);
@@ -1369,13 +1641,94 @@
     }
 
     async function mForceLiveSync() {
-      mLiveCountdownSeconds = 10;
+      mLiveCountdownSeconds = 8;
       const cEl = document.getElementById('m-live-countdown');
       if (cEl) cEl.innerText = mLiveCountdownSeconds;
 
       if (currentCinema) {
         await loadMenu(currentCinema.id, true);
+        mShowToast('⚡ Candy bar prices and combo promotions refreshed!');
       }
+    }
+
+    // Cinema Concession Ads Carousel (Mobile)
+    function mRenderCinemaAds() {
+      const container = document.getElementById('m-ads-card-container');
+      const counterEl = document.getElementById('m-ad-counter');
+      const dotsEl = document.getElementById('m-ad-dots-container');
+      if (!container || mCurrentCinemaAds.length === 0) return;
+
+      if (mCurrentAdIndex >= mCurrentCinemaAds.length) mCurrentAdIndex = 0;
+      if (mCurrentAdIndex < 0) mCurrentAdIndex = mCurrentCinemaAds.length - 1;
+
+      const ad = mCurrentCinemaAds[mCurrentAdIndex];
+      if (counterEl) counterEl.innerText = `${mCurrentAdIndex + 1} / ${mCurrentCinemaAds.length}`;
+
+      const tagsHtml = (ad.tags || []).map(t => `<span class="m-ad-tag-pill">#${t}</span>`).join(' ');
+
+      container.innerHTML = `
+        <div class="m-ad-card">
+          <div>
+            <span class="m-ad-badge ${ad.is_flash_ad ? '' : 'gold'}">${ad.badge_text}</span>
+            <div class="m-ad-title">${ad.title}</div>
+            <div class="m-ad-sub">${ad.subtitle}</div>
+            <div class="m-ad-tags-row">${tagsHtml}</div>
+          </div>
+          <div class="m-ad-pricing-bar">
+            <div>
+              ${ad.original_price_lkr > ad.discounted_price_lkr ? `<div class="m-ad-retail-price">Retail LKR ${ad.original_price_lkr.toFixed(0)}</div>` : ''}
+              <div class="m-ad-deal-price">LKR ${ad.discounted_price_lkr.toFixed(0)}</div>
+            </div>
+            <div style="text-align:right;">
+              <span class="m-ad-discount-tag">${ad.discount_text}</span>
+              ${ad.promo_code ? `<div style="font-size:0.65rem; color:var(--scope-gold); font-family:monospace; margin-top:0.2rem;">CODE: ${ad.promo_code}</div>` : ''}
+            </div>
+          </div>
+          <button type="button" class="m-btn-claim-ad" onclick="mClaimAdDeal('${ad.id}')">
+            <span>🎟️ ${ad.call_to_action}</span>
+          </button>
+        </div>
+      `;
+
+      if (dotsEl) {
+        dotsEl.innerHTML = mCurrentCinemaAds.map((_, idx) => `
+          <div class="m-ad-dot ${idx === mCurrentAdIndex ? 'active' : ''}" onclick="mGoToCinemaAd(${idx})"></div>
+        `).join('');
+      }
+
+      if (mAdAutoRotateTimer) clearInterval(mAdAutoRotateTimer);
+      mAdAutoRotateTimer = setInterval(() => {
+        mNextCinemaAd();
+      }, 6000);
+    }
+
+    function mNextCinemaAd() {
+      if (mCurrentCinemaAds.length <= 1) return;
+      mCurrentAdIndex = (mCurrentAdIndex + 1) % mCurrentCinemaAds.length;
+      mRenderCinemaAds();
+    }
+
+    function mPrevCinemaAd() {
+      if (mCurrentCinemaAds.length <= 1) return;
+      mCurrentAdIndex = (mCurrentAdIndex - 1 + mCurrentCinemaAds.length) % mCurrentCinemaAds.length;
+      mRenderCinemaAds();
+    }
+
+    function mGoToCinemaAd(idx) {
+      mCurrentAdIndex = idx;
+      mRenderCinemaAds();
+    }
+
+    function mClaimAdDeal(adId) {
+      const ad = mCurrentCinemaAds.find(a => a.id === adId);
+      if (!ad) return;
+
+      if (ad.target_item_id) {
+        addToCart(ad.target_item_id);
+      }
+
+      mShowToast(`🎟️ Deal Activated: ${ad.title} added to order! Code: ${ad.promo_code || 'APPLIED'}`);
+      switchNav('cart');
     }
 
     async function loadMenu(cinemaId, isAutoSync = false) {
@@ -1392,6 +1745,12 @@
 
         const items = data.items || data;
         const updatedAt = data.updated_at || new Date().toLocaleTimeString();
+
+        // Load promotional cinema ads
+        if (data.cinema_ads && Array.isArray(data.cinema_ads)) {
+          mCurrentCinemaAds = data.cinema_ads;
+          mRenderCinemaAds();
+        }
 
         mChangedItemIds.clear();
         if (Array.isArray(items)) {
@@ -1454,7 +1813,7 @@
 
         const discountsList = (item.applicable_discounts || []).map(d => `
           <div class="m-disc-row">
-            <span>${d.provider === 'Redopay' ? '💳' : d.provider === 'FriMi' ? '💎' : d.provider === 'Genie' ? '⚡' : '🇱🇰'} ${d.title}</span>
+            <span>${d.provider === 'Scope Privilege' ? '👑' : d.provider === 'FriMi' ? '💎' : d.provider === 'Genie' ? '⚡' : '🇱🇰'} ${d.title}</span>
             <strong style="color:var(--accent-green);">LKR ${d.discounted_price_lkr.toFixed(0)}</strong>
           </div>
         `).join('');
@@ -1508,7 +1867,7 @@
 
       const resBox = document.getElementById('m-deal-result-box');
       resBox.style.display = 'block';
-      resBox.innerHTML = `<div style="text-align:center; padding:1.5rem; color:var(--text-muted);">✨ Optimizing Redopay Combo...</div>`;
+      resBox.innerHTML = `<div style="text-align:center; padding:1.5rem; color:var(--text-muted);">👑 Optimizing Scope Privilege Combo...</div>`;
 
       try {
         const res = await fetch('/api/v1/recommend', {
@@ -1518,7 +1877,7 @@
             cinema_id: currentCinema ? currentCinema.id : 'KND-KCC',
             budget_lkr: budget,
             party_size: partySize,
-            redopay_tier: tier
+            privilege_tier: tier
           })
         });
 
@@ -1586,7 +1945,7 @@
 
     async function loadPromotions() {
       try {
-        const res = await fetch('/api/v1/promotions/redopay');
+        const res = await fetch('/api/v1/promotions/privilege');
         const promos = await res.json();
         const container = document.getElementById('m-vouchers-list');
         container.innerHTML = '';
@@ -1674,14 +2033,14 @@
           body: JSON.stringify({
             cinema_id: currentCinema ? currentCinema.id : 'KND-KCC',
             items: itemsPayload,
-            redopay_tier: document.getElementById('m-tier-select').value
+            privilege_tier: document.getElementById('m-tier-select').value
           })
         });
         const evalRes = await res.json();
         if (evalRes) {
           document.getElementById('m-subtotal-val').innerText = `LKR ${evalRes.original_total_lkr.toFixed(2)}`;
           document.getElementById('m-discount-val').innerText = `-LKR ${evalRes.discount_amount_lkr.toFixed(2)}`;
-          document.getElementById('m-applied-promo-label').innerText = `Redopay Savings (${evalRes.applied_promo}):`;
+          document.getElementById('m-applied-promo-label').innerText = `Scope Privilege Savings (${evalRes.applied_promo}):`;
           document.getElementById('m-final-val').innerText = `LKR ${evalRes.final_total_lkr.toFixed(2)}`;
           document.getElementById('m-upsell-msg').innerText = evalRes.next_tier_upsell || '';
         }
@@ -1719,7 +2078,7 @@
             cinema_id: currentCinema ? currentCinema.id : 'KND-KCC',
             items: itemsPayload,
             payment_method: method,
-            redopay_tier: document.getElementById('m-tier-select').value,
+            privilege_tier: document.getElementById('m-tier-select').value,
             customer_phone: phone
           })
         });
@@ -1750,7 +2109,7 @@
       let extra = '';
       if (order.payment_method === 'LANKAQR' && order.lanka_qr_emv) {
         extra = `
-          <div style="background:#000; border:1px solid var(--accent-redopay); border-radius:10px; padding:0.8rem; text-align:center; margin:0.8rem 0;">
+          <div style="background:#000; border:1px solid var(--border-gold); border-radius:10px; padding:0.8rem; text-align:center; margin:0.8rem 0;">
             <div style="font-weight:700; color:var(--accent-gold); font-size:0.75rem; margin-bottom:0.4rem;">📱 LANKAQR DYNAMIC CODE</div>
             <div style="background:#fff; display:inline-block; padding:8px; border-radius:6px;">
               <svg width="100" height="100" viewBox="0 0 100 100">
@@ -1766,7 +2125,7 @@
       }
 
       document.getElementById('m-receipt-body').innerHTML = `
-        <div style="background:rgba(99,102,241,0.2); border:1px dashed var(--accent-redopay); border-radius:10px; padding:0.7rem; text-align:center; margin-bottom:0.8rem;">
+        <div style="background:rgba(212,175,55,0.12); border:1px dashed var(--scope-gold); border-radius:10px; padding:0.7rem; text-align:center; margin-bottom:0.8rem;">
           <div style="font-size:0.68rem; text-transform:uppercase; letter-spacing:0.06em; color:#a5b4fc; font-weight:700;">🎟️ Physical Counter Voucher Code</div>
           <div style="font-size:1.25rem; font-weight:900; color:#fff; font-family:monospace; margin:0.2rem 0;">${order.voucher_code || order.order_id}</div>
           <div style="font-size:0.7rem; color:var(--accent-gold);">Present at physical cinema concession counter</div>

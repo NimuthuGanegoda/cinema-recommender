@@ -24,10 +24,10 @@ func main() {
 		city        = flag.String("city", "Kandy", "Target regional cinema city (outside Colombo)")
 		budget      = flag.Float64("budget", 2500.00, "Concession budget in LKR")
 		partySize   = flag.Int("party", 2, "Number of moviegoers in the party")
-		tier        = flag.String("tier", "Standard", "Redopay cardholder tier (Standard, Student, Silver, Gold, Platinum)")
-		promoCode   = flag.String("promo", "", "Specific Redopay promo code override")
+		tier        = flag.String("tier", "Standard", "Scope Privilege member tier (Standard, Student, Silver, Gold, Platinum)")
+		promoCode   = flag.String("promo", "", "Specific Scope Privilege promo code override (e.g. SCOPE-COMBO30)")
 		listCinemas = flag.Bool("list-cinemas", false, "List all registered regional out-of-Colombo cinemas")
-		listPromos  = flag.Bool("list-promos", false, "List all active Redopay concession promotions")
+		listPromos  = flag.Bool("list-promos", false, "List all active Scope Privilege concession promotions")
 	)
 	flag.Parse()
 
@@ -60,8 +60,8 @@ func main() {
 
 func printBanner() {
 	fmt.Println("================================================================================")
-	fmt.Println("🎬 CINEMA FOOD & BEVERAGE RECOMMENDATION ENGINE 🍿🥤")
-	fmt.Println("   Regional Outstation Scraping Pipeline & Redopay Discount Optimization Engine")
+	fmt.Println("🎬 SCOPE CINEMAS CANDY BAR RECOMMENDER 🍿🥤")
+	fmt.Println("   Regional Outstation Scraping Pipeline & Scope Privilege Pass Discount Engine")
 	fmt.Println("================================================================================")
 }
 
@@ -106,8 +106,9 @@ func runCLIRecommendation(
 		City:        targetCinema.City,
 		BudgetLKR:   budget,
 		PartySize:   partySize,
-		RedopayTier: models.RedopayTier(tierName),
-		PromoCode:   promoCode,
+		PrivilegeTier: models.PrivilegeTier(tierName),
+		RedopayTier:   models.RedopayTier(tierName),
+		PromoCode:     promoCode,
 	}
 
 	result, err := recEngine.RecommendOptimalBundle(targetCinema, items, req)
@@ -124,9 +125,9 @@ func runCLIRecommendation(
 	}
 
 	fmt.Println("--------------------------------------------------------------------------------")
-	fmt.Printf("   Original Menu Subtotal:     LKR %8.2f\n", result.OriginalTotal)
-	fmt.Printf("   Redopay Concession Savings: -LKR %8.2f (%s)\n", result.DiscountAmount, result.AppliedPromo)
-	fmt.Printf("   👉 Net Payable via Redopay:  LKR %8.2f\n", result.FinalTotal)
+	fmt.Printf("   Original Menu Subtotal:        LKR %8.2f\n", result.OriginalTotal)
+	fmt.Printf("   Scope Privilege Pass Savings: -LKR %8.2f (%s)\n", result.DiscountAmount, result.AppliedPromo)
+	fmt.Printf("   👉 Net Counter Payable (Cash/LankaQR): LKR %8.2f\n", result.FinalTotal)
 	fmt.Println("--------------------------------------------------------------------------------")
 	fmt.Printf("   💡 %s\n", result.Message)
 	if result.NextTierUpsell != "" {
@@ -153,7 +154,7 @@ func displayCinemas(sc *scraper.RegionalScraper) {
 
 func displayPromotions(recEngine *recommender.Engine) {
 	promos := recEngine.GetAvailablePromotions()
-	fmt.Printf("\n💳 Active Redopay Concession Promotions (%d campaigns):\n", len(promos))
+	fmt.Printf("\n👑 Active Scope Privilege Concession Promotions (%d campaigns):\n", len(promos))
 	fmt.Printf("%-18s | %-8s | %-14s | %s\n", "Promo Code", "Type", "Min Spend", "Description")
 	fmt.Println("--------------------------------------------------------------------------------")
 	for _, p := range promos {
@@ -183,7 +184,7 @@ func runHTTPServer(port string, sc *scraper.RegionalScraper, recEngine *recommen
 		fmt.Println("   - Health Check:       GET  http://localhost" + port + "/api/v1/health")
 		fmt.Println("   - List Cinemas:       GET  http://localhost" + port + "/api/v1/cinemas")
 		fmt.Println("   - Scrape Concessions: GET  http://localhost" + port + "/api/v1/cinemas/{id}/concessions")
-		fmt.Println("   - Redopay Promos:     GET  http://localhost" + port + "/api/v1/promotions/redopay")
+		fmt.Println("   - Privilege Promos:   GET  http://localhost" + port + "/api/v1/promotions/privilege")
 		fmt.Println("   - AI Recommendation:  POST http://localhost" + port + "/api/v1/recommend")
 		fmt.Println("   - Cart Evaluation:    POST http://localhost" + port + "/api/v1/cart/evaluate")
 		fmt.Println("\n(Press Ctrl+C to gracefully shutdown)")

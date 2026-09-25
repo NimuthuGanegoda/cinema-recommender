@@ -24,9 +24,7 @@
       --scope-red-hover: #b91c1c;
       --scope-red-glow: rgba(229, 9, 20, 0.35);
       --accent-gold: #d4af37;
-      --accent-redopay: #d4af37;
-      --accent-redopay-hover: #b8860b;
-      --accent-redopay-glow: rgba(212, 175, 55, 0.35);
+      --accent-gold-hover: #b8860b;
       --accent-red: #e50914;
       --accent-green: #10b981;
       --accent-cyan: #38bdf8;
@@ -609,9 +607,9 @@
 
     .promo-code-badge {
       display: inline-block;
-      background: rgba(99, 102, 241, 0.2);
-      border: 1px dashed var(--accent-redopay);
-      color: #a5b4fc;
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px dashed var(--scope-gold);
+      color: var(--scope-gold-light);
       font-family: monospace;
       font-size: 0.8rem;
       font-weight: 700;
@@ -691,8 +689,8 @@
     }
 
     .form-select:focus, .form-input:focus {
-      border-color: var(--accent-redopay);
-      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+      border-color: var(--scope-gold);
+      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
     }
 
     .party-buttons {
@@ -1025,8 +1023,8 @@
     }
 
     .btn-add-cart:hover {
-      background: var(--accent-redopay);
-      color: #fff;
+      background: var(--scope-gold);
+      color: #000;
     }
 
     /* Cinema Food & Concession Location Guide */
@@ -1045,8 +1043,8 @@
       transition: all 0.2s;
     }
     .btn-geo-detect:hover {
-      background: var(--accent-redopay);
-      color: #fff;
+      background: var(--scope-gold);
+      color: #000;
     }
 
     .food-guide-card {
@@ -1555,6 +1553,288 @@
       transform: translateY(0);
       opacity: 1;
     }
+
+    /* Auto-Refresh Inbuild Toggle */
+    .btn-auto-refresh-toggle {
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      color: #86efac;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-auto-refresh-toggle:hover {
+      background: rgba(34, 197, 94, 0.25);
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+    }
+
+    .btn-auto-refresh-toggle.paused {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    /* ==========================================================================
+       CINEMA CONCESSION PROMOTIONAL ADS & COMBOS SHOWCASE
+       ========================================================================== */
+    .cinema-ads-showcase {
+      background: linear-gradient(135deg, rgba(24, 14, 18, 0.96) 0%, rgba(10, 8, 14, 0.98) 50%, rgba(18, 16, 26, 0.96) 100%);
+      border: 1.5px solid var(--border-gold);
+      border-radius: 16px;
+      padding: 1.25rem 1.6rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.75), 0 0 25px rgba(212, 175, 55, 0.18);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cinema-ads-showcase::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--scope-red), var(--scope-gold), var(--scope-gold-light), var(--scope-red));
+      background-size: 200% 100%;
+      animation: adBorderGlow 4s linear infinite;
+    }
+
+    @keyframes adBorderGlow {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+
+    .ads-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .ads-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .ads-reel-icon {
+      font-size: 1.4rem;
+      filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.5));
+    }
+
+    .ads-section-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #fff;
+      font-family: 'Cinzel', serif;
+      letter-spacing: 0.06em;
+      margin: 0;
+    }
+
+    .ads-section-subtitle {
+      font-size: 0.76rem;
+      color: var(--scope-gold-light);
+      display: block;
+    }
+
+    .ads-nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .btn-ad-nav {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-gold);
+      color: #fff;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-ad-nav:hover {
+      background: var(--scope-gold);
+      color: #07070a;
+      box-shadow: 0 0 10px var(--scope-gold-glow);
+    }
+
+    .ad-counter {
+      font-size: 0.72rem;
+      font-family: monospace;
+      color: var(--text-muted);
+      padding: 0 0.3rem;
+    }
+
+    .ad-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 0.6rem 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    @media (max-width: 860px) {
+      .ad-card {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+
+    .ad-content {
+      flex: 1;
+    }
+
+    .ad-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      background: rgba(229, 9, 20, 0.25);
+      border: 1px solid rgba(229, 9, 20, 0.5);
+      color: #fca5a5;
+      margin-bottom: 0.5rem;
+    }
+
+    .ad-badge.gold {
+      background: rgba(212, 175, 55, 0.2);
+      border-color: var(--border-gold);
+      color: var(--scope-gold-light);
+    }
+
+    .ad-title {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: #ffffff;
+      margin-bottom: 0.4rem;
+      font-family: 'Cinzel', serif;
+      letter-spacing: 0.02em;
+    }
+
+    .ad-subtitle {
+      font-size: 0.88rem;
+      color: #cbd5e1;
+      line-height: 1.45;
+      margin-bottom: 0.75rem;
+      max-width: 650px;
+    }
+
+    .ad-tags-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .ad-tag-pill {
+      font-size: 0.7rem;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .ad-pricing-box {
+      min-width: 250px;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid var(--border-gold);
+      border-radius: 12px;
+      padding: 1.1rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+
+    .ad-price-retail {
+      font-size: 0.82rem;
+      color: #94a3b8;
+      text-decoration: line-through;
+    }
+
+    .ad-price-deal {
+      font-size: 1.65rem;
+      font-weight: 900;
+      color: var(--scope-gold-light);
+      font-family: 'Outfit', sans-serif;
+      line-height: 1;
+    }
+
+    .ad-discount-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.18);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      margin-bottom: 0.3rem;
+    }
+
+    .btn-claim-ad {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border: 1px solid #34d399;
+      color: #ffffff;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-claim-ad:hover {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+    }
+
+    .ad-dots-row {
+      display: flex;
+      justify-content: center;
+      gap: 0.4rem;
+      margin-top: 0.8rem;
+    }
+
+    .ad-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .ad-dot.active {
+      background: var(--scope-gold);
+      width: 22px;
+      border-radius: 4px;
+      box-shadow: 0 0 8px var(--scope-gold-glow);
+    }
   </style>
 </head>
 <body>
@@ -1648,10 +1928,32 @@
       </div>
     </section>
 
-    <!-- Redopay Campaigns Strip -->
+    <!-- Cinema Concession Ads & Combos Showcase -->
+    <section class="cinema-ads-showcase" id="cinema-ads-section">
+      <div class="ads-header">
+        <div class="ads-header-left">
+          <span class="ads-reel-icon">🎬</span>
+          <div>
+            <h3 class="ads-section-title">THEATER LOBBY PROMO SCREEN</h3>
+            <span class="ads-section-subtitle">Exclusive In-Theater Concession Ads & Combo Discounts</span>
+          </div>
+        </div>
+        <div class="ads-nav-controls">
+          <button type="button" class="btn-ad-nav" onclick="prevCinemaAd()" title="Previous Ad">‹</button>
+          <span id="ad-counter-indicator" class="ad-counter">1 / 4</span>
+          <button type="button" class="btn-ad-nav" onclick="nextCinemaAd()" title="Next Ad">›</button>
+        </div>
+      </div>
+      <div class="ads-carousel-wrapper" id="ads-carousel-container">
+        <!-- Rendered via JS -->
+      </div>
+      <div class="ad-dots-row" id="ad-dots-container"></div>
+    </section>
+
+    <!-- Scope Privilege Concession Promotions Strip -->
     <section class="promos-section">
       <div class="section-header">
-        <h3 class="section-title">💳 Active Redopay Concession Promotions</h3>
+        <h3 class="section-title">👑 Active Scope Privilege Concession Promotions</h3>
         <span style="font-size: 0.8rem; color: var(--text-muted);">Automatically matched at checkout</span>
       </div>
       <div class="promos-grid" id="promos-container">
@@ -1703,23 +2005,23 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="tier-select">Redopay Card Tier</label>
+            <label class="form-label" for="tier-select">Scope Privilege Member Tier</label>
             <select class="form-select" id="tier-select">
               <option value="Standard">Standard Account</option>
               <option value="Student">Student Moviegoer Pass (20% off)</option>
-              <option value="Silver">Silver Tier</option>
-              <option value="Gold">Gold Tier</option>
+              <option value="Silver">Silver Club (10% off)</option>
+              <option value="Gold">Gold Club (15% off)</option>
               <option value="Platinum">Platinum VIP (35% off)</option>
             </select>
           </div>
 
           <div class="form-group">
             <label class="form-label" for="promo-override">Promo Code (Optional)</label>
-            <input type="text" class="form-input" id="promo-override" placeholder="e.g. REDOPAY-COMBO30">
+            <input type="text" class="form-input" id="promo-override" placeholder="e.g. SCOPE-COMBO30">
           </div>
 
           <button type="submit" class="btn-primary" id="btn-submit-recommend">
-            <span>✨ Calculate Best Redopay Deal</span>
+            <span>✨ Calculate Best Deal</span>
           </button>
         </form>
       </aside>
@@ -1736,7 +2038,7 @@
         <div id="view-rec">
           <div class="deal-card" id="deal-container">
             <div style="text-align:center; padding: 2rem; color: var(--text-muted);">
-              Select options and click "Calculate Best Redopay Deal" to compute the optimal bundle.
+              Select options and click "Calculate Best Deal" to compute the optimal bundle.
             </div>
           </div>
         </div>
@@ -1750,12 +2052,16 @@
                 <span class="lpb-pulse-dot"></span>
                 <span class="lpb-title">LIVE CANDY BAR PRICING FEED</span>
                 <span class="lpb-chip">Real-time Rates</span>
+                <button type="button" class="btn-auto-refresh-toggle" id="btn-auto-refresh-toggle" onclick="toggleAutoRefresh()" title="Toggle built-in dynamic auto refresh">
+                  <span id="ar-dot">🟢</span>
+                  <span id="ar-status-text">Auto-Refresh: ON (8s)</span>
+                </button>
               </div>
               <div class="lpb-right">
                 <span class="lpb-updated-text" id="live-pricing-time">Updated: Just now</span>
-                <span class="lpb-countdown-pill">Next sync in <strong id="live-countdown-num">10</strong>s</span>
+                <span class="lpb-countdown-pill">Next refresh in <strong id="live-countdown-num">8</strong>s</span>
                 <button type="button" class="btn-live-sync" id="btn-force-sync" onclick="forceLivePriceSync()">
-                  <span id="sync-icon">🔄</span> Sync Live Prices
+                  <span id="sync-icon">🔄</span> Refresh Prices Now
                 </button>
               </div>
             </div>
@@ -1818,9 +2124,9 @@ Content-Type: application/json
 
 curl -X POST http://localhost:8080/api/v1/recommend \
   -H "Content-Type: application/json" \
-  -d '{"cinema_id":"KND-KCC","budget_lkr":2500,"party_size":2,"redopay_tier":"Standard"}'</code></pre>
+  -d '{"cinema_id":"KND-KCC","budget_lkr":2500,"party_size":2,"privilege_tier":"Standard"}'</code></pre>
 
-      <h4>5. Evaluate User Cart & Redopay Discounts</h4>
+      <h4>5. Evaluate User Cart & Scope Privilege Discounts</h4>
       <pre><code>POST /api/v1/cart/evaluate
 Content-Type: application/json
 
@@ -1853,7 +2159,7 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
       </div>
 
       <p style="font-size:0.78rem; color:var(--text-muted); text-align:center;">
-        💡 Native mobile PWA with touch tabs, live menu, deal optimizer, and Redopay wallet.
+        💡 Native mobile PWA with touch tabs, live menu, deal optimizer, and Scope Privilege Pass.
       </p>
     </div>
   </div>
@@ -1922,7 +2228,7 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
     let currentMenu = [];
     let customCart = [];
     let paymentMethods = [];
-    let selectedPaymentMethod = "REDOPAY";
+    let selectedPaymentMethod = "LANKAQR";
     let activeCheckoutPayload = null;
     let currentRecommendedDeal = null;
 
@@ -2016,7 +2322,7 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
 
     async function loadPromotions() {
       try {
-        const res = await fetch("/api/v1/promotions/redopay");
+        const res = await fetch("/api/v1/promotions/privilege");
         const promos = await res.json();
         const container = document.getElementById("promos-container");
         container.innerHTML = "";
@@ -2350,9 +2656,16 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
     // ==========================================================================
     // REAL-TIME CONSTANTLY UPDATING CONCESSION PRICING ENGINE
     // ==========================================================================
+    // ==========================================================================
+    // REAL-TIME CONSTANTLY UPDATING CONCESSION PRICING & ADS ENGINE
+    // ==========================================================================
     let livePricingInterval = null;
-    let liveCountdownSeconds = 10;
+    let liveCountdownSeconds = 8;
+    let isAutoRefreshEnabled = true;
     const previousPricesMap = new Map();
+    let currentCinemaAds = [];
+    let currentAdIndex = 0;
+    let adAutoRotateTimer = null;
 
     function showLiveToast(msg) {
       let toast = document.getElementById("live-price-toast");
@@ -2363,7 +2676,7 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
         toast.innerHTML = `
           <span style="font-size:1.3rem;">⚡</span>
           <div>
-            <div style="font-weight:800; color:var(--scope-gold-light); font-size:0.8rem; text-transform:uppercase; letter-spacing:0.04em;">Live Concession Feed</div>
+            <div style="font-weight:800; color:var(--scope-gold-light); font-size:0.8rem; text-transform:uppercase; letter-spacing:0.04em;">Cinema Candy Bar Live Feed</div>
             <div id="live-toast-message" style="font-size:0.75rem; color:#cbd5e1;"></div>
           </div>
         `;
@@ -2377,20 +2690,42 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
       }, 4000);
     }
 
+    function toggleAutoRefresh() {
+      isAutoRefreshEnabled = !isAutoRefreshEnabled;
+      const btn = document.getElementById("btn-auto-refresh-toggle");
+      const dot = document.getElementById("ar-dot");
+      const text = document.getElementById("ar-status-text");
+
+      if (isAutoRefreshEnabled) {
+        if (btn) btn.classList.remove("paused");
+        if (dot) dot.innerText = "🟢";
+        if (text) text.innerText = "Auto-Refresh: ON (8s)";
+        liveCountdownSeconds = 8;
+        showLiveToast("🟢 Built-in Auto-Refresh enabled (Prices update every 8s)");
+      } else {
+        if (btn) btn.classList.add("paused");
+        if (dot) dot.innerText = "⏸️";
+        if (text) text.innerText = "Auto-Refresh: PAUSED";
+        showLiveToast("⏸️ Auto-Refresh paused. Click 'Refresh Prices Now' for manual sync.");
+      }
+    }
+
     function startLivePricingTicker(cinemaId) {
       if (livePricingInterval) clearInterval(livePricingInterval);
-      liveCountdownSeconds = 10;
+      liveCountdownSeconds = 8;
 
       const countdownEl = document.getElementById("live-countdown-num");
       if (countdownEl) countdownEl.innerText = liveCountdownSeconds;
 
       livePricingInterval = setInterval(async () => {
+        if (!isAutoRefreshEnabled) return;
+
         liveCountdownSeconds--;
         const cEl = document.getElementById("live-countdown-num");
         if (cEl) cEl.innerText = liveCountdownSeconds;
 
         if (liveCountdownSeconds <= 0) {
-          liveCountdownSeconds = 10;
+          liveCountdownSeconds = 8;
           if (cEl) cEl.innerText = liveCountdownSeconds;
           if (currentCinema) {
             await loadCinemaMenu(currentCinema.id, true);
@@ -2405,18 +2740,103 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
       if (syncIcon) syncIcon.style.display = "inline-block";
       if (btn) btn.disabled = true;
 
-      liveCountdownSeconds = 10;
+      liveCountdownSeconds = 8;
       const cEl = document.getElementById("live-countdown-num");
       if (cEl) cEl.innerText = liveCountdownSeconds;
 
       try {
         if (currentCinema) {
           await loadCinemaMenu(currentCinema.id, true);
-          showLiveToast("⚡ Concession prices updated from live counter feed.");
+          showLiveToast("⚡ Concession prices and lobby ads updated.");
         }
       } finally {
         if (btn) btn.disabled = false;
       }
+    }
+
+    // Cinema Concession Ads Carousel & Deal Activation
+    function renderCinemaAds() {
+      const container = document.getElementById("ads-carousel-container");
+      const counterEl = document.getElementById("ad-counter-indicator");
+      const dotsEl = document.getElementById("ad-dots-container");
+      if (!container || currentCinemaAds.length === 0) return;
+
+      if (currentAdIndex >= currentCinemaAds.length) currentAdIndex = 0;
+      if (currentAdIndex < 0) currentAdIndex = currentCinemaAds.length - 1;
+
+      const ad = currentCinemaAds[currentAdIndex];
+      if (counterEl) counterEl.innerText = `${currentAdIndex + 1} / ${currentCinemaAds.length}`;
+
+      const tagsHtml = (ad.tags || []).map(t => `<span class="ad-tag-pill">#${t}</span>`).join(" ");
+
+      container.innerHTML = `
+        <div class="ad-card" id="active-ad-card">
+          <div class="ad-content">
+            <span class="ad-badge ${ad.is_flash_ad ? '' : 'gold'}">${ad.badge_text}</span>
+            <div class="ad-title">${ad.title}</div>
+            <div class="ad-subtitle">${ad.subtitle}</div>
+            <div class="ad-tags-row">${tagsHtml}</div>
+          </div>
+          <div class="ad-pricing-box">
+            ${ad.original_price_lkr > ad.discounted_price_lkr ? `<div class="ad-price-retail">Retail LKR ${ad.original_price_lkr.toFixed(0)}</div>` : ''}
+            <div class="ad-price-deal">LKR ${ad.discounted_price_lkr.toFixed(0)}</div>
+            <div class="ad-discount-tag">${ad.discount_text}</div>
+            <button type="button" class="btn-claim-ad" onclick="claimAdDeal('${ad.id}')">
+              ${ad.call_to_action}
+            </button>
+          </div>
+        </div>
+      `;
+
+      if (dotsEl) {
+        dotsEl.innerHTML = currentCinemaAds.map((_, idx) => `
+          <div class="ad-dot ${idx === currentAdIndex ? 'active' : ''}" onclick="goToCinemaAd(${idx})"></div>
+        `).join("");
+      }
+
+      // Start automatic ad cycling every 6 seconds
+      if (adAutoRotateTimer) clearInterval(adAutoRotateTimer);
+      adAutoRotateTimer = setInterval(() => {
+        nextCinemaAd();
+      }, 6000);
+    }
+
+    function nextCinemaAd() {
+      if (currentCinemaAds.length <= 1) return;
+      currentAdIndex = (currentAdIndex + 1) % currentCinemaAds.length;
+      renderCinemaAds();
+    }
+
+    function prevCinemaAd() {
+      if (currentCinemaAds.length <= 1) return;
+      currentAdIndex = (currentAdIndex - 1 + currentCinemaAds.length) % currentCinemaAds.length;
+      renderCinemaAds();
+    }
+
+    function goToCinemaAd(index) {
+      currentAdIndex = index;
+      renderCinemaAds();
+    }
+
+    function claimAdDeal(adId) {
+      const ad = currentCinemaAds.find(a => a.id === adId);
+      if (!ad) return;
+
+      if (ad.target_item_id) {
+        // Automatically add the item into user's custom cart
+        addToCart(ad.target_item_id);
+      }
+
+      // Apply promo code if present
+      if (ad.promo_code) {
+        const promoInput = document.getElementById("promo-override");
+        if (promoInput) promoInput.value = ad.promo_code;
+      }
+
+      showLiveToast(`🎟️ Ad Deal Activated: ${ad.title} added! Promo ${ad.promo_code || 'APPLIED'} unlocked.`);
+
+      // Switch to cart or re-evaluate
+      switchTab('cart');
     }
 
     async function loadCinemaMenu(cinemaId, isAutoSync = false) {
@@ -2433,6 +2853,12 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
 
         const items = data.items || data;
         const updatedAt = data.updated_at || new Date().toLocaleTimeString();
+
+        // Update Promotional Cinema Ads
+        if (data.cinema_ads && Array.isArray(data.cinema_ads)) {
+          currentCinemaAds = data.cinema_ads;
+          renderCinemaAds();
+        }
 
         // Detect price changes against previous tick
         const changedItemIds = new Set();
@@ -2487,7 +2913,7 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
           // Every food discount pill list
           const discountsHtml = (item.applicable_discounts || []).map(d => `
             <div class="disc-pill" title="${d.requirement}">
-              <span>${d.provider === 'Redopay' ? '💳' : d.provider === 'FriMi' ? '💎' : d.provider === 'Genie' ? '⚡' : '🇱🇰'} <strong>${d.title}</strong></span>
+              <span>${d.provider === 'Scope Privilege' ? '👑' : d.provider === 'FriMi' ? '💎' : d.provider === 'Genie' ? '⚡' : '🇱🇰'} <strong>${d.title}</strong></span>
               <span style="color:#34d399; font-weight:700;">LKR ${d.discounted_price_lkr.toFixed(0)}</span>
             </div>
           `).join("");
@@ -2564,12 +2990,12 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
         cinema_id: cinemaId,
         budget_lkr: budget,
         party_size: partySize,
-        redopay_tier: tier,
+        privilege_tier: tier,
         promo_code: promoOverride
       };
 
       const container = document.getElementById("deal-container");
-      container.innerHTML = `<div style="text-align:center; padding:2rem;"><span class="status-dot"></span> Optimizing Redopay Concession Bundle...</div>`;
+      container.innerHTML = `<div style="text-align:center; padding:2rem;"><span class="status-dot"></span> Optimizing Scope Privilege Concession Bundle...</div>`;
 
       try {
         const res = await fetch("/api/v1/recommend", {
@@ -2630,7 +3056,7 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
             <div class="sum-metric-val original">LKR ${deal.original_total_lkr.toFixed(2)}</div>
           </div>
           <div>
-            <div class="sum-metric-label">Redopay Savings</div>
+            <div class="sum-metric-label">Scope Privilege Savings</div>
             <div class="sum-metric-val discount">-LKR ${deal.discount_amount_lkr.toFixed(2)}</div>
           </div>
           <div>
@@ -2703,7 +3129,7 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
       content.innerHTML = `
         <div style="margin-bottom:1.5rem;">${rows}</div>
         <div id="cart-evaluation-results" style="padding:1rem; background:rgba(15,23,42,0.8); border-radius:10px;">
-          Evaluating Redopay savings...
+          Evaluating Scope Privilege savings...
         </div>
       `;
 
@@ -2716,7 +3142,7 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
           body: JSON.stringify({
             cinema_id: currentCinema ? currentCinema.id : "KND-KCC",
             items: itemsPayload,
-            redopay_tier: document.getElementById("tier-select").value,
+            privilege_tier: document.getElementById("tier-select").value,
             promo_code: document.getElementById("promo-override").value
           })
         });
@@ -2729,7 +3155,7 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
               <strong style="text-decoration:line-through; color:#94a3b8;">LKR ${evalRes.original_total_lkr.toFixed(2)}</strong>
             </div>
             <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem; color:var(--accent-green);">
-              <span>Redopay Discount (${evalRes.applied_promo}):</span>
+              <span>Scope Privilege Discount (${evalRes.applied_promo}):</span>
               <strong>-LKR ${evalRes.discount_amount_lkr.toFixed(2)}</strong>
             </div>
             <div style="display:flex; justify-content:space-between; font-size:1.15rem; margin-top:0.5rem; padding-top:0.5rem; border-top:1px solid var(--border-subtle);">
@@ -2805,8 +3231,8 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
         if (isSelected) selectedPaymentMethod = m.id;
 
         const row = document.createElement("div");
-        row.style.background = isSelected ? "rgba(99,102,241,0.2)" : "rgba(15,23,42,0.7)";
-        row.style.border = isSelected ? "1px solid var(--accent-redopay)" : "1px solid var(--border-subtle)";
+        row.style.background = isSelected ? "rgba(212,175,55,0.12)" : "rgba(15,23,42,0.7)";
+        row.style.border = isSelected ? "1px solid var(--border-gold)" : "1px solid var(--border-subtle)";
         row.style.borderRadius = "10px";
         row.style.padding = "0.75rem 0.9rem";
         row.style.cursor = "pointer";
@@ -2826,7 +3252,7 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
             <div style="font-weight:700; font-size:0.9rem; color:#fff;">${m.icon} ${m.name} ${offer}</div>
             <div style="font-size:0.75rem; color:var(--text-muted);">${m.description}</div>
           </div>
-          <input type="radio" name="pm" ${isSelected ? 'checked' : ''} style="accent-color:var(--accent-redopay);">
+          <input type="radio" name="pm" ${isSelected ? 'checked' : ''} style="accent-color:var(--scope-gold);">
         `;
         grid.appendChild(row);
       });
@@ -2860,7 +3286,7 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
           cinema_id: activeCheckoutPayload.cinema_id,
           items: activeCheckoutPayload.items,
           payment_method: selectedPaymentMethod,
-          redopay_tier: document.getElementById("tier-select").value,
+          privilege_tier: document.getElementById("tier-select").value,
           promo_code: document.getElementById("promo-override").value,
           customer_phone: document.getElementById("ck-customer-phone").value
         };
@@ -2897,7 +3323,7 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
       let extraSection = "";
       if (order.payment_method === "LANKAQR" && order.lanka_qr_emv) {
         extraSection = `
-          <div style="background:#000; border:2px solid var(--accent-redopay); border-radius:12px; padding:1.2rem; text-align:center; margin:1rem 0;">
+          <div style="background:#000; border:2px solid var(--border-gold); border-radius:12px; padding:1.2rem; text-align:center; margin:1rem 0;">
             <div style="color:var(--accent-gold); font-weight:800; font-size:0.9rem; margin-bottom:0.5rem;">📱 CBSL LANKAQR OFFICIAL STANDARD</div>
             <div style="background:#fff; display:inline-block; padding:12px; border-radius:8px;">
               <svg width="130" height="130" viewBox="0 0 100 100">
@@ -2912,14 +3338,14 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
         `;
       } else if (order.payment_method === "KOKO_BNPL") {
         extraSection = `
-          <div style="background:rgba(99,102,241,0.15); border:1px solid var(--accent-redopay); border-radius:10px; padding:0.8rem; margin:0.8rem 0;">
+          <div style="background:rgba(212,175,55,0.12); border:1px solid var(--border-gold); border-radius:10px; padding:0.8rem; margin:0.8rem 0;">
             <strong>🛍️ ${order.installment_note}</strong>
           </div>
         `;
       }
 
       document.getElementById("receipt-details-box").innerHTML = `
-        <div style="background:rgba(99,102,241,0.15); border:1px dashed var(--accent-redopay); border-radius:10px; padding:0.8rem; margin-bottom:1rem; text-align:center;">
+        <div style="background:rgba(212,175,55,0.12); border:1px dashed var(--scope-gold); border-radius:10px; padding:0.8rem; margin-bottom:1rem; text-align:center;">
           <div style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color:#a5b4fc; font-weight:700;">🎟️ Physical Counter Voucher Code</div>
           <div style="font-size:1.4rem; font-weight:900; color:#fff; font-family:monospace; letter-spacing:0.05em; margin:0.2rem 0;">${order.voucher_code || order.order_id}</div>
           <div style="font-size:0.75rem; color:var(--accent-gold);">Present this voucher to cashier at the candy bar counter</div>

@@ -13,33 +13,46 @@ func TestSupportedPaymentMethods(t *testing.T) {
 	methods := svc.GetSupportedPaymentMethods()
 
 	if len(methods) < 7 {
-		t.Fatalf("expected at least 7 Sri Lankan payment methods, got %d", len(methods))
+		t.Fatalf("expected at least 7 authentic Sri Lankan payment methods, got %d", len(methods))
 	}
 
 	foundLankaQR := false
+	foundFriMi := false
+	foundGenie := false
 	foundEzCash := false
 	foundKoko := false
+	foundMintpay := false
 	foundRedopay := false
 
 	for _, m := range methods {
 		switch m.ID {
 		case models.PaymentMethodLankaQR:
 			foundLankaQR = true
+		case models.PaymentMethodFriMi:
+			foundFriMi = true
+		case models.PaymentMethodGenie:
+			foundGenie = true
 		case models.PaymentMethodEzCash:
 			foundEzCash = true
 		case models.PaymentMethodKoko:
 			foundKoko = true
+		case models.PaymentMethodMintpay:
+			foundMintpay = true
 		case models.PaymentMethodRedopay:
 			foundRedopay = true
 		}
 	}
 
-	if !foundLankaQR || !foundEzCash || !foundKoko || !foundRedopay {
-		t.Fatal("expected LankaQR, eZ Cash, Koko, and Redopay in supported payment methods")
+	if !foundLankaQR || !foundFriMi || !foundGenie || !foundEzCash || !foundKoko || !foundMintpay {
+		t.Fatal("expected LankaQR, FriMi, Genie, eZ Cash, Koko, and Mintpay in authentic Sri Lankan payment methods")
+	}
+
+	if foundRedopay {
+		t.Fatal("Redopay does not exist in Sri Lanka and must not be in supported payment methods list")
 	}
 }
 
-func TestProcessCheckoutRedopay(t *testing.T) {
+func TestProcessCheckoutScopePrivilegePass(t *testing.T) {
 	svc := NewService(recommender.NewEngine())
 	cinema := models.Cinema{ID: "KND-KCC", Name: "KCC Multiplex", City: "Kandy"}
 
@@ -50,8 +63,8 @@ func TestProcessCheckoutRedopay(t *testing.T) {
 
 	req := models.CheckoutRequest{
 		CinemaID:      "KND-KCC",
-		PaymentMethod: models.PaymentMethodRedopay,
-		RedopayTier:   models.TierStandard,
+		PaymentMethod: models.PaymentMethodLankaQR,
+		PrivilegeTier: models.TierPlatinum,
 	}
 
 	res, err := svc.ProcessCheckout(cinema, items, req)
@@ -63,10 +76,10 @@ func TestProcessCheckoutRedopay(t *testing.T) {
 		t.Fatalf("expected subtotal 2200.00, got %.2f", res.SubtotalLKR)
 	}
 	if res.DiscountLKR <= 0 {
-		t.Fatal("expected Redopay discount to be applied")
+		t.Fatal("expected Scope Privilege discount to be applied")
 	}
-	if res.Status != "COMPLETED" {
-		t.Fatalf("expected status COMPLETED, got %s", res.Status)
+	if res.Status != "PENDING_LANKAQR_SCAN" {
+		t.Fatalf("expected status PENDING_LANKAQR_SCAN, got %s", res.Status)
 	}
 }
 
@@ -131,7 +144,7 @@ func TestProcessCheckoutEmptyCartError(t *testing.T) {
 	cinema := models.Cinema{ID: "KND-KCC", Name: "KCC", City: "Kandy"}
 
 	req := models.CheckoutRequest{
-		PaymentMethod: models.PaymentMethodRedopay,
+		PaymentMethod: models.PaymentMethodLankaQR,
 	}
 
 	_, err := svc.ProcessCheckout(cinema, nil, req)

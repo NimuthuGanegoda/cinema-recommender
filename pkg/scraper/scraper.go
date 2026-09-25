@@ -374,52 +374,52 @@ func EnrichItemDiscounts(item models.ConcessionItem, foodLocation string) models
 
 	var discounts []models.ItemDiscountInfo
 
-	// 1. Redopay Platinum VIP (35% off)
+	// 1. Scope Privilege Platinum VIP (35% off)
 	platPct := 0.35
 	platDisc := math.Round(price*(1.0-platPct)*100) / 100
 	discounts = append(discounts, models.ItemDiscountInfo{
-		PromoCode:       "REDOPAY-PLATINUM",
-		Provider:        "Redopay",
-		Title:           "Redopay Platinum VIP (35% Off)",
+		PromoCode:       "SCOPE-PLATINUM",
+		Provider:        "Scope Privilege",
+		Title:           "Scope Privilege Platinum VIP (35% Off)",
 		DiscountPct:     platPct,
 		DiscountedPrice: platDisc,
 		SavingsLKR:      math.Round((price-platDisc)*100) / 100,
-		Requirement:     "Redopay Platinum account or bundle > LKR 2,800",
+		Requirement:     "Scope Privilege Platinum VIP membership",
 	})
 
-	// 2. Redopay Combo 30% Deal
+	// 2. Scope Combo 30% Deal
 	comboPct := 0.30
 	comboDisc := math.Round(price*(1.0-comboPct)*100) / 100
 	discounts = append(discounts, models.ItemDiscountInfo{
-		PromoCode:       "REDOPAY-COMBO30",
-		Provider:        "Redopay",
-		Title:           "Redopay Popcorn + Drink Combo (30% Off)",
+		PromoCode:       "SCOPE-COMBO30",
+		Provider:        "Scope Privilege",
+		Title:           "Scope Popcorn + Drink Combo (30% Off)",
 		DiscountPct:     comboPct,
 		DiscountedPrice: comboDisc,
 		SavingsLKR:      math.Round((price-comboDisc)*100) / 100,
 		Requirement:     "Pair with any Popcorn & Beverage",
 	})
 
-	// 3. Redopay Regional Concession Boost (25% Off)
+	// 3. Scope Regional Concession Boost (25% Off)
 	regPct := 0.25
 	regDisc := math.Round(price*(1.0-regPct)*100) / 100
 	discounts = append(discounts, models.ItemDiscountInfo{
-		PromoCode:       "REDOPAY-CINEMA25",
-		Provider:        "Redopay",
-		Title:           "Regional Cinema Concession Boost (25% Off)",
+		PromoCode:       "SCOPE-CINEMA25",
+		Provider:        "Scope Privilege",
+		Title:           "Scope Regional Concession Pass (25% Off)",
 		DiscountPct:     regPct,
 		DiscountedPrice: regDisc,
 		SavingsLKR:      math.Round((price-regDisc)*100) / 100,
 		Requirement:     "Concession orders over LKR 2,000",
 	})
 
-	// 4. Redopay Student Moviegoer Pass (20% Off)
+	// 4. Scope Student Moviegoer Pass (20% Off)
 	stuPct := 0.20
 	stuDisc := math.Round(price*(1.0-stuPct)*100) / 100
 	discounts = append(discounts, models.ItemDiscountInfo{
-		PromoCode:       "REDOPAY-STUDENT",
-		Provider:        "Redopay",
-		Title:           "Redopay Student Moviegoer Pass (20% Off)",
+		PromoCode:       "SCOPE-STUDENT",
+		Provider:        "Scope Privilege",
+		Title:           "Scope Student Moviegoer Pass (20% Off)",
 		DiscountPct:     stuPct,
 		DiscountedPrice: stuDisc,
 		SavingsLKR:      math.Round((price-stuDisc)*100) / 100,
@@ -468,7 +468,7 @@ func EnrichItemDiscounts(item models.ConcessionItem, foodLocation string) models
 	item.ApplicableDiscounts = discounts
 	item.BestDiscountedPrice = platDisc // up to 35% maximum savings
 	item.MaxDiscountPct = platPct
-	item.BestPromoName = "Redopay Platinum VIP / Combo 30%"
+	item.BestPromoName = "Scope Privilege Platinum VIP / Combo 30%"
 	item.HasDiscount = true
 	if foodLocation != "" {
 		item.FoodLocation = foodLocation
@@ -522,7 +522,7 @@ func (s *RegionalScraper) ScrapeCinemaConcessions(cinema models.Cinema) ([]model
 // Movie theater candy bars dynamically update concession prices for flash deals, matinee slots,
 // and inventory optimization.
 func ApplyLiveDynamicPricing(rawItems []models.ConcessionItem, foodLoc string, now time.Time) []models.ConcessionItem {
-	tick := now.Unix() / 15 // new price cycle every 15 seconds
+	tick := now.Unix() / 8 // new dynamic price cycle every 8 seconds
 	timestampStr := now.Format("15:04:05")
 
 	results := make([]models.ConcessionItem, len(rawItems))
@@ -607,8 +607,8 @@ func ApplyLiveDynamicPricing(rawItems []models.ConcessionItem, foodLoc string, n
 // GetLiveConcessionTicker returns real-time pricing ticker metadata for a cinema.
 func (s *RegionalScraper) GetLiveConcessionTicker(cinema models.Cinema) map[string]interface{} {
 	now := time.Now()
-	tick := now.Unix() / 15
-	secondsUntilNextTick := 15 - (now.Unix() % 15)
+	tick := now.Unix() / 8
+	secondsUntilNextTick := 8 - (now.Unix() % 8)
 
 	return map[string]interface{}{
 		"cinema_id":            cinema.ID,
@@ -617,9 +617,117 @@ func (s *RegionalScraper) GetLiveConcessionTicker(cinema models.Cinema) map[stri
 		"tick_id":              tick,
 		"updated_at":           now.Format("15:04:05"),
 		"next_update_in_sec":   secondsUntilNextTick,
-		"update_interval_sec":  15,
+		"update_interval_sec":  8,
 		"dynamic_engine_state": "ACTIVE_MATINEE_FLASH_FEED",
 	}
+}
+
+// GetCinemaAds generates rich in-theater promotional advertisement banners highlighting combo, food, and drink discounts.
+func (s *RegionalScraper) GetCinemaAds(cinema models.Cinema, items []models.ConcessionItem) []models.CinemaAd {
+	var ads []models.CinemaAd
+
+	var comboItem *models.ConcessionItem
+	var flashItem *models.ConcessionItem
+	var beverageItem *models.ConcessionItem
+	var snackItem *models.ConcessionItem
+
+	for i := range items {
+		it := &items[i]
+		if it.Category == models.CategoryCombo && comboItem == nil {
+			comboItem = it
+		}
+		if (it.PriceTrend == "flash_drop" || it.PriceTrend == "down") && flashItem == nil {
+			flashItem = it
+		}
+		if it.Category == models.CategoryBeverage && beverageItem == nil {
+			beverageItem = it
+		}
+		if it.Category == models.CategorySnack && snackItem == nil {
+			snackItem = it
+		}
+	}
+
+	// 1. Featured Concession Combo Ad
+	if comboItem != nil {
+		savings := comboItem.Price - comboItem.BestDiscountedPrice
+		ads = append(ads, models.CinemaAd{
+			ID:              fmt.Sprintf("AD-COMBO-%s", comboItem.ID),
+			CinemaID:        cinema.ID,
+			Title:           fmt.Sprintf("🎬 %s Special", comboItem.Name),
+			Subtitle:        fmt.Sprintf("Complete concession bundle: %s. Order via counter pass and unlock massive combo savings!", comboItem.Description),
+			BadgeText:       "👑 EXCLUSIVE COMBO AD",
+			DiscountText:    fmt.Sprintf("Pass Rate LKR %.0f (Save LKR %.0f &bull; 30%% OFF)", comboItem.BestDiscountedPrice, savings),
+			PromoCode:       "SCOPE-COMBO30",
+			TargetItemID:    comboItem.ID,
+			TargetItemName:  comboItem.Name,
+			OriginalPrice:   comboItem.Price,
+			DiscountedPrice: comboItem.BestDiscountedPrice,
+			SavingsLKR:      savings,
+			CallToAction:    "🎟️ Claim Combo Deal & Add to Cart",
+			IsFlashAd:       false,
+			Tags:            []string{"combo", "popular", "best-value"},
+		})
+	}
+
+	// 2. Flash Concession Drop Ad (Dynamic live price drop)
+	if flashItem != nil {
+		savings := flashItem.BasePrice - flashItem.BestDiscountedPrice
+		ads = append(ads, models.CinemaAd{
+			ID:              fmt.Sprintf("AD-FLASH-%s", flashItem.ID),
+			CinemaID:        cinema.ID,
+			Title:           fmt.Sprintf("⚡ Flash Concession Markdown: %s", flashItem.Name),
+			Subtitle:        fmt.Sprintf("Live counter markdown active! %s. Pair with VIP pass for up to 35%% off!", flashItem.FlashDealText),
+			BadgeText:       "⚡ LIVE FLASH AD",
+			DiscountText:    fmt.Sprintf("Live LKR %.0f &bull; Pass LKR %.0f (Total Savings LKR %.0f)", flashItem.Price, flashItem.BestDiscountedPrice, savings),
+			PromoCode:       "SCOPE-PLATINUM",
+			TargetItemID:    flashItem.ID,
+			TargetItemName:  flashItem.Name,
+			OriginalPrice:   flashItem.BasePrice,
+			DiscountedPrice: flashItem.BestDiscountedPrice,
+			SavingsLKR:      savings,
+			CallToAction:    "⚡ Grab Flash Concession Deal",
+			IsFlashAd:       true,
+			Tags:            []string{"flash-sale", "limited-time", "live-rate"},
+		})
+	}
+
+	// 3. Popcorn & Beverage Booster Ad
+	if beverageItem != nil {
+		savings := beverageItem.Price - beverageItem.BestDiscountedPrice
+		ads = append(ads, models.CinemaAd{
+			ID:              fmt.Sprintf("AD-DRINK-%s", beverageItem.ID),
+			CinemaID:        cinema.ID,
+			Title:           fmt.Sprintf("🥤 Chilled Quencher Pairing: %s", beverageItem.Name),
+			Subtitle:        fmt.Sprintf("Pair your warm popcorn bucket with %s! Enjoy 30%% Combo discount or 10%% FriMi Instant Cashback.", beverageItem.Description),
+			BadgeText:       "🍿 DRINK + SNACK PAIRING",
+			DiscountText:    fmt.Sprintf("Starting from LKR %.0f with digital payment pass", beverageItem.BestDiscountedPrice),
+			PromoCode:       "FRIMI-CASHBACK",
+			TargetItemID:    beverageItem.ID,
+			TargetItemName:  beverageItem.Name,
+			OriginalPrice:   beverageItem.Price,
+			DiscountedPrice: beverageItem.BestDiscountedPrice,
+			SavingsLKR:      savings,
+			CallToAction:    "🥤 Add Chilled Drink Deal",
+			IsFlashAd:       false,
+			Tags:            []string{"beverage", "chilled", "pairing"},
+		})
+	}
+
+	// 4. National CBSL LankaQR Ad
+	ads = append(ads, models.CinemaAd{
+		ID:              "AD-LANKAQR-NATIONAL",
+		CinemaID:        cinema.ID,
+		Title:           "🇱🇰 CBSL LankaQR 5% Instant Counter Rebate",
+		Subtitle:        "Scan dynamic LankaQR at the counter with your bank app (Commercial Bank Q+, Sampath WePay, FriMi, HNB SOLO, BOC SmartPay) to receive a 5% instant price reduction!",
+		BadgeText:       "🇱🇰 5% NATIONAL REBATE",
+		DiscountText:    "Instant 5% Off Any Concession Order",
+		PromoCode:       "LANKAQR-5",
+		CallToAction:    "📱 Apply LankaQR 5% Discount",
+		IsFlashAd:       false,
+		Tags:            []string{"national-qr", "all-banks", "cbsl"},
+	})
+
+	return ads
 }
 
 // scrapeByCity executes concession scraping pipelines tuned for regional suppliers and theater concessions.

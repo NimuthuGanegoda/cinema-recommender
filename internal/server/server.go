@@ -102,8 +102,12 @@ func (s *Server) registerRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/v1/cinemas/{id}", s.handleGetCinema)
 	mux.HandleFunc("GET /api/v1/cinemas/{id}/concessions", s.handleGetConcessions)
 	mux.HandleFunc("GET /api/v1/cinemas/{id}/concessions/live", s.handleGetLiveConcessions)
+	mux.HandleFunc("GET /api/v1/cinemas/{id}/ads", s.handleGetCinemaAds)
 
-	// Redopay Promotions & Sri Lankan Payment Gateways
+	// Scope Privilege Concession Promotions & Authentic Sri Lankan Payment Gateways
+	mux.HandleFunc("GET /api/v1/promotions", s.handleListPromotions)
+	mux.HandleFunc("GET /api/v1/promotions/privilege", s.handleListPromotions)
+	mux.HandleFunc("GET /api/v1/promotions/scope", s.handleListPromotions)
 	mux.HandleFunc("GET /api/v1/promotions/redopay", s.handleListPromotions)
 	mux.HandleFunc("GET /api/v1/payment-methods", s.handleListPaymentMethods)
 
@@ -192,7 +196,7 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 		"version":           "2.0.0",
 		"regional_theaters": len(cinemas),
 		"scope":             "strictly_outside_colombo",
-		"promotion_engine":  "redopay_optimized",
+		"promotion_engine":  "scope_privilege_optimized",
 		"timestamp":         time.Now().UTC().Format(time.RFC3339),
 	})
 }
@@ -294,13 +298,39 @@ func (s *Server) handleGetLiveConcessions(w http.ResponseWriter, r *http.Request
 
 	ticker := s.scraper.GetLiveConcessionTicker(cinema)
 	ticker["items"] = items
+	ticker["cinema_ads"] = s.scraper.GetCinemaAds(cinema, items)
 
 	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 	w.Header().Set("X-Live-Price-Feed", "active")
 	s.writeJSON(w, http.StatusOK, ticker)
 }
 
-// Handler: List Available Redopay Promotions
+// Handler: Get Cinema Promotional Ads for Food, Drinks & Combos
+func (s *Server) handleGetCinemaAds(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	if id == "" {
+		s.writeJSON(w, http.StatusBadRequest, map[string]string{"error": "cinema id is required"})
+		return
+	}
+
+	cinema, err := s.scraper.GetCinemaByID(id)
+	if err != nil {
+		s.handleError(w, err)
+		return
+	}
+
+	items, err := s.scraper.ScrapeCinemaConcessions(cinema)
+	if err != nil {
+		s.handleError(w, err)
+		return
+	}
+
+	ads := s.scraper.GetCinemaAds(cinema, items)
+	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+	s.writeJSON(w, http.StatusOK, ads)
+}
+
+// Handler: List Available Scope Privilege Promotions
 func (s *Server) handleListPromotions(w http.ResponseWriter, r *http.Request) {
 	promos := s.recEngine.GetAvailablePromotions()
 	s.writeJSON(w, http.StatusOK, promos)
@@ -408,7 +438,11 @@ func (s *Server) handleEvaluateCart(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	result := s.recEngine.EvaluateCart(cinema, selected, req.PromoCode, req.RedopayTier)
+	tier := req.PrivilegeTier
+	if tier == "" {
+		tier = req.RedopayTier
+	}
+	result := s.recEngine.EvaluateCart(cinema, selected, req.PromoCode, tier)
 	s.writeJSON(w, http.StatusOK, result)
 }
 

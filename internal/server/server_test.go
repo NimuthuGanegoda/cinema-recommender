@@ -190,7 +190,7 @@ func TestGetConcessions(t *testing.T) {
 func TestListPromotions(t *testing.T) {
 	srv := setupTestServer()
 
-	req := httptest.NewRequest(http.MethodGet, "/api/v1/promotions/redopay", nil)
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/promotions/privilege", nil)
 	w := httptest.NewRecorder()
 	srv.GetHandler().ServeHTTP(w, req)
 
@@ -198,12 +198,12 @@ func TestListPromotions(t *testing.T) {
 		t.Fatalf("expected status 200, got %d", w.Code)
 	}
 
-	var promos []models.RedopayPromotion
+	var promos []models.ConcessionPromotion
 	if err := json.Unmarshal(w.Body.Bytes(), &promos); err != nil {
 		t.Fatalf("failed to parse promotions: %v", err)
 	}
 	if len(promos) == 0 {
-		t.Fatal("expected registered Redopay promotions")
+		t.Fatal("expected registered Scope Privilege promotions")
 	}
 }
 
@@ -212,10 +212,10 @@ func TestRecommendEndpoint(t *testing.T) {
 
 	// Successful regional recommendation
 	recPayload := models.RecommendationRequest{
-		CinemaID:    "KND-KCC",
-		BudgetLKR:   2500,
-		PartySize:   2,
-		RedopayTier: models.TierStandard,
+		CinemaID:      "KND-KCC",
+		BudgetLKR:     2500,
+		PartySize:     2,
+		PrivilegeTier: models.TierStandard,
 	}
 	body, _ := json.Marshal(recPayload)
 	req := httptest.NewRequest(http.MethodPost, "/api/v1/recommend", bytes.NewReader(body))
@@ -256,9 +256,9 @@ func TestCartEvaluateEndpoint(t *testing.T) {
 	cartReq := models.CartEvaluationRequest{
 		CinemaID: "KND-KCC",
 		Items: []models.CartItemInput{
-			{ItemID: "KND-01", Quantity: 2}, // Jumbo Popcorn 1200 * 2 = 2400 -> qualifies for REDOPAY-CINEMA25 (25%)
+			{ItemID: "KND-01", Quantity: 2}, // Jumbo Popcorn 1200 * 2 = 2400 -> qualifies for SCOPE-CINEMA25 (25%)
 		},
-		RedopayTier: models.TierStandard,
+		PrivilegeTier: models.TierStandard,
 	}
 	body, _ := json.Marshal(cartReq)
 	req := httptest.NewRequest(http.MethodPost, "/api/v1/cart/evaluate", bytes.NewReader(body))
@@ -274,8 +274,8 @@ func TestCartEvaluateEndpoint(t *testing.T) {
 		t.Fatalf("failed to parse cart evaluation: %v", err)
 	}
 
-	if res.AppliedPromo != "REDOPAY-CINEMA25" {
-		t.Fatalf("expected REDOPAY-CINEMA25, got %s", res.AppliedPromo)
+	if res.AppliedPromo != "SCOPE-CINEMA25" {
+		t.Fatalf("expected SCOPE-CINEMA25, got %s", res.AppliedPromo)
 	}
 	expectedDiscount := res.OriginalTotal * 0.25
 	if res.DiscountAmount != expectedDiscount {
@@ -387,4 +387,43 @@ func TestLiveConcessionsEndpoint(t *testing.T) {
 	if liveData["items"] == nil {
 		t.Fatalf("expected items array in live response")
 	}
+	if liveData["cinema_ads"] == nil {
+		t.Fatalf("expected cinema_ads in live response")
+	}
 }
+
+func TestCinemaAdsEndpoint(t *testing.T) {
+	srv := setupTestServer()
+
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/cinemas/KND-KCC/ads", nil)
+	w := httptest.NewRecorder()
+	srv.GetHandler().ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected status 200 on /ads, got %d", w.Code)
+	}
+
+	var ads []models.CinemaAd
+	if err := json.Unmarshal(w.Body.Bytes(), &ads); err != nil {
+		t.Fatalf("failed to decode ads: %v", err)
+	}
+
+	if len(ads) == 0 {
+		t.Fatal("expected promotional cinema ads for KCC Multiplex")
+	}
+
+	var hasComboAd bool
+	for _, ad := range ads {
+		if ad.TargetItemID != "" && ad.PromoCode != "" {
+			hasComboAd = true
+		}
+		if ad.Title == "" || ad.DiscountText == "" || ad.CallToAction == "" {
+			t.Errorf("ad missing essential fields: %+v", ad)
+		}
+	}
+
+	if !hasComboAd {
+		t.Fatal("expected at least one actionable combo/discount ad with target item and promo code")
+	}
+}
+

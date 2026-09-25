@@ -22,15 +22,6 @@ type Service struct {
 func NewService(recEngine *recommender.Engine) *Service {
 	methods := []models.PaymentMethodInfo{
 		{
-			ID:           models.PaymentMethodRedopay,
-			Name:         "Redopay Digital Pass (Max Savings)",
-			Category:     "Digital Partner",
-			Icon:         "💳",
-			Description:  "Primary cinema partner discount gateway. Unlocks 15% to 35% automated concession savings.",
-			DiscountPct:  0.25,
-			SpecialOffer: "Up to 35% off on regional concessions",
-		},
-		{
 			ID:           models.PaymentMethodLankaQR,
 			Name:         "LankaQR (CBSL National Standard)",
 			Category:     "National QR",
@@ -46,24 +37,6 @@ func NewService(recEngine *recommender.Engine) *Service {
 				"BOC SmartPay",
 				"Seylan Bank Pay",
 			},
-		},
-		{
-			ID:             models.PaymentMethodEzCash,
-			Name:           "eZ Cash (Dialog Axiata)",
-			Category:       "Telco Mobile Money",
-			Icon:           "📶",
-			Description:    "Direct mobile wallet payment for Dialog, Hutch, and Airtel subscribers via instant USSD prompt.",
-			RequiresMobile: true,
-			SpecialOffer:   "Direct mobile wallet charge via USSD PIN",
-		},
-		{
-			ID:             models.PaymentMethodMcash,
-			Name:           "mCash (SLT-Mobitel)",
-			Category:       "Telco Mobile Money",
-			Icon:           "📶",
-			Description:    "Mobitel and Sri Lanka Telecom mobile money wallet with instant SMS payment authorization.",
-			RequiresMobile: true,
-			SpecialOffer:   "Zero service fee on movie concessions",
 		},
 		{
 			ID:           models.PaymentMethodFriMi,
@@ -84,6 +57,24 @@ func NewService(recEngine *recommender.Engine) *Service {
 			SpecialOffer: "8% Genie Digital Rebate",
 		},
 		{
+			ID:             models.PaymentMethodEzCash,
+			Name:           "eZ Cash (Dialog Axiata)",
+			Category:       "Telco Mobile Money",
+			Icon:           "📶",
+			Description:    "Direct mobile wallet payment for Dialog, Hutch, and Airtel subscribers via instant USSD prompt.",
+			RequiresMobile: true,
+			SpecialOffer:   "Direct mobile wallet charge via USSD PIN",
+		},
+		{
+			ID:             models.PaymentMethodMcash,
+			Name:           "mCash (SLT-Mobitel)",
+			Category:       "Telco Mobile Money",
+			Icon:           "📶",
+			Description:    "Mobitel and Sri Lanka Telecom mobile money wallet with instant SMS payment authorization.",
+			RequiresMobile: true,
+			SpecialOffer:   "Zero service fee on movie concessions",
+		},
+		{
 			ID:           models.PaymentMethodKoko,
 			Name:         "Koko (Buy Now, Pay Later)",
 			Category:     "BNPL",
@@ -91,6 +82,15 @@ func NewService(recEngine *recommender.Engine) *Service {
 			Description:  "Popular Sri Lankan BNPL gateway. Split cinema concession orders over LKR 1,500 into 3 interest-free monthly installments.",
 			Installments: 3,
 			SpecialOffer: "Pay in 3 monthly installments at 0% interest",
+		},
+		{
+			ID:           models.PaymentMethodMintpay,
+			Name:         "Mintpay (Buy Now, Pay Later)",
+			Category:     "BNPL",
+			Icon:         "🛍️",
+			Description:  "Sri Lanka's homegrown BNPL platform. Split payment into 3 debit/credit installments with zero interest.",
+			Installments: 3,
+			SpecialOffer: "Pay in 3 installments using any debit card",
 		},
 		{
 			ID:           models.PaymentMethodCard,
@@ -132,8 +132,8 @@ func (s *Service) ProcessCheckout(
 	}
 
 	method := req.PaymentMethod
-	if method == "" {
-		method = models.PaymentMethodRedopay
+	if method == "" || method == models.PaymentMethodRedopay {
+		method = models.PaymentMethodLankaQR
 	}
 
 	methodInfo := s.findMethod(method)
@@ -144,56 +144,81 @@ func (s *Service) ProcessCheckout(
 	}
 	subtotal = math.Round(subtotal*100) / 100
 
-	var discount float64
 	status := "COMPLETED"
 	instructions := ""
 	installmentNote := ""
 
-	switch method {
-	case models.PaymentMethodRedopay:
-		// Full Redopay engine optimization
-		rec := s.recEngine.EvaluateCart(cinema, items, req.PromoCode, req.RedopayTier)
-		discount = rec.DiscountAmount
-		instructions = fmt.Sprintf("Charged via Redopay. %s", rec.Message)
+	// 1. Evaluate Scope Privilege Concession Pass savings if member tier or promo code provided
+	tier := req.PrivilegeTier
+	if tier == "" {
+		tier = req.RedopayTier
+	}
 
+	var discount float64
+	if req.PromoCode != "" || (tier != "" && tier != models.TierStandard) {
+		rec := s.recEngine.EvaluateCart(cinema, items, req.PromoCode, tier)
+		discount = rec.DiscountAmount
+		if discount > 0 {
+			instructions = fmt.Sprintf("Scope Privilege concession savings applied: %s. ", rec.Message)
+		}
+	}
+
+	// 2. Apply payment gateway-specific incentives & gateway handling
+	switch method {
 	case models.PaymentMethodLankaQR:
 		// CBSL 5% digital incentive
-		discount = math.Round(subtotal*0.05*100) / 100
+		lankaQRDiscount := math.Round(subtotal*0.05*100) / 100
+		if lankaQRDiscount > discount {
+			discount = lankaQRDiscount
+		}
 		status = "PENDING_LANKAQR_SCAN"
-		instructions = "Scan the dynamic LankaQR using any supported Sri Lankan banking app (COMBANK Q+, WePay, FriMi, SOLO, SmartPay) to complete payment."
+		instructions += "Scan the dynamic LankaQR using any supported Sri Lankan banking app (COMBANK Q+, WePay, FriMi, SOLO, SmartPay) to complete payment."
 
 	case models.PaymentMethodFriMi:
 		// 10% FriMi cashback
-		discount = math.Round(subtotal*0.10*100) / 100
-		instructions = "Approved via FriMi API. 10% partner concession cashback credited to your FriMi wallet."
+		frimiDiscount := math.Round(subtotal*0.10*100) / 100
+		if frimiDiscount > discount {
+			discount = frimiDiscount
+		}
+		instructions += "Approved via FriMi API. 10% partner concession cashback credited to your FriMi wallet."
 
 	case models.PaymentMethodGenie:
 		// 8% Genie rebate
-		discount = math.Round(subtotal*0.08*100) / 100
-		instructions = "Processed via Genie by Dialog Finance. 8% rebate applied to checkout."
+		genieDiscount := math.Round(subtotal*0.08*100) / 100
+		if genieDiscount > discount {
+			discount = genieDiscount
+		}
+		instructions += "Processed via Genie by Dialog Finance. 8% rebate applied to checkout."
 
 	case models.PaymentMethodEzCash:
 		phone := cleanPhone(req.CustomerPhone)
 		status = "PENDING_USSD_PIN"
-		instructions = fmt.Sprintf("A USSD payment prompt has been dispatched to %s. Enter your 4-digit eZ Cash PIN on your handset to authorize.", phone)
+		instructions += fmt.Sprintf("A USSD payment prompt has been dispatched to %s. Enter your 4-digit eZ Cash PIN on your handset to authorize.", phone)
 
 	case models.PaymentMethodMcash:
 		phone := cleanPhone(req.CustomerPhone)
 		status = "PENDING_USSD_PIN"
-		instructions = fmt.Sprintf("SLT-Mobitel mCash notification sent to %s. Confirm payment via your mCash wallet.", phone)
+		instructions += fmt.Sprintf("SLT-Mobitel mCash notification sent to %s. Confirm payment via your mCash wallet.", phone)
 
 	case models.PaymentMethodKoko:
 		finalPayable := subtotal - discount
 		installments := 3
 		monthlyAmount := math.Round((finalPayable/float64(installments))*100) / 100
 		installmentNote = fmt.Sprintf("Pay in %d interest-free monthly installments of LKR %.2f with Koko", installments, monthlyAmount)
-		instructions = "Koko BNPL schedule created. First installment charged today, remaining 2 installments due over the next 60 days."
+		instructions += "Koko BNPL schedule created. First installment charged today, remaining 2 installments due over the next 60 days."
+
+	case models.PaymentMethodMintpay:
+		finalPayable := subtotal - discount
+		installments := 3
+		monthlyAmount := math.Round((finalPayable/float64(installments))*100) / 100
+		installmentNote = fmt.Sprintf("Pay in %d interest-free debit card installments of LKR %.2f with Mintpay", installments, monthlyAmount)
+		instructions += "Mintpay BNPL installment plan activated. Split across 3 monthly debit card payments with zero interest."
 
 	case models.PaymentMethodCounterCash:
-		instructions = "Order reserved! Present your Order ID at the cinema snack counter and pay in cash (LKR) to collect your freshly prepared concessions."
+		instructions += "Order reserved! Present your Order ID at the cinema snack counter and pay in cash (LKR) to collect your freshly prepared concessions."
 
 	default:
-		instructions = "Payment authorized via Sri Lankan Interbank Payment Gateway."
+		instructions += "Payment authorized via Sri Lankan Interbank Payment Gateway."
 	}
 
 	finalPayable := math.Round((subtotal-discount)*100) / 100
@@ -215,7 +240,7 @@ func (s *Service) ProcessCheckout(
 	}
 
 	redemptionNotice := "⚠️ In-Person Counter Redemption: This is a cinema concession recommendation voucher. Food is NOT delivered online. Please visit the theater concession counter in person to collect your freshly prepared snacks."
-	cashierInst := "Present this voucher code and LankaQR / Redopay / payment confirmation to the concession counter cashier upon physical arrival at the cinema."
+	cashierInst := "Present this voucher code and your payment / LankaQR confirmation to the concession counter cashier upon physical arrival at the cinema."
 
 	return models.CheckoutResult{
 		OrderID:                  orderID,
