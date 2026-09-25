@@ -11,18 +11,18 @@ import (
 func (e *Engine) calculateUpsellAdvice(subtotal float64) string {
 	if subtotal < 1000.00 {
 		gap := 1000.00 - subtotal
-		return fmt.Sprintf("💡 Add LKR %.0f more to unlock 15%% Scope Privilege savings with SCOPE-SNACK15!", gap)
+		return fmt.Sprintf("💡 Add LKR %.0f more to unlock 15%% CinePass savings with CINE-SNACK15!", gap)
 	} else if subtotal < 2000.00 {
 		gap := 2000.00 - subtotal
-		return fmt.Sprintf("🚀 Spend LKR %.0f more to unlock 25%% Scope Privilege savings with SCOPE-CINEMA25!", gap)
+		return fmt.Sprintf("🚀 Spend LKR %.0f more to unlock 25%% CinePass savings with CINE-CINEMA25!", gap)
 	} else if subtotal < 2200.00 {
 		gap := 2200.00 - subtotal
-		return fmt.Sprintf("🍿 Combo Deal: Add Popcorn & Drink for LKR %.0f more to get 30%% off via SCOPE-COMBO30!", gap)
+		return fmt.Sprintf("🍿 Combo Deal: Add Popcorn & Drink for LKR %.0f more to get 30%% off via CINE-COMBO30!", gap)
 	} else if subtotal < 2800.00 {
 		gap := 2800.00 - subtotal
-		return fmt.Sprintf("💎 Platinum VIP: Reach LKR 2,800 (LKR %.0f away) to unlock 35%% off with SCOPE-PLATINUM!", gap)
+		return fmt.Sprintf("💎 Platinum VIP: Reach LKR 2,800 (LKR %.0f away) to unlock 35%% off with CINE-PLATINUM!", gap)
 	}
-	return "✨ Maximum Scope Privilege promotional tier unlocked! Enjoy your movie."
+	return "✨ Maximum CinePass VIP promotional tier unlocked! Enjoy your movie."
 }
 
 func calculateValueScore(res models.RecommendationResult, partySize int) float64 {

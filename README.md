@@ -1,15 +1,17 @@
-# Cinema Food & Beverage Recommendation Engine 🍿🥤
+# CineBite 🍿 — Universal Sri Lanka Cinema Concession & Snack Recommender
 
-An intelligent, production-ready backend service and interactive dashboard built in Go designed to scrape, aggregate, and recommend optimal food and beverage deals across regional cinema theaters.
+An intelligent, production-ready cinema concession recommendation service and Apple HIG-crafted interactive dashboard engineered in Go to scrape, aggregate, and recommend optimal candy bar deals across all Sri Lankan cinema theaters.
 
 ---
 
 ## 🎯 Project Overview
 
-The **Cinema Food & Beverage Recommendation Engine** provides moviegoers with real-time, value-optimized recommendations on cinema concessions. By combining automated menu and pricing extraction with an advanced promotion engine, users can find the most cost-effective snacking combinations for their movie experience.
+**CineBite** provides moviegoers with real-time, value-optimized recommendations on cinema concessions. Built for any theater in Sri Lanka (Regal Kandy, Queens Galle, Rodeo Negombo, Rajah Jaffna, SK Matara, Cinemax Anuradhapura, Milano Ratnapura, Scope partner circuits, and heritage independent screens), moviegoers can find the most cost-effective snacking combinations, live prices, and instant candy bar discounts with **CinePass VIP**.
 
-### Key Scope & Design Directives
-- **Scope Privilege Promotion Optimization**: The discount and offer evaluation engine is specifically optimized for processing **Scope Privilege Club** promotional campaigns, partner tier discounts (Standard, Student, Silver, Gold, Platinum), combo rebates (`SCOPE-COMBO30`, `SCOPE-CINEMA25`), and automated threshold upsell intelligence.
+### Key Design & Universal Directives
+- **Universal Cinema Coverage**: Designed for ANY theater circuit across Sri Lanka, with automated GPS nearby theater detection and in-person snack guide.
+- **Apple Human Interface Guidelines (HIG)**: Crafted with OLED true black canvas, Cupertino system grays (`#1c1c1e`), Apple System Blue (`#0071e3`), Apple Mint Green (`#30d158`), SF Pro typography, Dynamic Island live indicator, and Apple Wallet pass voucher card.
+- **CinePass VIP Promotion Engine**: Evaluates discount tiers (Standard, Student, Silver, Gold, Platinum), combo rebates (`CINE-COMBO30`, `CINE-CINEMA25`, `CINE-PLATINUM`), and threshold upsell advice.
 
 ---
 

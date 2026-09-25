@@ -17,52 +17,52 @@ func EnrichItemDiscounts(item models.ConcessionItem, foodLocation string) models
 
 	var discounts []models.ItemDiscountInfo
 
-	// 1. Scope Privilege Platinum VIP (35% off)
+	// 1. CinePass Platinum VIP (35% off)
 	platPct := 0.35
 	platDisc := math.Round(price*(1.0-platPct)*100) / 100
 	discounts = append(discounts, models.ItemDiscountInfo{
-		PromoCode:       "SCOPE-PLATINUM",
-		Provider:        "Scope Privilege",
-		Title:           "Scope Privilege Platinum VIP (35% Off)",
+		PromoCode:       "CINE-PLATINUM",
+		Provider:        "CinePass VIP",
+		Title:           "CinePass Platinum VIP (35% Off)",
 		DiscountPct:     platPct,
 		DiscountedPrice: platDisc,
 		SavingsLKR:      math.Round((price-platDisc)*100) / 100,
-		Requirement:     "Scope Privilege Platinum VIP membership",
+		Requirement:     "CinePass Platinum VIP membership",
 	})
 
-	// 2. Scope Combo 30% Deal
+	// 2. CineBite Combo 30% Deal
 	comboPct := 0.30
 	comboDisc := math.Round(price*(1.0-comboPct)*100) / 100
 	discounts = append(discounts, models.ItemDiscountInfo{
-		PromoCode:       "SCOPE-COMBO30",
-		Provider:        "Scope Privilege",
-		Title:           "Scope Popcorn + Drink Combo (30% Off)",
+		PromoCode:       "CINE-COMBO30",
+		Provider:        "CinePass VIP",
+		Title:           "CineBite Popcorn + Drink Combo (30% Off)",
 		DiscountPct:     comboPct,
 		DiscountedPrice: comboDisc,
 		SavingsLKR:      math.Round((price-comboDisc)*100) / 100,
 		Requirement:     "Pair with any Popcorn & Beverage",
 	})
 
-	// 3. Scope Regional Concession Boost (25% Off)
+	// 3. Cinema Concession Boost (25% Off)
 	regPct := 0.25
 	regDisc := math.Round(price*(1.0-regPct)*100) / 100
 	discounts = append(discounts, models.ItemDiscountInfo{
-		PromoCode:       "SCOPE-CINEMA25",
-		Provider:        "Scope Privilege",
-		Title:           "Scope Regional Concession Pass (25% Off)",
+		PromoCode:       "CINE-CINEMA25",
+		Provider:        "CinePass VIP",
+		Title:           "Cinema Concession Pass (25% Off)",
 		DiscountPct:     regPct,
 		DiscountedPrice: regDisc,
 		SavingsLKR:      math.Round((price-regDisc)*100) / 100,
 		Requirement:     "Concession orders over LKR 2,000",
 	})
 
-	// 4. Scope Student Moviegoer Pass (20% Off)
+	// 4. Student Moviegoer Pass (20% Off)
 	stuPct := 0.20
 	stuDisc := math.Round(price*(1.0-stuPct)*100) / 100
 	discounts = append(discounts, models.ItemDiscountInfo{
-		PromoCode:       "SCOPE-STUDENT",
-		Provider:        "Scope Privilege",
-		Title:           "Scope Student Moviegoer Pass (20% Off)",
+		PromoCode:       "CINE-STUDENT",
+		Provider:        "CinePass VIP",
+		Title:           "Student Moviegoer Pass (20% Off)",
 		DiscountPct:     stuPct,
 		DiscountedPrice: stuDisc,
 		SavingsLKR:      math.Round((price-stuDisc)*100) / 100,

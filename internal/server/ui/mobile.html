@@ -3,40 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#07070a">
+  <meta name="theme-color" content="#000000">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Scope Cinemas &bull; CinemaSnack Mobile Candy Bar Pass</title>
+  <title>CineBite • Universal Mobile Cinema Concession Pass</title>
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" type="image/jpeg" href="/ui/app-icon.jpg">
   <link rel="apple-touch-icon" href="/ui/app-icon.jpg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Montserrat:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/ui/apple-design-system.css">
   <script src="/ui/cinema-client.js"></script>
   <style>
-    :root {
-      --bg-dark: #07070a;
-      --bg-card: rgba(16, 16, 22, 0.94);
-      --bg-surface: #0e0e14;
-      --scope-gold: #d4af37;
-      --scope-gold-light: #fef08a;
-      --scope-gold-glow: rgba(212, 175, 55, 0.35);
-      --scope-red: #e50914;
-      --scope-red-glow: rgba(229, 9, 20, 0.35);
-      --accent-gold: #d4af37;
-      --accent-gold-hover: #b8860b;
-      --accent-green: #10b981;
-      --accent-red: #e50914;
-      --text-main: #f8fafc;
-      --text-muted: #9ca3af;
-      --border-subtle: rgba(212, 175, 55, 0.22);
-      --border-gold: rgba(212, 175, 55, 0.45);
-      --border-glow: rgba(212, 175, 55, 0.35);
-      --safe-bottom: env(safe-area-inset-bottom, 16px);
-    }
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -46,107 +22,123 @@
     }
 
     body {
-      background-color: var(--bg-dark);
-      background-image: 
-        radial-gradient(at 0% 0%, rgba(212, 175, 55, 0.12) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, rgba(229, 9, 20, 0.08) 0px, transparent 50%);
-      color: var(--text-main);
-      font-family: 'Montserrat', sans-serif;
+      background-color: #000000;
+      color: #ffffff;
+      font-family: var(--apple-font-system);
       min-height: 100vh;
-      overflow-x: hidden;
       display: flex;
       flex-direction: column;
-      position: relative;
+      overflow-x: hidden;
+      padding-bottom: calc(72px + env(safe-area-inset-bottom, 16px));
     }
 
-    h1, h2, h3, h4, .brand-font, .m-cf-title {
-      font-family: 'Cinzel', serif;
-      letter-spacing: 0.03em;
-    }
-
-    /* Mobile Header */
-    .mobile-header {
-      position: sticky;
-      top: 0;
-      z-index: 40;
-      background: rgba(8, 12, 20, 0.92);
-      backdrop-filter: blur(12px);
-      padding: 0.8rem 1.1rem;
-      border-bottom: 1px solid var(--border-subtle);
+    /* iOS Top Status Area */
+    .ios-status-bar {
+      height: 44px;
+      padding: 0 1.2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #ffffff;
+      background: #000000;
+      position: sticky;
+      top: 0;
+      z-index: 60;
     }
 
-    .header-left {
+    /* iOS Dynamic Island Capsule */
+    .ios-island-wrapper {
+      display: flex;
+      justify-content: center;
+      padding: 0.35rem 1rem 0.65rem;
+      background: #000000;
+      position: sticky;
+      top: 44px;
+      z-index: 55;
+    }
+
+    .island-capsule {
+      background: #000000;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: var(--radius-pill);
+      padding: 0.42rem 1.1rem;
       display: flex;
       align-items: center;
       gap: 0.65rem;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.95);
+      width: 100%;
+      max-width: 360px;
+      justify-content: space-between;
     }
 
-    .app-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: url('/ui/app-icon.jpg') center/cover;
-      box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
-      border: 1px solid var(--border-glow);
+    .island-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--apple-green);
+      box-shadow: 0 0 8px var(--apple-green-glow);
+      animation: applePulse 2s infinite ease-in-out;
     }
 
-    .location-selector {
+    /* App Header / Location Switcher */
+    .mobile-nav-bar {
+      padding: 0.6rem 1.1rem 0.85rem;
       display: flex;
-      flex-direction: column;
-    }
-
-    .loc-label {
-      font-size: 0.68rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--accent-gold);
-      font-weight: 700;
-      display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 0.25rem;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: var(--apple-glass-blur);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      position: sticky;
+      top: 96px;
+      z-index: 50;
     }
 
-    .loc-dropdown {
-      background: transparent;
-      border: none;
-      color: #fff;
-      font-family: 'Outfit', sans-serif;
-      font-weight: 700;
-      font-size: 0.95rem;
-      outline: none;
-      cursor: pointer;
-    }
-
-    .loc-dropdown option {
-      background: #0f172a;
-      color: #fff;
-    }
-
-    .header-right {
+    .brand-title-group {
       display: flex;
       align-items: center;
       gap: 0.6rem;
     }
 
-    .tier-pill {
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(245, 158, 11, 0.2));
-      border: 1px solid var(--border-glow);
-      color: #e2e8f0;
-      padding: 0.25rem 0.6rem;
-      border-radius: 9999px;
-      font-size: 0.72rem;
+    .brand-icon-mobile {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #1c1c1e, #2c2c2e);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+    }
+
+    .cinema-select-dropdown {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 0.92rem;
       font-weight: 700;
+      font-family: inherit;
+      outline: none;
+      max-width: 190px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+    }
+
+    .cinema-select-dropdown option {
+      background: #1c1c1e;
+      color: #fff;
     }
 
     /* Screen Views */
     .screen-view {
       display: none;
+      padding: 1.1rem;
       flex: 1;
-      padding: 1rem 1rem calc(75px + var(--safe-bottom));
-      overflow-y: auto;
       animation: fadeIn 0.2s ease-out;
     }
 
@@ -159,2032 +151,802 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Hero Mini Banner */
-    .mobile-hero {
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.95));
-      border: 1px solid var(--border-glow);
-      border-radius: 18px;
-      padding: 1.2rem;
-      margin-bottom: 1.2rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .mobile-hero h2 {
-      font-size: 1.25rem;
-      font-weight: 800;
-      margin-bottom: 0.3rem;
-      background: linear-gradient(135deg, #fff, #cbd5e1);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .mobile-hero p {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      line-height: 1.35;
-      margin-bottom: 0.8rem;
-    }
-
-    .hero-quick-btn {
-      background: linear-gradient(135deg, var(--scope-gold), var(--accent-gold-hover));
-      border: none;
-      color: #000;
-      font-weight: 700;
-      font-size: 0.8rem;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    /* Category Chips Carousel */
-    .chips-bar {
+    /* Cinema Meta Card */
+    .cinema-info-card {
+      background: var(--apple-surface);
+      border: var(--apple-border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.15rem;
+      margin-bottom: 1.25rem;
       display: flex;
+      flex-direction: column;
       gap: 0.5rem;
+    }
+
+    .cinema-chain-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Live Ads Carousel in Mobile */
+    .mobile-ads-scroller {
+      display: flex;
+      gap: 0.85rem;
       overflow-x: auto;
-      padding-bottom: 0.7rem;
-      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.35rem;
       scrollbar-width: none;
     }
 
-    .chips-bar::-webkit-scrollbar {
+    .mobile-ads-scroller::-webkit-scrollbar {
       display: none;
     }
 
-    .chip-btn {
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-muted);
-      padding: 0.45rem 0.85rem;
-      border-radius: 9999px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      white-space: nowrap;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .chip-btn.active {
-      background: var(--scope-gold);
-      border-color: var(--scope-gold);
-      color: #000;
-      box-shadow: 0 0 10px rgba(212, 175, 55, 0.35);
-    }
-
-    /* Concession Item Card (Mobile) */
-    .items-container {
+    .mobile-ad-card {
+      min-width: 250px;
+      max-width: 250px;
+      background: var(--apple-surface);
+      border: var(--apple-border);
+      border-radius: var(--radius-md);
+      padding: 1rem;
       display: flex;
       flex-direction: column;
-      gap: 0.85rem;
+      justify-content: space-between;
+      gap: 0.6rem;
+      cursor: pointer;
     }
 
-    .m-item-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: 14px;
-      padding: 0.95rem;
+    /* Category Pill Scroller */
+    .category-scroller {
+      display: flex;
+      gap: 0.45rem;
+      overflow-x: auto;
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.1rem;
+      scrollbar-width: none;
+    }
+
+    .category-scroller::-webkit-scrollbar {
+      display: none;
+    }
+
+    .cat-pill {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--apple-text-secondary);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.38rem 0.85rem;
+      border-radius: var(--radius-pill);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .cat-pill.active {
+      background: var(--apple-blue);
+      border-color: var(--apple-blue);
+      color: #fff;
+    }
+
+    /* Concession List Items (iOS Grouped Style) */
+    .concession-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .concession-item-row {
+      background: var(--apple-surface);
+      border: var(--apple-border);
+      border-radius: var(--radius-md);
+      padding: 0.95rem 1.1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 0.8rem;
+      transition: transform 0.16s ease;
     }
 
-    .m-item-info {
-      flex: 1;
+    .concession-item-row:active {
+      transform: scale(0.98);
     }
 
-    .m-item-title {
-      font-weight: 700;
-      font-size: 0.92rem;
-      color: #fff;
-      margin-bottom: 0.2rem;
-    }
-
-    .m-item-sub {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-bottom: 0.4rem;
-      line-height: 1.2;
-    }
-
-    .m-item-price {
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: var(--accent-gold);
-      font-family: 'Outfit', sans-serif;
-    }
-
-    .m-add-btn {
-      background: rgba(99, 102, 241, 0.15);
-      border: 1px solid rgba(99, 102, 241, 0.35);
-      color: #c7d2fe;
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 1.2rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.15s active;
-    }
-
-    .m-add-btn:active {
-      background: var(--scope-gold);
-      color: #000;
-      transform: scale(0.92);
-    }
-
-    /* Optimizer Screen */
-    .opt-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: 16px;
-      padding: 1.2rem;
-      margin-bottom: 1.2rem;
-    }
-
-    .opt-card h3 {
-      font-size: 1.05rem;
-      margin-bottom: 1rem;
-    }
-
-    .m-party-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0.5rem;
-      margin-bottom: 1.2rem;
-    }
-
-    .m-party-btn {
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-muted);
-      padding: 0.55rem 0;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .m-party-btn.active {
-      background: var(--scope-gold);
-      color: #000;
-      border-color: var(--scope-gold);
-      box-shadow: 0 0 10px rgba(212, 175, 55, 0.35);
-    }
-
-    .m-slider-box {
-      margin-bottom: 1.2rem;
-    }
-
-    .m-slider-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-bottom: 0.4rem;
-    }
-
-    .m-slider-val {
-      color: var(--accent-gold);
-      font-weight: 700;
-    }
-
-    input[type=range] {
-      width: 100%;
-      height: 6px;
-      border-radius: 3px;
-      background: rgba(255, 255, 255, 0.15);
-      outline: none;
-    }
-
-    .btn-calc-mobile {
-      width: 100%;
-      background: linear-gradient(135deg, var(--scope-gold), var(--accent-gold-hover));
-      border: none;
-      color: #000;
-      padding: 0.8rem;
-      border-radius: 10px;
-      font-weight: 700;
-      font-size: 0.9rem;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 0.4rem;
-      box-shadow: 0 6px 16px -2px rgba(212, 175, 55, 0.35);
-    }
-
-    /* Result Card (Mobile) */
-    .m-deal-result {
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.95));
-      border: 1px solid var(--border-glow);
-      border-radius: 16px;
-      padding: 1.2rem;
-      margin-top: 1rem;
-    }
-
-    .m-summary-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.5rem;
-      background: rgba(15, 23, 42, 0.8);
-      border-radius: 10px;
-      padding: 0.8rem;
-      text-align: center;
-      margin: 0.8rem 0;
-    }
-
-    .m-sum-val {
-      font-family: 'Outfit', sans-serif;
-      font-weight: 800;
-      font-size: 1.05rem;
-    }
-
-    /* Scope Privilege VIP Card (Pass Screen) */
-    .digital-card {
-      background: linear-gradient(135deg, #181822 0%, #282215 50%, #0d0d12 100%);
-      border: 1px solid var(--border-gold);
-      border-radius: 18px;
-      padding: 1.4rem;
-      color: #fff;
-      box-shadow: 0 15px 30px -10px rgba(212, 175, 55, 0.25);
-      margin-bottom: 1.3rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .digital-card::after {
-      content: '';
-      position: absolute;
-      top: -30%;
-      right: -20%;
-      width: 180px;
-      height: 180px;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
-    }
-
-    .card-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.8rem;
-    }
-
-    .card-brand {
-      font-size: 1.15rem;
-      font-weight: 800;
-      letter-spacing: 0.05em;
-    }
-
-    .card-num {
-      font-family: monospace;
-      font-size: 1.05rem;
-      letter-spacing: 0.15em;
-      margin-bottom: 1.2rem;
-      color: #e0e7ff;
-    }
-
-    .card-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      font-size: 0.78rem;
-    }
-
-    /* Cart Screen (Mobile) */
-    .cart-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.75rem 0;
-      border-bottom: 1px solid var(--border-subtle);
-    }
-
-    .qty-controls {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .qty-btn {
-      background: rgba(255, 255, 255, 0.1);
-      border: none;
-      color: #fff;
-      width: 26px;
-      height: 26px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 700;
-    }
-
-    /* Bottom App Tab Navigation */
-    .bottom-nav {
+    /* Bottom iOS Tab Bar */
+    .ios-tab-bar {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      z-index: 50;
-      background: rgba(8, 12, 20, 0.95);
-      backdrop-filter: blur(16px);
-      border-top: 1px solid var(--border-subtle);
-      padding: 0.45rem 0.5rem calc(0.45rem + var(--safe-bottom));
+      height: calc(56px + env(safe-area-inset-bottom, 16px));
+      background: rgba(18, 18, 20, 0.92);
+      backdrop-filter: var(--apple-glass-blur);
+      -webkit-backdrop-filter: var(--apple-glass-blur);
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
       display: flex;
       justify-content: space-around;
-      align-items: center;
+      align-items: flex-start;
+      padding-top: 6px;
+      z-index: 100;
     }
 
-    .nav-item {
+    .tab-button {
+      flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.2rem;
-      background: transparent;
+      justify-content: center;
+      gap: 2px;
+      background: none;
       border: none;
-      color: var(--text-muted);
-      font-size: 0.7rem;
+      color: var(--apple-text-tertiary);
+      font-size: 0.65rem;
       font-weight: 600;
       cursor: pointer;
       position: relative;
-      padding: 0.25rem 0.8rem;
-      transition: all 0.15s;
     }
 
-    .nav-item.active {
-      color: #a5b4fc;
+    .tab-button.active {
+      color: var(--apple-blue-ios);
     }
 
-    .nav-icon {
+    .tab-icon {
       font-size: 1.3rem;
-      transition: transform 0.2s;
+      line-height: 1;
     }
 
-    .nav-item.active .nav-icon {
-      transform: scale(1.15);
-      filter: drop-shadow(0 0 6px rgba(99, 102, 241, 0.5));
-    }
-
-    .nav-badge {
+    .tab-badge {
       position: absolute;
-      top: 0;
-      right: 0.6rem;
-      background: var(--accent-red);
+      top: -2px;
+      right: calc(50% - 16px);
+      background: var(--apple-red);
       color: #fff;
       font-size: 0.62rem;
-      font-weight: 800;
-      padding: 0.1rem 0.35rem;
-      border-radius: 9999px;
-    }
-
-    /* Toast */
-    .m-toast {
-      position: fixed;
-      top: 4.5rem;
-      left: 1rem;
-      right: 1rem;
-      z-index: 100;
-      background: rgba(239, 68, 68, 0.92);
-      backdrop-filter: blur(8px);
-      color: #fff;
-      padding: 0.75rem 1rem;
-      border-radius: 12px;
-      font-size: 0.82rem;
-      display: none;
-      align-items: center;
-      gap: 0.5rem;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
-    }
-
-    .m-gps-btn {
-      background: linear-gradient(135deg, var(--scope-gold), #b8860b);
-      border: none;
-      color: #07070a;
-      border-radius: 8px;
-      padding: 0.35rem 0.75rem;
-      font-size: 0.75rem;
-      font-weight: 800;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-      box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
-    }
-
-    .m-cf-card {
-      background: linear-gradient(135deg, rgba(22, 22, 30, 0.95) 0%, rgba(10, 10, 15, 0.98) 100%);
-      border: 1.5px solid var(--border-gold);
-      border-radius: 14px;
-      padding: 1rem;
-      margin-bottom: 1.2rem;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
-      position: relative;
-    }
-
-    .m-cf-badge {
-      font-size: 0.65rem;
-      font-weight: 800;
-      color: var(--scope-gold);
-      background: rgba(212, 175, 55, 0.15);
-      border: 1px solid var(--border-gold);
-      padding: 0.15rem 0.5rem;
-      border-radius: 9999px;
-      letter-spacing: 0.06em;
-    }
-
-    .m-cf-search-box {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: #09090e;
-      border: 1px solid var(--border-gold);
-      border-radius: 10px;
-      padding: 0.5rem 0.8rem;
-      margin-bottom: 0.6rem;
-    }
-
-    .m-cf-search-input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: #fff;
-      font-size: 0.85rem;
-      font-family: inherit;
-      outline: none;
-    }
-
-    .m-cf-dropdown {
-      background: #0e0e16;
-      border: 1.5px solid var(--border-gold);
-      border-radius: 10px;
-      max-height: 220px;
-      overflow-y: auto;
-      margin-bottom: 0.8rem;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
-    }
-
-    .m-cf-drop-item {
-      padding: 0.65rem 0.85rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .m-cf-drop-item:hover, .m-cf-drop-item:active {
-      background: rgba(212, 175, 55, 0.2);
-    }
-
-    .m-food-info-card {
-      background: rgba(16, 16, 22, 0.9);
-      border: 1px solid var(--border-gold);
-      border-radius: 14px;
-      padding: 0.85rem;
-      margin-bottom: 1.2rem;
-    }
-    .m-fg-title {
-      font-size: 0.85rem;
       font-weight: 700;
-      color: #f8fafc;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.35rem;
-    }
-    .m-fg-sub {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      line-height: 1.35;
-      margin-bottom: 0.4rem;
-    }
-    .m-fg-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.3rem;
-    }
-    .m-fg-pill {
-      font-size: 0.65rem;
-      background: rgba(255, 255, 255, 0.06);
-      padding: 0.15rem 0.4rem;
-      border-radius: 4px;
-      color: #cbd5e1;
-    }
-    .m-fg-pill.green {
-      background: rgba(16, 185, 129, 0.15);
-      color: #34d399;
-      border: 1px solid rgba(16, 185, 129, 0.3);
-    }
-    .m-fg-pill.blue {
-      background: rgba(56, 189, 248, 0.15);
-      color: #38bdf8;
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      text-decoration: none;
-    }
-
-    .m-save-tag {
-      display: inline-block;
-      background: linear-gradient(135deg, #10b981, #059669);
-      color: #ffffff;
-      font-size: 0.62rem;
-      font-weight: 800;
-      padding: 0.1rem 0.35rem;
-      border-radius: 4px;
-    }
-    .m-discounts-panel {
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 6px;
-      padding: 0.4rem;
-      margin: 0.4rem 0;
-    }
-    .m-disc-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.68rem;
-      color: #cbd5e1;
-      margin-bottom: 0.2rem;
-    }
-    .m-btn-add-food {
-      width: 100%;
-      background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.4));
-      border: 1px solid var(--border-gold);
-      color: var(--scope-gold-light);
-      border-radius: 6px;
-      padding: 0.45rem;
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 0.25rem;
-    }
-    .m-btn-add-food:active {
-      background: var(--scope-gold);
-      color: #07070a;
-    }
-
-    /* Mobile Live Pricing Bar & Glow */
-    .m-live-pricing-bar {
-      background: linear-gradient(135deg, rgba(22, 22, 30, 0.95) 0%, rgba(10, 10, 15, 0.98) 100%);
-      border: 1px solid var(--border-gold);
-      border-radius: 10px;
-      padding: 0.6rem 0.8rem;
-      margin-bottom: 0.8rem;
-    }
-    .m-pulse-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #22c55e;
-      box-shadow: 0 0 8px #22c55e;
-      display: inline-block;
-      animation: mPulse 1.8s infinite;
-    }
-    @keyframes mPulse {
-      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-      70% { transform: scale(1.15); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
-      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-    }
-    .m-btn-sync {
-      background: rgba(212, 175, 55, 0.15);
-      border: 1px solid var(--border-gold);
-      color: var(--scope-gold-light);
-      padding: 0.2rem 0.5rem;
-      border-radius: 6px;
-      font-size: 0.7rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .m-btn-sync:active {
-      background: var(--scope-gold);
-      color: #07070a;
-    }
-    .m-flash-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.2rem;
-      background: rgba(239, 68, 68, 0.2);
-      border: 1px solid rgba(212, 175, 55, 0.4);
-      color: var(--scope-gold-light);
-      font-size: 0.65rem;
-      font-weight: 700;
-      padding: 0.15rem 0.4rem;
-      border-radius: 4px;
-      margin-bottom: 0.25rem;
-    }
-    .m-price-glow {
-      animation: mPriceFlash 1.6s ease-out;
-    }
-    @keyframes mPriceFlash {
-      0% { border-color: #22c55e !important; box-shadow: 0 0 15px rgba(34, 197, 94, 0.5) !important; }
-      50% { border-color: #d4af37 !important; box-shadow: 0 0 12px rgba(212, 175, 55, 0.4) !important; }
-      100% { border-color: var(--border-gold); }
-    }
-
-    /* Mobile Cinema Ads Showcase */
-    .m-cinema-ads-showcase {
-      background: linear-gradient(135deg, rgba(20, 20, 28, 0.95) 0%, rgba(10, 10, 15, 0.98) 100%);
-      border: 1.5px solid var(--border-gold);
-      border-radius: 14px;
-      padding: 0.9rem;
-      margin-bottom: 1.2rem;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .m-ads-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.75rem;
-      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-      padding-bottom: 0.5rem;
-    }
-
-    .m-btn-ad-nav {
-      background: rgba(212, 175, 55, 0.15);
-      border: 1px solid var(--border-gold);
-      color: var(--scope-gold-light);
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.9rem;
-      font-weight: 800;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .m-btn-ad-nav:active {
-      background: var(--scope-gold);
-      color: #07070a;
-    }
-
-    .m-ad-card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(212, 175, 55, 0.3);
-      border-radius: 12px;
-      padding: 0.85rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-      transition: all 0.3s ease;
-    }
-
-    .m-ad-badge {
-      display: inline-block;
-      font-size: 0.62rem;
-      font-weight: 800;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 0.15rem 0.45rem;
-      border-radius: 4px;
-      background: linear-gradient(135deg, var(--scope-red), #b91c1c);
-      color: #ffffff;
-      box-shadow: 0 2px 8px rgba(229, 9, 20, 0.4);
-      margin-bottom: 0.3rem;
-    }
-
-    .m-ad-badge.gold {
-      background: linear-gradient(135deg, var(--scope-gold), #b8860b);
-      color: #07070a;
-      box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
-    }
-
-    .m-ad-title {
-      font-size: 0.95rem;
-      font-weight: 900;
-      color: #ffffff;
-      font-family: 'Cinzel', serif;
-      letter-spacing: 0.02em;
-      line-height: 1.25;
-      margin-bottom: 0.2rem;
-    }
-
-    .m-ad-sub {
-      font-size: 0.72rem;
-      color: #cbd5e1;
-      line-height: 1.35;
-      margin-bottom: 0.4rem;
-    }
-
-    .m-ad-tags-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.3rem;
-      margin-bottom: 0.4rem;
-    }
-
-    .m-ad-tag-pill {
-      font-size: 0.62rem;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #94a3b8;
-      padding: 0.1rem 0.35rem;
-      border-radius: 4px;
-    }
-
-    .m-ad-pricing-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(212, 175, 55, 0.25);
-      border-radius: 8px;
-      padding: 0.5rem 0.7rem;
-    }
-
-    .m-ad-deal-price {
-      font-size: 1.15rem;
-      font-weight: 900;
-      color: var(--scope-gold-light);
-      font-family: 'Outfit', sans-serif;
-    }
-
-    .m-ad-retail-price {
-      font-size: 0.7rem;
-      color: #94a3b8;
-      text-decoration: line-through;
-    }
-
-    .m-ad-discount-tag {
-      font-size: 0.65rem;
-      font-weight: 800;
-      color: #34d399;
-      background: rgba(16, 185, 129, 0.18);
-      border: 1px solid rgba(16, 185, 129, 0.35);
-      padding: 0.1rem 0.35rem;
-      border-radius: 4px;
-      display: inline-block;
-    }
-
-    .m-btn-claim-ad {
-      width: 100%;
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      border: 1px solid #34d399;
-      color: #ffffff;
-      padding: 0.55rem 0.8rem;
-      border-radius: 8px;
-      font-weight: 800;
-      font-size: 0.8rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.3rem;
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
-      transition: all 0.2s;
-    }
-
-    .m-btn-claim-ad:active {
-      background: linear-gradient(135deg, #059669 0%, #047857 100%);
-      transform: scale(0.98);
-    }
-
-    .m-ad-dots-row {
-      display: flex;
-      justify-content: center;
-      gap: 0.35rem;
-      margin-top: 0.6rem;
-    }
-
-    .m-ad-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .m-ad-dot.active {
-      background: var(--scope-gold);
-      width: 18px;
-      border-radius: 4px;
-      box-shadow: 0 0 6px var(--scope-gold-glow);
-    }
-
-    .m-btn-ar-toggle {
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid rgba(16, 185, 129, 0.35);
-      color: #34d399;
-      padding: 0.2rem 0.5rem;
-      border-radius: 6px;
-      font-size: 0.68rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
-      transition: all 0.2s;
-    }
-
-    .m-btn-ar-toggle.paused {
-      background: rgba(239, 68, 68, 0.15);
-      border-color: rgba(239, 68, 68, 0.35);
-      color: #f87171;
+      padding: 1px 5px;
+      border-radius: var(--radius-pill);
     }
   </style>
 </head>
 <body>
 
-  <!-- Top App Bar (Scope Cinemas) -->
-  <header class="mobile-header">
-    <div class="header-left">
-      <span style="font-size:1.5rem; color:var(--scope-gold); filter:drop-shadow(0 0 8px var(--scope-gold-glow));">👑</span>
-      <div>
-        <div style="font-weight:900; font-size:0.95rem; letter-spacing:0.04em; color:#fff; font-family:'Cinzel', serif;">SCOPE CINEMAS</div>
-        <div style="font-size:0.62rem; color:var(--scope-gold); text-transform:uppercase; letter-spacing:0.1em; font-weight:700;">CANDY BAR PASS</div>
-      </div>
+  <!-- iOS Status Bar -->
+  <div class="ios-status-bar">
+    <span id="ios-time-indicator">9:41</span>
+    <div style="display:flex; align-items:center; gap:0.4rem;">
+      <span>5G</span>
+      <span>100% 🔋</span>
     </div>
-    <div class="header-right" style="display:flex; align-items:center; gap:0.4rem;">
-      <select class="loc-dropdown" id="m-cinema-select" style="display:none;"></select>
-      <span class="tier-pill" id="m-header-tier" style="background:rgba(212,175,55,0.18); border-color:var(--border-gold); color:var(--scope-gold-light);">VIP PASS</span>
-    </div>
-  </header>
-
-  <div class="m-toast" id="m-alert">
-    <span>⚠️</span>
-    <span id="m-alert-text">Colombo theaters are excluded by regional policy.</span>
   </div>
 
-  <!-- Screen 1: Explore & Menu -->
-  <main class="screen-view active" id="view-explore">
-    <!-- Step 1: Mobile Cinema Finder & Detector -->
-    <div class="m-cf-card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
-        <span class="m-cf-badge">👑 STEP 1: SELECT CINEMA</span>
-        <button id="m-btn-gps" class="m-gps-btn" onclick="mAutoDetectLocation()">
-          <span>📍 Detect GPS</span>
-        </button>
+  <!-- iOS Dynamic Island Capsule -->
+  <div class="ios-island-wrapper">
+    <div class="island-capsule" id="m-dynamic-island">
+      <div style="display:flex; align-items:center; gap:0.5rem;">
+        <div class="island-dot"></div>
+        <span style="font-size:0.75rem; font-weight:700; color:#fff;" id="m-island-cinema-text">Regal Cinema Kandy</span>
       </div>
-      <div style="font-size:1.05rem; font-weight:800; color:#fff; font-family:'Cinzel', serif; margin-bottom:0.2rem;">
-        FIND YOUR THEATER
+      <div style="display:flex; align-items:center; gap:0.35rem;">
+        <span style="font-size:0.7rem; color:var(--apple-green); font-weight:600;" id="m-island-sync">Sync in 8s</span>
       </div>
-      <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.7rem;">
-        Search cinema by name or tap "Detect GPS" to locate where you are at:
-      </p>
+    </div>
+  </div>
 
-      <!-- Search Input -->
-      <div class="m-cf-search-box">
-        <span style="color:var(--scope-gold); font-size:0.95rem;">🔍</span>
-        <input type="text" id="m-cinema-search-input" class="m-cf-search-input" placeholder="Type cinema name or city (Kandy, Galle...)" autocomplete="off">
-        <button id="m-btn-clear-search" onclick="mClearCinemaSearch()" style="display:none; background:none; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer;">&times;</button>
-      </div>
-
-      <!-- Live Search Suggestions Dropdown -->
-      <div id="m-cinema-dropdown" class="m-cf-dropdown" style="display:none;"></div>
-
-      <!-- Detection alert -->
-      <div id="m-gps-alert" style="display:none; margin-top:0.6rem; background:rgba(16,185,129,0.18); border:1px solid rgba(16,185,129,0.4); border-radius:8px; padding:0.5rem 0.7rem; font-size:0.75rem; color:#6ee7b7;"></div>
-
-      <!-- Mobile Active Cinema Spotlight -->
-      <div id="m-active-spotlight" style="margin-top:0.8rem; background:rgba(8,8,12,0.7); border:1px solid var(--border-gold); border-radius:10px; padding:0.75rem;">
-        <div style="text-align:center; font-size:0.75rem; color:var(--text-muted);">Loading active theater...</div>
+  <!-- Mobile App Navigation Header -->
+  <div class="mobile-nav-bar">
+    <div class="brand-title-group">
+      <div class="brand-icon-mobile">🍿</div>
+      <div>
+        <div style="font-size:0.95rem; font-weight:800; letter-spacing:-0.02em;">CineBite</div>
+        <div style="display:flex; align-items:center; gap:0.25rem;">
+          <select id="m-cinema-dropdown" class="cinema-select-dropdown" onchange="onMobileCinemaChanged(this.value)">
+            <!-- Cinema options loaded here -->
+          </select>
+          <span style="color:var(--apple-text-tertiary); font-size:0.75rem;">▼</span>
+        </div>
       </div>
     </div>
 
-    <!-- Cinema Food & Refreshment Location Guide -->
-    <div class="m-food-info-card" id="m-food-info-card" style="display:none;"></div>
+    <button class="apple-btn-secondary" onclick="handleMobileDetectGPS()" style="font-size:0.75rem; padding:0.35rem 0.75rem;">
+      📍 Near Me
+    </button>
+  </div>
 
-    <!-- Mobile Cinema Ads & Combo Showcase -->
-    <div class="m-cinema-ads-showcase" id="m-cinema-ads-section">
-      <div class="m-ads-header">
-        <div style="display:flex; align-items:center; gap:0.4rem;">
-          <span style="font-size:1.15rem; color:var(--scope-gold); filter:drop-shadow(0 0 6px var(--scope-gold-glow));">🎬</span>
+  <!-- =========================================================================
+       Screen 1: Explore (Live Concessions & Deals)
+       ========================================================================= -->
+  <div class="screen-view active" id="screen-explore">
+    <!-- Cinema Details Card -->
+    <div class="cinema-info-card">
+      <div class="cinema-chain-row">
+        <span style="font-size:0.95rem; font-weight:700;" id="m-display-name">Regal Cinema Kandy</span>
+        <span class="apple-badge blue" id="m-display-chain" style="font-size:0.68rem;">Ceylon Theatres</span>
+      </div>
+      <div style="font-size:0.78rem; color:var(--apple-text-secondary);" id="m-display-location">
+        Katugastota Road, Kandy • 2 Screens
+      </div>
+      <div style="font-size:0.75rem; color:var(--apple-green); font-weight:600;" id="m-display-foodplace">
+        🍿 Regal Foyer Concession Counter
+      </div>
+    </div>
+
+    <!-- Active Deals Scroller -->
+    <div style="font-size:0.85rem; font-weight:700; margin-bottom:0.6rem; display:flex; justify-content:space-between; align-items:center;">
+      <span>🎬 In-Theater Concession Ads</span>
+      <span class="apple-badge green" style="font-size:0.65rem;">Updated Live</span>
+    </div>
+    <div class="mobile-ads-scroller" id="m-ads-scroller">
+      <!-- Ads loaded here -->
+    </div>
+
+    <!-- Category Filter Bar -->
+    <div class="category-scroller">
+      <button class="cat-pill active" onclick="mobileFilterCat('ALL')">All Snacks</button>
+      <button class="cat-pill" onclick="mobileFilterCat('Popcorn')">🍿 Popcorn</button>
+      <button class="cat-pill" onclick="mobileFilterCat('Beverage')">🥤 Drinks</button>
+      <button class="cat-pill" onclick="mobileFilterCat('Snack')">🌭 Warm Food</button>
+      <button class="cat-pill" onclick="mobileFilterCat('Combo')">🎬 Combos</button>
+    </div>
+
+    <!-- Concession Items List -->
+    <div class="concession-list" id="m-concession-list">
+      <!-- Items loaded here -->
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Screen 2: Smart Bundle Optimizer
+       ========================================================================= -->
+  <div class="screen-view" id="screen-optimizer">
+    <h3 style="font-size:1.3rem; font-weight:800; margin-bottom:0.4rem; letter-spacing:-0.02em;">
+      ⚡ Smart Bundle Optimizer
+    </h3>
+    <p style="font-size:0.82rem; color:var(--apple-text-secondary); margin-bottom:1.4rem;">
+      Maximize food & beverage value within your cinema budget.
+    </p>
+
+    <!-- Budget Setting -->
+    <div style="margin-bottom:1.25rem;">
+      <label style="font-size:0.8rem; font-weight:600; color:var(--apple-text-secondary); display:block; margin-bottom:0.4rem;">
+        Concession Budget (LKR)
+      </label>
+      <div class="budget-input-wrap">
+        <span class="budget-prefix">LKR</span>
+        <input type="number" id="m-opt-budget" class="budget-input" value="2500" min="500" max="20000" step="100">
+      </div>
+      <div style="display:flex; gap:0.4rem; margin-top:0.5rem; flex-wrap:wrap;">
+        <button class="quick-pill" onclick="setMobileBudget(1500)">1,500</button>
+        <button class="quick-pill" onclick="setMobileBudget(2500)">2,500</button>
+        <button class="quick-pill" onclick="setMobileBudget(3500)">3,500</button>
+        <button class="quick-pill" onclick="setMobileBudget(5000)">5,000</button>
+      </div>
+    </div>
+
+    <!-- Party Size Segmented Control -->
+    <div style="margin-bottom:1.25rem;">
+      <label style="font-size:0.8rem; font-weight:600; color:var(--apple-text-secondary); display:block; margin-bottom:0.4rem;">
+        Moviegoers
+      </label>
+      <div class="apple-segmented-control" style="width:100%;">
+        <button class="apple-segment-item" style="flex:1;" onclick="setMobileParty(1)">1 Solo</button>
+        <button class="apple-segment-item active" style="flex:1;" onclick="setMobileParty(2)">2 Duo</button>
+        <button class="apple-segment-item" style="flex:1;" onclick="setMobileParty(3)">3 Trio</button>
+        <button class="apple-segment-item" style="flex:1;" onclick="setMobileParty(4)">4+ Group</button>
+      </div>
+    </div>
+
+    <!-- Membership Tier Segmented Control -->
+    <div style="margin-bottom:1.25rem;">
+      <label style="font-size:0.8rem; font-weight:600; color:var(--apple-text-secondary); display:block; margin-bottom:0.4rem;">
+        CinePass VIP Tier
+      </label>
+      <div class="apple-segmented-control" style="width:100%;">
+        <button class="apple-segment-item active" style="flex:1;" onclick="setMobileTier('Standard')">Standard</button>
+        <button class="apple-segment-item" style="flex:1;" onclick="setMobileTier('Student')">Student</button>
+        <button class="apple-segment-item" style="flex:1;" onclick="setMobileTier('Platinum')">Platinum</button>
+      </div>
+    </div>
+
+    <!-- Promo Code -->
+    <div style="margin-bottom:1.4rem;">
+      <label style="font-size:0.8rem; font-weight:600; color:var(--apple-text-secondary); display:block; margin-bottom:0.4rem;">
+        Promo Code (Optional)
+      </label>
+      <div class="search-input-wrap">
+        <input type="text" id="m-opt-promo" placeholder="CINE-COMBO30, CINE-PLATINUM" style="text-transform:uppercase;">
+      </div>
+    </div>
+
+    <button class="apple-btn-primary" style="width:100%; padding:0.85rem;" onclick="handleMobileOptimize()">
+      ⚡ Calculate Best Bundle
+    </button>
+
+    <!-- Optimization Result Card -->
+    <div id="m-opt-result" style="display:none; margin-top:1.4rem;">
+      <!-- Populated dynamically -->
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Screen 3: Apple Wallet CinePass
+       ========================================================================= -->
+  <div class="screen-view" id="screen-pass">
+    <div class="apple-wallet-pass">
+      <!-- Pass Header -->
+      <div class="apple-wallet-header">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+          <span style="font-size:1.4rem;">🎟️</span>
           <div>
-            <div style="font-size:0.8rem; font-weight:800; color:#fff; font-family:'Cinzel', serif; letter-spacing:0.04em;">THEATER LOBBY PROMO SCREEN</div>
-            <div style="font-size:0.65rem; color:var(--scope-gold);">Combos & Concession Discounts</div>
+            <div style="font-weight:700; font-size:0.95rem;">CineBite Pass</div>
+            <div style="font-size:0.72rem; color:var(--apple-text-secondary);" id="pass-view-cinema">Regal Cinema Kandy</div>
           </div>
         </div>
-        <div style="display:flex; align-items:center; gap:0.3rem;">
-          <button type="button" class="m-btn-ad-nav" onclick="mPrevCinemaAd()" title="Previous Promo Ad">‹</button>
-          <span id="m-ad-counter" style="font-size:0.68rem; font-weight:700; color:var(--scope-gold); min-width:32px; text-align:center;">1 / 4</span>
-          <button type="button" class="m-btn-ad-nav" onclick="mNextCinemaAd()" title="Next Promo Ad">›</button>
+        <span class="apple-badge purple" id="pass-view-tier">Platinum VIP</span>
+      </div>
+
+      <!-- Items Section -->
+      <div style="padding:1.25rem;">
+        <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--apple-text-tertiary); margin-bottom:0.6rem;">
+          Concession Order
         </div>
-      </div>
-      <div id="m-ads-card-container">
-        <!-- Rendered via JS -->
-      </div>
-      <div class="m-ad-dots-row" id="m-ad-dots-container"></div>
-    </div>
-
-    <!-- Mobile Live Dynamic Pricing Bar -->
-    <div class="m-live-pricing-bar" id="m-live-pricing-bar">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.35rem;">
-        <div style="display:flex; align-items:center; gap:0.4rem;">
-          <span class="m-pulse-dot"></span>
-          <span style="font-weight:800; font-size:0.78rem; color:#fff; font-family:'Cinzel', serif;">LIVE CANDY BAR FEED</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:0.35rem;">
-          <button type="button" id="m-btn-auto-refresh-toggle" class="m-btn-ar-toggle" onclick="mToggleAutoRefresh()" title="Toggle built-in auto-refresh">
-            <span id="m-ar-dot">🟢</span>
-            <span id="m-ar-text">Auto (8s)</span>
-          </button>
-          <button type="button" class="m-btn-sync" onclick="mForceLiveSync()">
-            <span>🔄 Sync</span>
-          </button>
-        </div>
-      </div>
-      <div style="display:flex; justify-content:space-between; font-size:0.68rem; color:var(--text-muted);">
-        <span id="m-live-updated-time">Updated: Just now</span>
-        <span>Auto-sync in <strong id="m-live-countdown" style="color:var(--scope-gold);">8</strong>s</span>
-      </div>
-    </div>
-
-    <!-- Category Chips -->
-    <div class="chips-bar">
-      <button class="chip-btn active" onclick="filterCategory('all', this)">All Items</button>
-      <button class="chip-btn" onclick="filterCategory('Popcorn', this)">🍿 Popcorn</button>
-      <button class="chip-btn" onclick="filterCategory('Beverage', this)">🥤 Beverages</button>
-      <button class="chip-btn" onclick="filterCategory('Snack', this)">🌭 Snacks</button>
-      <button class="chip-btn" onclick="filterCategory('Combo', this)">✨ Combos</button>
-    </div>
-
-    <div class="items-container" id="m-concessions-list">
-      <!-- Concessions dynamically loaded -->
-    </div>
-  </main>
-
-  <!-- Screen 2: Deal Optimizer -->
-  <section class="screen-view" id="view-optimizer">
-    <div class="opt-card">
-      <h3>⚡ AI Concession Bundle Optimizer</h3>
-
-      <div style="font-size:0.78rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.4rem; font-weight:700;">
-        Party Size
-      </div>
-      <div class="m-party-grid">
-        <button class="m-party-btn" data-val="1">Solo (1)</button>
-        <button class="m-party-btn active" data-val="2">Couple (2)</button>
-        <button class="m-party-btn" data-val="3">Trio (3)</button>
-        <button class="m-party-btn" data-val="4">4+ Group</button>
-      </div>
-      <input type="hidden" id="m-party-size" value="2">
-
-      <div class="m-slider-box">
-        <div class="m-slider-label">
-          <span>Target Budget:</span>
-          <span class="m-slider-val" id="m-budget-text">LKR 2,500</span>
-        </div>
-        <input type="range" id="m-budget-slider" min="1000" max="6000" step="250" value="2500">
-      </div>
-
-      <div style="margin-bottom:1.2rem;">
-        <label style="display:block; font-size:0.78rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.4rem; font-weight:700;">
-          Scope Privilege Member Tier
-        </label>
-        <select id="m-tier-select" style="width:100%; background:#090d16; border:1px solid var(--border-subtle); color:#fff; padding:0.6rem; border-radius:8px; font-family:inherit;">
-          <option value="Standard">Standard Account</option>
-          <option value="Student">Student Cardholder (20% off)</option>
-          <option value="Silver">Silver Tier</option>
-          <option value="Gold">Gold Tier</option>
-          <option value="Platinum">Platinum VIP (35% off)</option>
-        </select>
-      </div>
-
-      <button class="btn-calc-mobile" id="btn-m-calc">
-        <span>👑 Optimize Deal with Scope Privilege</span>
-      </button>
-    </div>
-
-    <!-- Optimization Results -->
-    <div id="m-deal-result-box" style="display:none;">
-      <!-- Populated via JS -->
-    </div>
-  </section>
-
-  <!-- Screen 3: Scope Privilege VIP Pass & Vouchers -->
-  <section class="screen-view" id="view-privilege">
-    <div class="digital-card">
-      <div class="card-top">
-        <span class="card-brand" style="font-family:'Cinzel',serif; letter-spacing:0.06em; color:var(--scope-gold-light);">👑 SCOPE PRIVILEGE PASS</span>
-        <span id="card-tier-label" style="text-transform:uppercase; font-size:0.75rem; font-weight:800; color:#fbbf24;">STANDARD</span>
-      </div>
-      <div class="card-num">&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 8824</div>
-      <div class="card-bottom">
-        <div>
-          <div style="font-size:0.65rem; color:#94a3b8;">CARDHOLDER</div>
-          <div style="font-weight:700;">CINEMA PRIVILEGE CLUB</div>
-        </div>
-        <div>
-          <div style="font-size:0.65rem; color:#94a3b8;">VALID REGION</div>
-          <div style="font-weight:700;">SRI LANKA (ALL THEATERS)</div>
-        </div>
-      </div>
-    </div>
-
-    <h3 style="font-size:1.05rem; margin-bottom:0.8rem;">Active Scope Privilege Vouchers</h3>
-    <div class="items-container" id="m-vouchers-list">
-      <!-- Vouchers loaded dynamically -->
-    </div>
-  </section>
-
-  <!-- Screen 4: In-Person Counter Voucher Pass -->
-  <section class="screen-view" id="view-cart">
-    <h3 style="font-size:1.1rem; margin-bottom:0.4rem;">🎟️ In-Theater Counter Voucher</h3>
-    <div style="background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); border-radius:10px; padding:0.6rem 0.8rem; font-size:0.75rem; color:#fde68a; margin-bottom:1rem; line-height:1.35;">
-      ⚠️ <strong>In-Theater Collection:</strong> This is a recommender and in-person savings pass. Present this voucher to the cashier when you arrive at the cinema snack counter.
-    </div>
-
-    <div id="m-cart-empty" style="text-align:center; padding:2rem; color:var(--text-muted);">
-      Your voucher pass is empty.<br>Add snacks from the Explore tab!
-    </div>
-
-    <div id="m-cart-content" style="display:none;">
-      <div id="m-cart-items-list" style="margin-bottom:1.2rem;"></div>
-
-      <div class="opt-card" id="m-cart-summary-box">
-        <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem; font-size:0.88rem;">
-          <span style="color:var(--text-muted);">Menu Subtotal:</span>
-          <span style="text-decoration:line-through; color:#94a3b8;" id="m-subtotal-val">LKR 0.00</span>
-        </div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem; color:var(--accent-green); font-size:0.88rem;">
-          <span id="m-applied-promo-label">Scope Privilege Savings:</span>
-          <strong id="m-discount-val">-LKR 0.00</strong>
-        </div>
-        <div style="margin-top:0.8rem; padding-top:0.8rem; border-top:1px solid var(--border-subtle);">
-          <label style="display:block; font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.4rem; font-weight:700;">
-            🇱🇰 Payment Method
-          </label>
-          <select id="m-pay-select" style="width:100%; background:#090d16; border:1px solid var(--border-subtle); color:#fff; padding:0.6rem; border-radius:8px; font-family:inherit; font-size:0.85rem;">
-            <!-- Loaded dynamically -->
-          </select>
+        <div id="pass-view-items" style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem;">
+          <!-- Item rows -->
         </div>
 
-        <div id="m-phone-row" style="display:none; margin-top:0.6rem;">
-          <label style="display:block; font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.3rem; font-weight:700;">
-            Mobile Number (eZ Cash / mCash)
-          </label>
-          <input type="tel" id="m-phone-input" style="width:100%; background:#090d16; border:1px solid var(--border-subtle); color:#fff; padding:0.6rem; border-radius:8px; font-family:inherit; font-size:0.85rem;" placeholder="077 123 4567" value="077 123 4567">
+        <div style="background:rgba(255,255,255,0.04); border-radius:var(--radius-sm); padding:0.85rem; display:flex; flex-direction:column; gap:0.35rem; font-size:0.82rem;">
+          <div style="display:flex; justify-content:space-between; color:var(--apple-text-secondary);">
+            <span>Subtotal:</span>
+            <span id="pass-view-subtotal">LKR 0</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; color:var(--apple-green); font-weight:600;">
+            <span>CinePass Savings:</span>
+            <span id="pass-view-savings">-LKR 0</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:1.15rem; font-weight:800; border-top:1px solid rgba(255,255,255,0.1); padding-top:0.5rem; margin-top:0.2rem;">
+            <span>Pay at Counter:</span>
+            <span style="color:#fff;" id="pass-view-final">LKR 0</span>
+          </div>
         </div>
-
-        <button class="btn-calc-mobile" style="margin-top:1rem; background:linear-gradient(135deg, #10b981, #059669);" id="btn-m-checkout">
-          🎟️ Generate Physical Counter Pass
-        </button>
       </div>
 
-      <!-- Mobile Receipt Sheet -->
-      <div id="m-receipt-sheet" style="display:none; background:#090d16; border:1px solid var(--border-glow); border-radius:16px; padding:1.2rem; margin-top:1rem;">
-        <div style="text-align:center; font-size:2rem; margin-bottom:0.3rem;">🎟️</div>
-        <h4 style="text-align:center; color:var(--accent-green); font-size:1.15rem; margin-bottom:0.2rem;">Counter Voucher Ready!</h4>
-        <p style="text-align:center; font-size:0.78rem; color:var(--text-muted); margin-bottom:1rem;" id="m-receipt-sub"></p>
+      <!-- Perforation -->
+      <div class="apple-wallet-perforation">
+        <div class="apple-wallet-dashline"></div>
+      </div>
 
-        <div id="m-receipt-body" style="font-size:0.82rem; margin-bottom:1rem;"></div>
-
-        <button class="btn-calc-mobile" onclick="dismissMobileReceipt()" style="background:rgba(255,255,255,0.1);">Done & Save Pass</button>
+      <!-- Barcode / Instructions -->
+      <div style="padding:1.25rem; text-align:center;">
+        <div class="apple-wallet-barcode-container">
+          <svg width="240" height="50" viewBox="0 0 240 50">
+            <rect x="5" y="5" width="3" height="40" fill="#000" />
+            <rect x="11" y="5" width="2" height="40" fill="#000" />
+            <rect x="16" y="5" width="5" height="40" fill="#000" />
+            <rect x="24" y="5" width="2" height="40" fill="#000" />
+            <rect x="30" y="5" width="4" height="40" fill="#000" />
+            <rect x="38" y="5" width="6" height="40" fill="#000" />
+            <rect x="48" y="5" width="3" height="40" fill="#000" />
+            <rect x="54" y="5" width="4" height="40" fill="#000" />
+            <rect x="62" y="5" width="2" height="40" fill="#000" />
+            <rect x="68" y="5" width="5" height="40" fill="#000" />
+            <rect x="76" y="5" width="3" height="40" fill="#000" />
+            <rect x="83" y="5" width="6" height="40" fill="#000" />
+            <rect x="94" y="5" width="2" height="40" fill="#000" />
+            <rect x="100" y="5" width="4" height="40" fill="#000" />
+            <rect x="108" y="5" width="3" height="40" fill="#000" />
+            <rect x="115" y="5" width="6" height="40" fill="#000" />
+            <rect x="126" y="5" width="2" height="40" fill="#000" />
+            <rect x="132" y="5" width="5" height="40" fill="#000" />
+            <rect x="141" y="5" width="3" height="40" fill="#000" />
+            <rect x="148" y="5" width="4" height="40" fill="#000" />
+            <rect x="156" y="5" width="2" height="40" fill="#000" />
+            <rect x="162" y="5" width="6" height="40" fill="#000" />
+            <rect x="172" y="5" width="3" height="40" fill="#000" />
+            <rect x="179" y="5" width="4" height="40" fill="#000" />
+            <rect x="187" y="5" width="3" height="40" fill="#000" />
+            <rect x="194" y="5" width="5" height="40" fill="#000" />
+            <rect x="203" y="5" width="2" height="40" fill="#000" />
+            <rect x="209" y="5" width="4" height="40" fill="#000" />
+            <rect x="217" y="5" width="6" height="40" fill="#000" />
+          </svg>
+          <div style="font-family:var(--apple-font-mono); font-size:0.75rem; font-weight:700; color:#000; margin-top:0.3rem;" id="pass-view-serial">
+            CB-PASS-98421
+          </div>
+        </div>
+        <p style="font-size:0.75rem; color:var(--apple-text-secondary); margin-top:0.85rem; line-height:1.4;">
+          Show this barcode at the candy bar counter before order punching.
+        </p>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- Bottom Navigation Bar -->
-  <nav class="bottom-nav">
-    <button class="nav-item active" id="nav-explore" onclick="switchNav('explore')">
-      <span class="nav-icon">🍿</span>
+  <!-- =========================================================================
+       Screen 4: Concession Tray (Cart)
+       ========================================================================= -->
+  <div class="screen-view" id="screen-tray">
+    <h3 style="font-size:1.3rem; font-weight:800; margin-bottom:0.4rem; letter-spacing:-0.02em;">
+      🛍️ Concession Tray
+    </h3>
+    <p style="font-size:0.82rem; color:var(--apple-text-secondary); margin-bottom:1.25rem;">
+      Your selected snacks ready for in-person counter redemption.
+    </p>
+
+    <div id="m-tray-items-list" style="display:flex; flex-direction:column; gap:0.75rem; margin-bottom:1.5rem;">
+      <!-- Populated dynamically -->
+    </div>
+
+    <div style="background:var(--apple-surface); border:var(--apple-border); border-radius:var(--radius-lg); padding:1.15rem; margin-bottom:1.5rem;">
+      <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--apple-text-secondary); margin-bottom:0.35rem;">
+        <span>Tray Total:</span>
+        <span id="m-tray-subtotal">LKR 0</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--apple-green); font-weight:600; margin-bottom:0.5rem;">
+        <span>Estimated CinePass Savings:</span>
+        <span id="m-tray-savings">-LKR 0</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:800; border-top:1px solid rgba(255,255,255,0.1); padding-top:0.6rem;">
+        <span>Pay at Counter:</span>
+        <span id="m-tray-final" style="color:#fff;">LKR 0</span>
+      </div>
+    </div>
+
+    <button class="apple-btn-green apple-btn-primary" style="width:100%; padding:0.85rem;" onclick="switchToTab('pass')">
+      🎟️ View Apple Wallet Pass
+    </button>
+  </div>
+
+  <!-- iOS Tab Bar -->
+  <nav class="ios-tab-bar">
+    <button class="tab-button active" onclick="switchToTab('explore')">
+      <span class="tab-icon">🍿</span>
       <span>Explore</span>
     </button>
-    <button class="nav-item" id="nav-optimizer" onclick="switchNav('optimizer')">
-      <span class="nav-icon">⚡</span>
+    <button class="tab-button" onclick="switchToTab('optimizer')">
+      <span class="tab-icon">⚡</span>
       <span>Optimizer</span>
     </button>
-    <button class="nav-item" id="nav-privilege" onclick="switchNav('privilege')">
-      <span class="nav-icon">👑</span>
-      <span>VIP Pass</span>
+    <button class="tab-button" onclick="switchToTab('pass')">
+      <span class="tab-icon">🎟️</span>
+      <span>CinePass</span>
     </button>
-    <button class="nav-item" id="nav-cart" onclick="switchNav('cart')">
-      <span class="nav-icon">🎟️</span>
-      <span>Voucher Pass</span>
-      <span class="nav-badge" id="m-cart-badge" style="display:none;">0</span>
+    <button class="tab-button" onclick="switchToTab('tray')">
+      <span class="tab-icon">🛍️</span>
+      <span>Tray</span>
+      <span class="tab-badge" id="tab-tray-count" style="display:none;">0</span>
     </button>
   </nav>
 
   <script>
-    let registeredCinemas = [];
-    let currentCinema = null;
-    let menuItems = [];
-    let activeCategory = 'all';
-    let cart = [];
+    const client = new CinemaClient();
+    let mCinemas = [];
+    let mCurrentCinema = null;
+    let mMenu = [];
+    let mCategory = 'ALL';
+    let mCart = [];
+    let mParty = 2;
+    let mTier = 'Standard';
+    let mSeconds = 8;
 
-    // Register Service Worker for PWA
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration error:', err));
-      });
-    }
-
-    let paymentMethods = [];
-
-    document.addEventListener('DOMContentLoaded', async () => {
-      setupPartyButtons();
-      setupBudgetSlider();
-      await loadCinemas();
-      await loadPromotions();
-      await loadPaymentMethods();
-
-      document.getElementById('btn-m-calc').addEventListener('click', calculateDeal);
-      document.getElementById('btn-m-checkout').addEventListener('click', processMobileCheckout);
-      document.getElementById('m-pay-select').addEventListener('change', handlePayMethodChange);
-      document.getElementById('m-tier-select').addEventListener('change', (e) => {
-        document.getElementById('m-header-tier').innerText = e.target.value;
-        document.getElementById('card-tier-label').innerText = e.target.value;
-      });
+    window.addEventListener('DOMContentLoaded', async () => {
+      updateClock();
+      setInterval(updateClock, 1000);
+      await loadMobileCinemas();
+      startMobileTicker();
     });
 
-    async function loadPaymentMethods() {
+    function updateClock() {
+      const now = new Date();
+      const hrs = now.getHours();
+      const mins = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('ios-time-indicator').textContent = `${hrs}:${mins}`;
+    }
+
+    async function loadMobileCinemas() {
       try {
-        const res = await fetch('/api/v1/payment-methods');
-        paymentMethods = await res.json();
-        const select = document.getElementById('m-pay-select');
-        select.innerHTML = '';
-        paymentMethods.forEach(m => {
-          const opt = document.createElement('option');
-          opt.value = m.id;
-          opt.innerText = `${m.icon} ${m.name}`;
-          select.appendChild(opt);
-        });
-      } catch (err) {
-        console.error('Failed to load payment methods', err);
-      }
-    }
-
-    function handlePayMethodChange(e) {
-      const isMobileWallet = (e.target.value === 'EZCASH' || e.target.value === 'MCASH');
-      document.getElementById('m-phone-row').style.display = isMobileWallet ? 'block' : 'none';
-    }
-
-    function setupPartyButtons() {
-      const btns = document.querySelectorAll('.m-party-btn');
-      btns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          btns.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          document.getElementById('m-party-size').value = btn.dataset.val;
-        });
-      });
-    }
-
-    function setupBudgetSlider() {
-      const slider = document.getElementById('m-budget-slider');
-      const text = document.getElementById('m-budget-text');
-      slider.addEventListener('input', () => {
-        text.innerText = `LKR ${Number(slider.value).toLocaleString()}`;
-      });
-    }
-
-    function renderMobileActiveSpotlight(cinema) {
-      const box = document.getElementById('m-active-spotlight');
-      if (!box || !cinema) return;
-
-      const dist = cinema.distance_km !== undefined && cinema.distance_km !== null
-        ? `<span style="font-size:0.7rem; color:#34d399; font-weight:700; background:rgba(16,185,129,0.15); padding:0.15rem 0.4rem; border-radius:4px;">📍 ${cinema.distance_km.toFixed(1)} km</span>`
-        : '';
-
-      box.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.4rem;">
-          <div>
-            <div style="font-weight:800; font-size:0.92rem; color:#fff;">${cinema.name}</div>
-            <div style="font-size:0.72rem; color:var(--text-muted);">${cinema.address || cinema.city}</div>
-          </div>
-          <div>${dist}</div>
-        </div>
-
-        <div style="background:rgba(0,0,0,0.3); border-radius:8px; padding:0.5rem; font-size:0.72rem; margin-bottom:0.5rem;">
-          <div style="color:var(--scope-gold-light); font-weight:700; margin-bottom:0.2rem;">🍿 ${cinema.food_place_name || 'Concession Stand'}</div>
-          <div style="color:#cbd5e1;">⏰ ${cinema.food_hours || '10:00 AM - 10:30 PM'}</div>
-          <div style="color:#34d399; margin-top:0.2rem;">🟢 Concessions Open &bull; ${cinema.food_delivery_to_seat ? '💺 VIP In-Seat Delivery' : '🛍️ Counter Pickup'}</div>
-        </div>
-
-        <div style="display:flex; gap:0.4rem;">
-          ${cinema.map_url ? `<a href="${cinema.map_url}" target="_blank" style="flex:1; text-align:center; background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.3); color:#38bdf8; padding:0.4rem; border-radius:6px; font-size:0.72rem; font-weight:700; text-decoration:none;">🗺️ Maps Directions</a>` : ''}
-          <button onclick="document.getElementById('m-cinema-search-input').focus()" style="flex:1; background:rgba(212,175,55,0.15); border:1px solid var(--border-gold); color:var(--scope-gold-light); padding:0.4rem; border-radius:6px; font-size:0.72rem; font-weight:700; cursor:pointer;">🔍 Switch Cinema</button>
-        </div>
-      `;
-    }
-
-    function setupMobileCinemaSearch() {
-      const input = document.getElementById('m-cinema-search-input');
-      const dropdown = document.getElementById('m-cinema-dropdown');
-      const clearBtn = document.getElementById('m-btn-clear-search');
-
-      if (!input) return;
-
-      input.addEventListener('input', () => {
-        const q = input.value.trim().toLowerCase();
-        if (q.length === 0) {
-          clearBtn.style.display = 'none';
-          dropdown.style.display = 'none';
-          dropdown.innerHTML = '';
-          return;
-        }
-
-        clearBtn.style.display = 'block';
-        const matches = registeredCinemas.filter(c =>
-          c.name.toLowerCase().includes(q) ||
-          c.city.toLowerCase().includes(q) ||
-          (c.address && c.address.toLowerCase().includes(q)) ||
-          (c.food_place_name && c.food_place_name.toLowerCase().includes(q))
-        );
-
-        if (matches.length === 0) {
-          dropdown.innerHTML = `<div style="padding:0.75rem; text-align:center; color:var(--text-muted); font-size:0.75rem;">No cinemas found matching "${input.value}"</div>`;
-          dropdown.style.display = 'block';
-          return;
-        }
-
-        dropdown.innerHTML = matches.map(c => `
-          <div class="m-cf-drop-item" onclick="selectMobileCinema('${c.id}')">
-            <div>
-              <div style="font-weight:700; color:#fff; font-size:0.82rem;">${c.name}</div>
-              <div style="font-size:0.7rem; color:var(--text-muted);">📍 ${c.city} &bull; 🍿 ${c.food_place_name || 'Candy Bar'}</div>
-            </div>
-            ${c.distance_km ? `<span style="font-size:0.7rem; color:#34d399; font-weight:700;">${c.distance_km.toFixed(1)} km</span>` : ''}
-          </div>
+        const cinemas = await client.getCinemas();
+        mCinemas = cinemas;
+        const dropdown = document.getElementById('m-cinema-dropdown');
+        dropdown.innerHTML = cinemas.map(c => `
+          <option value="${c.id}">${c.name}</option>
         `).join('');
 
-        dropdown.style.display = 'block';
-      });
-
-      document.addEventListener('click', (e) => {
-        if (!input.contains(e.target) && !dropdown.contains(e.target)) {
-          dropdown.style.display = 'none';
+        if (cinemas.length > 0) {
+          selectMobileCinema(cinemas[0]);
         }
-      });
-    }
-
-    function mClearCinemaSearch() {
-      const input = document.getElementById('m-cinema-search-input');
-      const clearBtn = document.getElementById('m-btn-clear-search');
-      const dropdown = document.getElementById('m-cinema-dropdown');
-      input.value = '';
-      clearBtn.style.display = 'none';
-      dropdown.style.display = 'none';
-      input.focus();
-    }
-
-    function selectMobileCinema(cinemaId) {
-      const found = registeredCinemas.find(c => c.id === cinemaId);
-      if (!found) return;
-
-      currentCinema = found;
-
-      const input = document.getElementById('m-cinema-search-input');
-      const dropdown = document.getElementById('m-cinema-dropdown');
-      if (input) input.value = currentCinema.name;
-      if (dropdown) dropdown.style.display = 'none';
-
-      const select = document.getElementById('m-cinema-select');
-      if (select) select.value = currentCinema.id;
-
-      renderMobileActiveSpotlight(currentCinema);
-      mRenderFoodGuide(currentCinema);
-      loadMenu(currentCinema.id);
-      mStartLivePricingTicker(currentCinema.id);
-    }
-
-    function mRenderFoodGuide(cinema) {
-      const card = document.getElementById('m-food-info-card');
-      if (!cinema) {
-        card.style.display = 'none';
-        return;
-      }
-
-      card.style.display = 'block';
-      const distTag = cinema.distance_km ? `<span class="m-fg-pill green">📍 ${cinema.distance_km.toFixed(1)} km</span>` : '';
-      const nearbyTags = (cinema.nearby_food_options || []).map(opt => `<span class="m-fg-pill">🍽️ ${opt}</span>`).join(' ');
-
-      card.innerHTML = `
-        <div class="m-fg-title">
-          <span>🍿 ${cinema.food_place_name || 'In-Theater Concession Stand'}</span>
-          ${distTag}
-        </div>
-        <div class="m-fg-sub">
-          ${cinema.food_place_type || 'Concession Stand'} &bull; ⏰ ${cinema.food_hours || '10:00 AM - 10:30 PM'}
-        </div>
-        <div class="m-fg-pills" style="margin-bottom:0.4rem;">
-          <span class="m-fg-pill green">🟢 Concessions Open</span>
-          ${cinema.food_delivery_to_seat ? '<span class="m-fg-pill">💺 Seat Delivery</span>' : '<span class="m-fg-pill">🛍️ Counter Pickup</span>'}
-          ${cinema.map_url ? `<a href="${cinema.map_url}" target="_blank" class="m-fg-pill blue">🗺️ Maps</a>` : ''}
-        </div>
-        ${cinema.nearby_food_options && cinema.nearby_food_options.length > 0 ? `
-          <div style="background:rgba(0,0,0,0.25); border-radius:6px; padding:0.4rem; font-size:0.68rem;">
-            <div style="color:var(--text-muted); margin-bottom:0.2rem; font-weight:700;">Nearby Food Courts & Stalls:</div>
-            <div class="m-fg-pills">${nearbyTags}</div>
-          </div>
-        ` : ''}
-      `;
-    }
-
-    function mAutoDetectLocation() {
-      const btn = document.getElementById('m-btn-gps');
-      const alertBox = document.getElementById('m-gps-alert');
-      if (!navigator.geolocation) {
-        alert('Geolocation is not supported by your browser.');
-        return;
-      }
-
-      const origText = btn.innerHTML;
-      btn.innerHTML = '<span>⏳...</span>';
-      btn.disabled = true;
-
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          try {
-            const lat = pos.coords.latitude;
-            const lng = pos.coords.longitude;
-            const res = await fetch(`/api/v1/cinemas?lat=${lat}&lng=${lng}`);
-            if (!res.ok) throw new Error('Failed to find nearby cinemas');
-            registeredCinemas = await res.json();
-
-            const select = document.getElementById('m-cinema-select');
-            select.innerHTML = '';
-            registeredCinemas.forEach(c => {
-              const opt = document.createElement('option');
-              opt.value = c.id;
-              const dist = c.distance_km ? ` [${c.distance_km.toFixed(1)} km]` : '';
-              opt.innerText = `${c.name} (${c.city})${dist}`;
-              select.appendChild(opt);
-            });
-
-            if (registeredCinemas.length > 0) {
-              const nearest = registeredCinemas[0];
-              selectMobileCinema(nearest.id);
-
-              if (alertBox) {
-                if (nearest.distance_km !== undefined && nearest.distance_km <= 0.5) {
-                  alertBox.innerHTML = `🎯 <strong>Detected:</strong> You are at <strong>${nearest.name}</strong>!`;
-                } else {
-                  alertBox.innerHTML = `📍 <strong>Nearest:</strong> ${nearest.name} (${nearest.distance_km ? nearest.distance_km.toFixed(1) + ' km away' : ''}).`;
-                }
-                alertBox.style.display = 'block';
-              }
-
-              btn.innerHTML = `<span>📍 ${nearest.city}</span>`;
-            }
-          } catch (err) {
-            console.error('Geo detect failed', err);
-            btn.innerHTML = origText;
-          } finally {
-            btn.disabled = false;
-          }
-        },
-        (err) => {
-          console.warn('Geolocation denied', err);
-          btn.innerHTML = origText;
-          btn.disabled = false;
-          alert('Location permission was denied. You can search any cinema above.');
-        },
-        { timeout: 8000 }
-      );
-    }
-
-    async function loadCinemas() {
-      try {
-        const res = await fetch('/api/v1/cinemas');
-        registeredCinemas = await res.json();
-        const select = document.getElementById('m-cinema-select');
-        select.innerHTML = '';
-
-        registeredCinemas.forEach(c => {
-          const opt = document.createElement('option');
-          opt.value = c.id;
-          opt.innerText = `${c.name} (${c.city})`;
-          select.appendChild(opt);
-        });
-
-        setupMobileCinemaSearch();
-
-        if (registeredCinemas.length > 0) {
-          currentCinema = registeredCinemas[0];
-          selectMobileCinema(currentCinema.id);
-        }
-
-        select.addEventListener('change', () => {
-          selectMobileCinema(select.value);
-        });
-      } catch (err) {
-        console.error('Cinema loading failed', err);
-      }
-    }
-
-    // ==========================================================================
-    // MOBILE REAL-TIME CONSTANT CONCESSION PRICING ENGINE & PROMO ADS
-    // ==========================================================================
-    let mLivePricingInterval = null;
-    let mLiveCountdownSeconds = 8;
-    let mIsAutoRefreshEnabled = true;
-    const mPreviousPricesMap = new Map();
-    const mChangedItemIds = new Set();
-    let mCurrentCinemaAds = [];
-    let mCurrentAdIndex = 0;
-    let mAdAutoRotateTimer = null;
-
-    function mShowToast(msg) {
-      const alertBox = document.getElementById('m-alert');
-      const alertText = document.getElementById('m-alert-text');
-      if (alertBox && alertText) {
-        alertText.innerText = msg;
-        alertBox.style.display = 'flex';
-        setTimeout(() => {
-          alertBox.style.display = 'none';
-        }, 4000);
-      }
-    }
-
-    function mToggleAutoRefresh() {
-      mIsAutoRefreshEnabled = !mIsAutoRefreshEnabled;
-      const btn = document.getElementById('m-btn-auto-refresh-toggle');
-      const dot = document.getElementById('m-ar-dot');
-      const text = document.getElementById('m-ar-text');
-
-      if (mIsAutoRefreshEnabled) {
-        if (btn) btn.classList.remove('paused');
-        if (dot) dot.innerText = '🟢';
-        if (text) text.innerText = 'Auto (8s)';
-        mLiveCountdownSeconds = 8;
-        mShowToast('🟢 Built-in Auto-Refresh ON: Concession prices update constantly every 8s.');
-      } else {
-        if (btn) btn.classList.add('paused');
-        if (dot) dot.innerText = '⏸️';
-        if (text) text.innerText = 'Paused';
-        mShowToast('⏸️ Auto-Refresh paused. Tap Sync to update prices manually.');
-      }
-    }
-
-    function mStartLivePricingTicker(cinemaId) {
-      if (mLivePricingInterval) clearInterval(mLivePricingInterval);
-      mLiveCountdownSeconds = 8;
-
-      const countdownEl = document.getElementById('m-live-countdown');
-      if (countdownEl) countdownEl.innerText = mLiveCountdownSeconds;
-
-      mLivePricingInterval = setInterval(async () => {
-        if (!mIsAutoRefreshEnabled) return;
-
-        mLiveCountdownSeconds--;
-        const cEl = document.getElementById('m-live-countdown');
-        if (cEl) cEl.innerText = mLiveCountdownSeconds;
-
-        if (mLiveCountdownSeconds <= 0) {
-          mLiveCountdownSeconds = 8;
-          if (cEl) cEl.innerText = mLiveCountdownSeconds;
-          if (currentCinema) {
-            await loadMenu(currentCinema.id, true);
-          }
-        }
-      }, 1000);
-    }
-
-    async function mForceLiveSync() {
-      mLiveCountdownSeconds = 8;
-      const cEl = document.getElementById('m-live-countdown');
-      if (cEl) cEl.innerText = mLiveCountdownSeconds;
-
-      if (currentCinema) {
-        await loadMenu(currentCinema.id, true);
-        mShowToast('⚡ Candy bar prices and combo promotions refreshed!');
-      }
-    }
-
-    // Cinema Concession Ads Carousel (Mobile)
-    function mRenderCinemaAds() {
-      const container = document.getElementById('m-ads-card-container');
-      const counterEl = document.getElementById('m-ad-counter');
-      const dotsEl = document.getElementById('m-ad-dots-container');
-      if (!container || mCurrentCinemaAds.length === 0) return;
-
-      if (mCurrentAdIndex >= mCurrentCinemaAds.length) mCurrentAdIndex = 0;
-      if (mCurrentAdIndex < 0) mCurrentAdIndex = mCurrentCinemaAds.length - 1;
-
-      const ad = mCurrentCinemaAds[mCurrentAdIndex];
-      if (counterEl) counterEl.innerText = `${mCurrentAdIndex + 1} / ${mCurrentCinemaAds.length}`;
-
-      const tagsHtml = (ad.tags || []).map(t => `<span class="m-ad-tag-pill">#${t}</span>`).join(' ');
-
-      container.innerHTML = `
-        <div class="m-ad-card">
-          <div>
-            <span class="m-ad-badge ${ad.is_flash_ad ? '' : 'gold'}">${ad.badge_text}</span>
-            <div class="m-ad-title">${ad.title}</div>
-            <div class="m-ad-sub">${ad.subtitle}</div>
-            <div class="m-ad-tags-row">${tagsHtml}</div>
-          </div>
-          <div class="m-ad-pricing-bar">
-            <div>
-              ${ad.original_price_lkr > ad.discounted_price_lkr ? `<div class="m-ad-retail-price">Retail LKR ${ad.original_price_lkr.toFixed(0)}</div>` : ''}
-              <div class="m-ad-deal-price">LKR ${ad.discounted_price_lkr.toFixed(0)}</div>
-            </div>
-            <div style="text-align:right;">
-              <span class="m-ad-discount-tag">${ad.discount_text}</span>
-              ${ad.promo_code ? `<div style="font-size:0.65rem; color:var(--scope-gold); font-family:monospace; margin-top:0.2rem;">CODE: ${ad.promo_code}</div>` : ''}
-            </div>
-          </div>
-          <button type="button" class="m-btn-claim-ad" onclick="mClaimAdDeal('${ad.id}')">
-            <span>🎟️ ${ad.call_to_action}</span>
-          </button>
-        </div>
-      `;
-
-      if (dotsEl) {
-        dotsEl.innerHTML = mCurrentCinemaAds.map((_, idx) => `
-          <div class="m-ad-dot ${idx === mCurrentAdIndex ? 'active' : ''}" onclick="mGoToCinemaAd(${idx})"></div>
-        `).join('');
-      }
-
-      if (mAdAutoRotateTimer) clearInterval(mAdAutoRotateTimer);
-      mAdAutoRotateTimer = setInterval(() => {
-        mNextCinemaAd();
-      }, 6000);
-    }
-
-    function mNextCinemaAd() {
-      if (mCurrentCinemaAds.length <= 1) return;
-      mCurrentAdIndex = (mCurrentAdIndex + 1) % mCurrentCinemaAds.length;
-      mRenderCinemaAds();
-    }
-
-    function mPrevCinemaAd() {
-      if (mCurrentCinemaAds.length <= 1) return;
-      mCurrentAdIndex = (mCurrentAdIndex - 1 + mCurrentCinemaAds.length) % mCurrentCinemaAds.length;
-      mRenderCinemaAds();
-    }
-
-    function mGoToCinemaAd(idx) {
-      mCurrentAdIndex = idx;
-      mRenderCinemaAds();
-    }
-
-    function mClaimAdDeal(adId) {
-      const ad = mCurrentCinemaAds.find(a => a.id === adId);
-      if (!ad) return;
-
-      if (ad.target_item_id) {
-        addToCart(ad.target_item_id);
-      }
-
-      mShowToast(`🎟️ Deal Activated: ${ad.title} added to order! Code: ${ad.promo_code || 'APPLIED'}`);
-      switchNav('cart');
-    }
-
-    async function loadMenu(cinemaId, isAutoSync = false) {
-      try {
-        const res = await fetch(`/api/v1/cinemas/${cinemaId}/concessions/live`);
-        let data;
-        if (res.ok) {
-          data = await res.json();
-        } else {
-          const fallbackRes = await fetch(`/api/v1/cinemas/${cinemaId}/concessions`);
-          const items = await fallbackRes.json();
-          data = { items: items, updated_at: new Date().toLocaleTimeString() };
-        }
-
-        const items = data.items || data;
-        const updatedAt = data.updated_at || new Date().toLocaleTimeString();
-
-        // Load promotional cinema ads
-        if (data.cinema_ads && Array.isArray(data.cinema_ads)) {
-          mCurrentCinemaAds = data.cinema_ads;
-          mRenderCinemaAds();
-        }
-
-        mChangedItemIds.clear();
-        if (Array.isArray(items)) {
-          items.forEach(it => {
-            const oldPrice = mPreviousPricesMap.get(it.id);
-            if (oldPrice !== undefined && oldPrice !== it.price_lkr) {
-              mChangedItemIds.add(it.id);
-            }
-            mPreviousPricesMap.set(it.id, it.price_lkr);
-          });
-        }
-
-        menuItems = items;
-
-        // If cart has items and live prices shifted, update cart in real-time
-        if (mChangedItemIds.size > 0 && cart.length > 0) {
-          let cartChanged = false;
-          cart.forEach(entry => {
-            const fresh = menuItems.find(m => m.id === entry.item.id);
-            if (fresh && fresh.price_lkr !== entry.item.price_lkr) {
-              entry.item = fresh;
-              cartChanged = true;
-            }
-          });
-          if (cartChanged) {
-            renderCartScreen();
-          }
-        }
-
-        const timeEl = document.getElementById('m-live-updated-time');
-        if (timeEl) timeEl.innerText = `Updated: ${updatedAt}`;
-
-        renderMenu();
-      } catch (err) {
-        console.error('Failed to load menu', err);
-      }
-    }
-
-    function renderMenu() {
-      const container = document.getElementById('m-concessions-list');
-      container.innerHTML = '';
-
-      const filtered = activeCategory === 'all' 
-        ? menuItems 
-        : menuItems.filter(i => i.category === activeCategory);
-
-      filtered.forEach(item => {
-        const isChanged = mChangedItemIds.has(item.id);
-        const card = document.createElement('div');
-        card.className = 'm-item-card' + (isChanged ? ' m-price-glow' : '');
-
-        const maxPct = item.max_discount_pct ? Math.round(item.max_discount_pct * 100) : 35;
-        const discountedPrice = item.best_discounted_price_lkr || (item.price_lkr * 0.65);
-        const basePrice = item.base_price_lkr || item.price_lkr;
-        const hasBaseDiff = basePrice > item.price_lkr;
-
-        const flashBadgeHtml = item.flash_deal_text && item.flash_deal_text !== 'Standard Counter Rate' && item.flash_deal_text !== 'Active Concession Rate'
-          ? `<div class="m-flash-pill">${item.flash_deal_text}</div>`
-          : '';
-
-        const discountsList = (item.applicable_discounts || []).map(d => `
-          <div class="m-disc-row">
-            <span>${d.provider === 'Scope Privilege' ? '👑' : d.provider === 'FriMi' ? '💎' : d.provider === 'Genie' ? '⚡' : '🇱🇰'} ${d.title}</span>
-            <strong style="color:var(--accent-green);">LKR ${d.discounted_price_lkr.toFixed(0)}</strong>
-          </div>
-        `).join('');
-
-        card.innerHTML = `
-          <div style="width:100%;">
-            ${flashBadgeHtml}
-            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-              <div class="m-item-info">
-                <div class="m-item-title">${item.name}</div>
-                <div class="m-item-sub">${item.description || item.category} ${item.size ? '&bull; ' + item.size : ''}</div>
-              </div>
-              <div style="text-align:right;">
-                ${hasBaseDiff ? `<div style="text-decoration:line-through; font-size:0.72rem; color:#94a3b8;">Base: LKR ${basePrice.toFixed(0)}</div>` : ''}
-                <div style="color:var(--scope-gold-light); font-weight:800; font-size:1.05rem;">Live: LKR ${item.price_lkr.toFixed(0)}</div>
-                <div style="color:var(--accent-green); font-weight:700; font-size:0.8rem;">Pass: LKR ${discountedPrice.toFixed(0)}</div>
-                <span class="m-save-tag">SAVE ${maxPct}%</span>
-              </div>
-            </div>
-
-            <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.68rem; color:var(--text-muted); margin-top:0.25rem;">
-              <span>📍 ${item.food_location || (currentCinema ? currentCinema.food_place_name : 'Candy Bar')}</span>
-              <span style="color:${item.price_trend === 'down' || item.price_trend === 'flash_drop' ? '#4ade80' : '#94a3b8'}; font-weight:700;">
-                ${item.price_trend === 'flash_drop' || item.price_trend === 'down' ? '▼ FLASH RATE' : '● LIVE'}
-              </span>
-            </div>
-
-            <div class="m-discounts-panel">
-              <div style="font-size:0.68rem; font-weight:700; color:#cbd5e1; margin-bottom:0.25rem;">Discounts Available on This Item:</div>
-              ${discountsList}
-            </div>
-
-            <button class="m-btn-add-food" onclick="addToCart('${item.id}')">+ Add with Live Dynamic Discounts</button>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    function filterCategory(cat, el) {
-      activeCategory = cat;
-      document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
-      el.classList.add('active');
-      renderMenu();
-    }
-
-    async function calculateDeal() {
-      const budget = parseFloat(document.getElementById('m-budget-slider').value);
-      const partySize = parseInt(document.getElementById('m-party-size').value);
-      const tier = document.getElementById('m-tier-select').value;
-
-      const resBox = document.getElementById('m-deal-result-box');
-      resBox.style.display = 'block';
-      resBox.innerHTML = `<div style="text-align:center; padding:1.5rem; color:var(--text-muted);">👑 Optimizing Scope Privilege Combo...</div>`;
-
-      try {
-        const res = await fetch('/api/v1/recommend', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({
-            cinema_id: currentCinema ? currentCinema.id : 'KND-KCC',
-            budget_lkr: budget,
-            party_size: partySize,
-            privilege_tier: tier
-          })
-        });
-
-        const deal = await res.json();
-        if (!res.ok) {
-          resBox.innerHTML = `<div style="color:var(--accent-red); padding:1rem;">❌ ${deal.error}</div>`;
-          return;
-        }
-
-        const itemsList = deal.selected_items.map(it => `
-          <div style="display:flex; justify-content:space-between; font-size:0.82rem; margin-bottom:0.35rem;">
-            <span>${it.name}</span>
-            <strong style="color:var(--accent-gold);">LKR ${it.price_lkr.toFixed(0)}</strong>
-          </div>
-        `).join('');
-
-        resBox.innerHTML = `
-          <div class="m-deal-result">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <h4 style="font-size:1.05rem;">Recommended Bundle</h4>
-              <span style="font-size:0.75rem; background:rgba(245,158,11,0.2); color:var(--accent-gold); padding:0.2rem 0.5rem; border-radius:6px; font-weight:700;">Score ${deal.value_score || 8.5}/10</span>
-            </div>
-            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.7rem;">Party of ${deal.party_size || 2} &bull; ${deal.selected_items.length} items</div>
-
-            <div style="border-bottom:1px solid var(--border-subtle); padding-bottom:0.5rem; margin-bottom:0.6rem;">
-              ${itemsList}
-            </div>
-
-            <div class="m-summary-grid">
-              <div>
-                <div style="font-size:0.65rem; color:var(--text-muted);">MENU</div>
-                <div class="m-sum-val" style="color:#94a3b8; text-decoration:line-through;">LKR ${deal.original_total_lkr.toFixed(0)}</div>
-              </div>
-              <div>
-                <div style="font-size:0.65rem; color:var(--accent-green);">SAVED</div>
-                <div class="m-sum-val" style="color:var(--accent-green);">-LKR ${deal.discount_amount_lkr.toFixed(0)}</div>
-              </div>
-              <div>
-                <div style="font-size:0.65rem; color:#fff;">PAYABLE</div>
-                <div class="m-sum-val" style="color:#fff;">LKR ${deal.final_total_lkr.toFixed(0)}</div>
-              </div>
-            </div>
-
-            <div style="font-size:0.75rem; color:#c7d2fe; margin-top:0.4rem;">
-              🏷️ ${deal.message}
-            </div>
-
-            <button class="m-btn-add-food" style="margin-top:0.8rem; background:linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; padding:0.65rem; border-radius:8px; font-weight:700;" onclick="loadDealIntoMobileVoucherPass()">
-              🎟️ Redeem Bundle as Counter Voucher Pass
-            </button>
-          </div>
-        `;
-        window.currentMobileDeal = deal;
-      } catch (err) {
-        resBox.innerHTML = `<div style="color:var(--accent-red); padding:1rem;">❌ Calculation failed</div>`;
-      }
-    }
-
-    function loadDealIntoMobileVoucherPass() {
-      if (!window.currentMobileDeal || !window.currentMobileDeal.selected_items) return;
-      cart = window.currentMobileDeal.selected_items.map(it => ({ item: it, quantity: 1 }));
-      updateCartUI();
-      switchNav('cart');
-    }
-
-    async function loadPromotions() {
-      try {
-        const res = await fetch('/api/v1/promotions/privilege');
-        const promos = await res.json();
-        const container = document.getElementById('m-vouchers-list');
-        container.innerHTML = '';
-
-        promos.forEach(p => {
-          const card = document.createElement('div');
-          card.className = 'm-item-card';
-          card.innerHTML = `
-            <div class="m-item-info">
-              <div style="display:inline-block; font-family:monospace; font-size:0.75rem; background:rgba(99,102,241,0.25); color:#a5b4fc; padding:0.15rem 0.4rem; border-radius:4px; margin-bottom:0.25rem;">
-                ${p.promo_code}
-              </div>
-              <div class="m-item-title">${p.title}</div>
-              <div class="m-item-sub">${p.description}</div>
-              <div style="font-size:0.75rem; color:var(--accent-gold); font-weight:700;">Min Spend: LKR ${p.min_spend_lkr.toFixed(0)}</div>
-            </div>
-          `;
-          container.appendChild(card);
-        });
       } catch (err) {
         console.error(err);
       }
     }
 
-    // Cart System
-    function addToCart(itemId) {
-      const item = menuItems.find(i => i.id === itemId);
-      if (!item) return;
-
-      const found = cart.find(c => c.item.id === itemId);
-      if (found) {
-        found.quantity += 1;
-      } else {
-        cart.push({ item: item, quantity: 1 });
-      }
-      updateCartUI();
+    function onMobileCinemaChanged(cinemaId) {
+      const c = mCinemas.find(x => x.id === cinemaId);
+      if (c) selectMobileCinema(c);
     }
 
-    function updateCartUI() {
-      const totalCount = cart.reduce((s, c) => s + c.quantity, 0);
-      const badge = document.getElementById('m-cart-badge');
-      if (totalCount > 0) {
+    async function selectMobileCinema(cinema) {
+      mCurrentCinema = cinema;
+      document.getElementById('m-display-name').textContent = cinema.name;
+      document.getElementById('m-display-chain').textContent = cinema.chain || 'Independent Circuit';
+      document.getElementById('m-display-location').textContent = `${cinema.address || cinema.city} • ${cinema.screens} Screens`;
+      document.getElementById('m-display-foodplace').textContent = `🍿 ${cinema.food_place_name || 'Concession Counter'}`;
+      document.getElementById('m-island-cinema-text').textContent = cinema.name;
+      document.getElementById('pass-view-cinema').textContent = cinema.name;
+
+      await Promise.all([
+        loadMobileConcessions(cinema.id),
+        loadMobileAds(cinema.id)
+      ]);
+    }
+
+    async function loadMobileConcessions(cinemaId) {
+      try {
+        const data = await client.getLiveConcessions(cinemaId);
+        mMenu = data.items || [];
+        renderMobileConcessions();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loadMobileAds(cinemaId) {
+      try {
+        const ads = await client.getCinemaAds(cinemaId);
+        const container = document.getElementById('m-ads-scroller');
+        if (!ads || ads.length === 0) {
+          container.innerHTML = '<div style="color:var(--apple-text-tertiary); font-size:0.75rem;">No active banners.</div>';
+          return;
+        }
+        container.innerHTML = ads.map(ad => `
+          <div class="mobile-ad-card" onclick="applyAdDealMobile('${ad.promo_code || ''}', '${ad.target_item_id || ''}')">
+            <div>
+              <span class="apple-badge ${ad.is_flash_ad ? 'orange' : 'blue'}" style="font-size:0.65rem; margin-bottom:0.35rem;">
+                ${ad.badge_text || 'PROMO'}
+              </span>
+              <div style="font-size:0.88rem; font-weight:700;">${ad.title}</div>
+            </div>
+            <div style="font-size:0.75rem; color:var(--apple-green); font-weight:700; border-top:1px solid rgba(255,255,255,0.06); padding-top:0.4rem;">
+              ${ad.discount_text}
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function applyAdDealMobile(promoCode, targetItemId) {
+      if (promoCode) {
+        document.getElementById('m-opt-promo').value = promoCode;
+      }
+      if (targetItemId) {
+        const item = mMenu.find(i => i.id === targetItemId);
+        if (item) addMobileCart(item);
+      }
+      switchToTab('optimizer');
+      handleMobileOptimize();
+    }
+
+    function renderMobileConcessions() {
+      const container = document.getElementById('m-concession-list');
+      const filtered = mCategory === 'ALL' ? mMenu : mMenu.filter(i => i.category.toLowerCase() === mCategory.toLowerCase());
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div style="color:var(--apple-text-tertiary); font-size:0.8rem; text-align:center; padding:1.5rem;">No items found.</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => {
+        const emoji = item.category === 'Popcorn' ? '🍿' : item.category === 'Beverage' ? '🥤' : item.category === 'Combo' ? '🎬' : '🌭';
+        const bestDiscount = (item.discounts && item.discounts.length > 0) ? item.discounts[0] : null;
+        const discountPrice = bestDiscount ? bestDiscount.discounted_price : item.price;
+        const savings = item.price - discountPrice;
+
+        return `
+          <div class="concession-item-row">
+            <div style="display:flex; align-items:center; gap:0.65rem; flex:1;">
+              <span style="font-size:1.6rem;">${emoji}</span>
+              <div>
+                <div style="font-size:0.92rem; font-weight:700;">${item.name}</div>
+                <div style="font-size:0.74rem; color:var(--apple-text-secondary);">${item.category} • ${item.size || 'Standard'}</div>
+                ${savings > 0 ? `
+                  <div style="font-size:0.68rem; color:var(--apple-green); font-weight:600;">Save LKR ${savings.toFixed(0)}</div>
+                ` : ''}
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.35rem;">
+              <div style="font-size:0.95rem; font-weight:800;">LKR ${item.price.toFixed(0)}</div>
+              <button class="add-btn" style="padding:0.25rem 0.65rem; font-size:0.75rem;" onclick="addMobileCartById('${item.id}')">
+                + Add
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function mobileFilterCat(cat) {
+      mCategory = cat;
+      document.querySelectorAll('.cat-pill').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      renderMobileConcessions();
+    }
+
+    function addMobileCartById(itemId) {
+      const item = mMenu.find(i => i.id === itemId);
+      if (item) addMobileCart(item);
+    }
+
+    function addMobileCart(item) {
+      mCart.push(item);
+      updateMobileCartUI();
+    }
+
+    function updateMobileCartUI() {
+      const badge = document.getElementById('tab-tray-count');
+      if (mCart.length > 0) {
+        badge.textContent = mCart.length;
         badge.style.display = 'block';
-        badge.innerText = totalCount;
       } else {
         badge.style.display = 'none';
       }
-      renderCartScreen();
-    }
 
-    async function renderCartScreen() {
-      const emptyDiv = document.getElementById('m-cart-empty');
-      const contentDiv = document.getElementById('m-cart-content');
-      const listDiv = document.getElementById('m-cart-items-list');
-
-      if (cart.length === 0) {
-        emptyDiv.style.display = 'block';
-        contentDiv.style.display = 'none';
-        return;
+      // Update Tray Screen
+      const trayList = document.getElementById('m-tray-items-list');
+      if (mCart.length === 0) {
+        trayList.innerHTML = '<div style="color:var(--apple-text-tertiary); font-size:0.85rem; text-align:center; padding:2rem;">Your concession tray is empty. Add snacks from the Explore tab!</div>';
+      } else {
+        trayList.innerHTML = mCart.map((item, idx) => `
+          <div style="background:var(--apple-surface); border:var(--apple-border); border-radius:var(--radius-sm); padding:0.8rem 1rem; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-weight:700; font-size:0.9rem;">${item.name}</div>
+              <div style="font-size:0.72rem; color:var(--apple-text-secondary);">${item.category}</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.6rem;">
+              <span style="font-weight:800; font-size:0.92rem;">LKR ${item.price.toFixed(0)}</span>
+              <button onclick="removeMobileCart(${idx})" style="background:none; border:none; color:var(--apple-red); cursor:pointer; font-size:1.1rem;">✕</button>
+            </div>
+          </div>
+        `).join('');
       }
 
-      emptyDiv.style.display = 'none';
-      contentDiv.style.display = 'block';
+      const subtotal = mCart.reduce((s, i) => s + i.price, 0);
+      const savings = subtotal > 2000 ? subtotal * 0.25 : subtotal * 0.15;
+      const finalTotal = subtotal - savings;
 
-      listDiv.innerHTML = cart.map((c, idx) => `
-        <div class="cart-row">
-          <div>
-            <div style="font-weight:700; font-size:0.9rem;">${c.item.name}</div>
-            <div style="font-size:0.75rem; color:var(--accent-gold);">LKR ${(c.item.price_lkr * c.quantity).toFixed(0)}</div>
-          </div>
-          <div class="qty-controls">
-            <button class="qty-btn" onclick="changeQty(${idx}, -1)">-</button>
-            <span style="font-weight:700; font-size:0.85rem;">${c.quantity}</span>
-            <button class="qty-btn" onclick="changeQty(${idx}, 1)">+</button>
-          </div>
+      document.getElementById('m-tray-subtotal').textContent = `LKR ${subtotal.toFixed(0)}`;
+      document.getElementById('m-tray-savings').textContent = `-LKR ${savings.toFixed(0)}`;
+      document.getElementById('m-tray-final').textContent = `LKR ${finalTotal.toFixed(0)}`;
+
+      // Update Pass Screen
+      document.getElementById('pass-view-items').innerHTML = mCart.map(item => `
+        <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+          <span>• ${item.name}</span>
+          <span style="font-weight:600;">LKR ${item.price.toFixed(0)}</span>
         </div>
       `).join('');
-
-      // Evaluate cart through Go REST API
-      const itemsPayload = cart.map(c => ({ item_id: c.item.id, quantity: c.quantity }));
-      try {
-        const res = await fetch('/api/v1/cart/evaluate', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({
-            cinema_id: currentCinema ? currentCinema.id : 'KND-KCC',
-            items: itemsPayload,
-            privilege_tier: document.getElementById('m-tier-select').value
-          })
-        });
-        const evalRes = await res.json();
-        if (evalRes) {
-          document.getElementById('m-subtotal-val').innerText = `LKR ${evalRes.original_total_lkr.toFixed(2)}`;
-          document.getElementById('m-discount-val').innerText = `-LKR ${evalRes.discount_amount_lkr.toFixed(2)}`;
-          document.getElementById('m-applied-promo-label').innerText = `Scope Privilege Savings (${evalRes.applied_promo}):`;
-          document.getElementById('m-final-val').innerText = `LKR ${evalRes.final_total_lkr.toFixed(2)}`;
-          document.getElementById('m-upsell-msg').innerText = evalRes.next_tier_upsell || '';
-        }
-      } catch (err) {
-        console.error(err);
-      }
+      document.getElementById('pass-view-subtotal').textContent = `LKR ${subtotal.toFixed(0)}`;
+      document.getElementById('pass-view-savings').textContent = `-LKR ${savings.toFixed(0)}`;
+      document.getElementById('pass-view-final').textContent = `LKR ${finalTotal.toFixed(0)}`;
+      document.getElementById('pass-view-serial').textContent = `CB-PASS-${Math.floor(10000 + Math.random() * 90000)}`;
     }
 
-    function changeQty(idx, delta) {
-      cart[idx].quantity += delta;
-      if (cart[idx].quantity <= 0) {
-        cart.splice(idx, 1);
-      }
-      updateCartUI();
+    function removeMobileCart(idx) {
+      mCart.splice(idx, 1);
+      updateMobileCartUI();
     }
 
-    async function processMobileCheckout() {
-      if (cart.length === 0) {
-        alert("Your cart is empty. Please add items first.");
-        return;
-      }
+    function switchToTab(tabName) {
+      document.querySelectorAll('.screen-view').forEach(s => s.classList.remove('active'));
+      document.getElementById(`screen-${tabName}`).classList.add('active');
 
-      const method = document.getElementById('m-pay-select').value;
-      const phone = document.getElementById('m-phone-input').value;
-      const itemsPayload = cart.map(c => ({ item_id: c.item.id, quantity: c.quantity }));
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = Array.from(document.querySelectorAll('.tab-button')).find(b => b.textContent.toLowerCase().includes(tabName));
+      if (activeBtn) activeBtn.classList.add('active');
 
-      const btn = document.getElementById('btn-m-checkout');
-      btn.innerHTML = '<span>⏳ Processing Payment...</span>';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function setMobileBudget(val) {
+      document.getElementById('m-opt-budget').value = val;
+    }
+
+    function setMobileParty(size) {
+      mParty = size;
+      const btns = event.target.parentElement.querySelectorAll('.apple-segment-item');
+      btns.forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+
+    function setMobileTier(tier) {
+      mTier = tier;
+      document.getElementById('pass-view-tier').textContent = `${tier} VIP`;
+      const btns = event.target.parentElement.querySelectorAll('.apple-segment-item');
+      btns.forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+
+    async function handleMobileOptimize() {
+      if (!mCurrentCinema) return;
+      const budget = parseFloat(document.getElementById('m-opt-budget').value) || 2500;
+      const promo = document.getElementById('m-opt-promo').value.trim();
 
       try {
-        const res = await fetch('/api/v1/checkout', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({
-            cinema_id: currentCinema ? currentCinema.id : 'KND-KCC',
-            items: itemsPayload,
-            payment_method: method,
-            privilege_tier: document.getElementById('m-tier-select').value,
-            customer_phone: phone
-          })
+        const result = await client.recommendBundle({
+          cinemaId: mCurrentCinema.id,
+          budget,
+          partySize: mParty,
+          privilegeTier: mTier,
+          promoCode: promo
         });
 
-        const order = await res.json();
-        if (!res.ok) {
-          alert("Payment failed: " + (order.error || "error"));
-          btn.innerHTML = '💳 Pay with Sri Lankan Gateway';
-          return;
-        }
-
-        renderMobileReceipt(order);
-      } catch (err) {
-        alert("Payment network error: " + err.message);
-      } finally {
-        btn.innerHTML = '💳 Pay with Sri Lankan Gateway';
-      }
-    }
-
-    function renderMobileReceipt(order) {
-      document.getElementById('m-cart-summary-box').style.display = 'none';
-      const sheet = document.getElementById('m-receipt-sheet');
-      sheet.style.display = 'block';
-
-      document.getElementById('m-receipt-sub').innerText = 
-        `${order.cinema_name} &bull; Order ID: ${order.order_id}`;
-
-      let extra = '';
-      if (order.payment_method === 'LANKAQR' && order.lanka_qr_emv) {
-        extra = `
-          <div style="background:#000; border:1px solid var(--border-gold); border-radius:10px; padding:0.8rem; text-align:center; margin:0.8rem 0;">
-            <div style="font-weight:700; color:var(--accent-gold); font-size:0.75rem; margin-bottom:0.4rem;">📱 LANKAQR DYNAMIC CODE</div>
-            <div style="background:#fff; display:inline-block; padding:8px; border-radius:6px;">
-              <svg width="100" height="100" viewBox="0 0 100 100">
-                <rect width="100" height="100" fill="#fff" />
-                <path d="M10 10h30v30h-30z M60 10h30v30h-30z M10 60h30v30h-30z M20 20h10v10h-10z M70 20h10v10h-10z M20 70h10v10h-10z M45 20h10v10h-10z M45 45h10v10h-10z M60 60h10v10h-10z M80 60h10v10h-10z M70 75h15v15h-15z M45 70h10v20h-10z" fill="#0f172a" />
-              </svg>
+        const resBox = document.getElementById('m-opt-result');
+        resBox.style.display = 'block';
+        resBox.innerHTML = `
+          <div class="apple-card" style="padding:1.15rem; border-color:rgba(48,209,88,0.35);">
+            <span class="apple-badge green" style="font-size:0.7rem; margin-bottom:0.4rem;">Optimal Bundle Unlocked</span>
+            <div style="font-size:1.05rem; font-weight:700; margin-bottom:0.6rem;">Applied: ${result.applied_promo}</div>
+            
+            <div style="display:flex; flex-direction:column; gap:0.4rem; margin-bottom:0.85rem;">
+              ${result.items.map(item => `
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; background:rgba(255,255,255,0.04); padding:0.4rem 0.6rem; border-radius:6px;">
+                  <span>${item.name}</span>
+                  <span style="font-weight:700;">LKR ${item.price.toFixed(0)}</span>
+                </div>
+              `).join('')}
             </div>
-            <div style="font-size:0.68rem; color:#94a3b8; margin-top:0.4rem;">Scan with Q+, WePay, FriMi, SOLO, SmartPay</div>
+
+            <div style="border-top:1px solid rgba(255,255,255,0.1); padding-top:0.6rem; margin-bottom:0.85rem;">
+              <div style="font-size:1.15rem; font-weight:800; color:var(--apple-green);">
+                LKR ${result.final_total.toFixed(0)} 
+                <span style="font-size:0.75rem;">(Saved LKR ${result.discount_amount.toFixed(0)})</span>
+              </div>
+            </div>
+
+            <button class="apple-btn-green apple-btn-primary" style="width:100%; padding:0.65rem; font-size:0.85rem;" onclick="applyOptimizedBundleMobile(${JSON.stringify(result.items).replace(/"/g, '&quot;')})">
+              🎟️ Use in CinePass
+            </button>
           </div>
         `;
-      } else if (order.payment_method === 'KOKO_BNPL') {
-        extra = `<div style="background:rgba(99,102,241,0.15); border-radius:8px; padding:0.5rem; margin:0.5rem 0; font-size:0.75rem; color:#a5b4fc;">${order.installment_note}</div>`;
+      } catch (err) {
+        alert(err.message);
       }
-
-      document.getElementById('m-receipt-body').innerHTML = `
-        <div style="background:rgba(212,175,55,0.12); border:1px dashed var(--scope-gold); border-radius:10px; padding:0.7rem; text-align:center; margin-bottom:0.8rem;">
-          <div style="font-size:0.68rem; text-transform:uppercase; letter-spacing:0.06em; color:#a5b4fc; font-weight:700;">🎟️ Physical Counter Voucher Code</div>
-          <div style="font-size:1.25rem; font-weight:900; color:#fff; font-family:monospace; margin:0.2rem 0;">${order.voucher_code || order.order_id}</div>
-          <div style="font-size:0.7rem; color:var(--accent-gold);">Present at physical cinema concession counter</div>
-        </div>
-
-        <div style="background:rgba(245,158,11,0.12); border-left:3px solid var(--accent-gold); border-radius:0 6px 6px 0; padding:0.5rem 0.7rem; margin-bottom:0.7rem; font-size:0.75rem; color:#fde68a;">
-          <div style="font-weight:700;">📍 Counter Location: ${order.counter_pickup_location || 'Main Candy Bar Counter'}</div>
-          <div>⚠️ ${order.physical_redemption_notice || 'Food is collected physically at the cinema.'}</div>
-        </div>
-
-        <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
-          <span style="color:var(--text-muted);">Gateway:</span>
-          <strong>${order.payment_method_name}</strong>
-        </div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
-          <span style="color:var(--text-muted);">Status:</span>
-          <span style="color:var(--accent-green); font-weight:700;">${order.status}</span>
-        </div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
-          <span style="color:var(--text-muted);">Transaction Ref:</span>
-          <span style="font-family:monospace; color:#a5b4fc;">${order.transaction_reference}</span>
-        </div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
-          <span style="color:var(--text-muted);">Concession Savings:</span>
-          <span style="color:var(--accent-green); font-weight:700;">-LKR ${order.discount_lkr.toFixed(2)}</span>
-        </div>
-        <div style="display:flex; justify-content:space-between; font-size:1.05rem; font-weight:800; border-top:1px solid var(--border-subtle); padding-top:0.4rem; margin-top:0.3rem;">
-          <span>Net Counter Payable:</span>
-          <span style="color:var(--accent-gold);">LKR ${order.final_payable_lkr.toFixed(2)}</span>
-        </div>
-        ${extra}
-        <div style="margin-top:0.6rem; padding:0.5rem; background:rgba(255,255,255,0.05); border-radius:6px; font-size:0.72rem; color:#cbd5e1;">
-          💁 <strong>Cashier Note:</strong> ${order.cashier_instructions || order.instructions}
-        </div>
-      `;
-
-      cart = [];
-      updateCartUI();
     }
 
-    function dismissMobileReceipt() {
-      document.getElementById('m-receipt-sheet').style.display = 'none';
-      document.getElementById('m-cart-summary-box').style.display = 'block';
-      renderCartScreen();
+    function applyOptimizedBundleMobile(items) {
+      mCart = items;
+      updateMobileCartUI();
+      switchToTab('pass');
     }
 
-    // Tab Navigation
-    function switchNav(tabId) {
-      document.querySelectorAll('.screen-view').forEach(v => v.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-
-      document.getElementById(`view-${tabId}`).classList.add('active');
-      document.getElementById(`nav-${tabId}`).classList.add('active');
-
-      if (tabId === 'cart') {
-        renderCartScreen();
+    function handleMobileDetectGPS() {
+      if (!navigator.geolocation) {
+        alert('Geolocation not supported');
+        return;
       }
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        try {
+          const sorted = await client.getCinemas({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+          if (sorted && sorted.length > 0) {
+            mCinemas = sorted;
+            selectMobileCinema(sorted[0]);
+            document.getElementById('m-cinema-dropdown').value = sorted[0].id;
+            alert(`📍 Closest cinema found: ${sorted[0].name} (${sorted[0].distance_km.toFixed(1)} km away)`);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      });
+    }
+
+    function startMobileTicker() {
+      setInterval(async () => {
+        mSeconds--;
+        if (mSeconds <= 0) {
+          mSeconds = 8;
+          if (mCurrentCinema) await loadMobileConcessions(mCurrentCinema.id);
+        }
+        document.getElementById('m-island-sync').textContent = `Sync in ${mSeconds}s`;
+      }, 1000);
     }
   </script>
 </body>

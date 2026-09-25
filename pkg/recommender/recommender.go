@@ -44,12 +44,20 @@ func (e *Engine) BestPromotionWithContext(
 	hasPopcorn, hasBeverage := hasPopcornAndBeverage(items)
 
 	cleanCode := strings.ToUpper(strings.TrimSpace(forcedPromoCode))
-	aliasCode := strings.Replace(cleanCode, "REDOPAY-", "SCOPE-", 1)
+	normalizedCode := cleanCode
+	if strings.HasPrefix(normalizedCode, "SCOPE-") {
+		normalizedCode = strings.Replace(normalizedCode, "SCOPE-", "CINE-", 1)
+	} else if strings.HasPrefix(normalizedCode, "REDOPAY-") {
+		normalizedCode = strings.Replace(normalizedCode, "REDOPAY-", "CINE-", 1)
+	}
 
 	for _, promo := range e.availablePromos {
-		// If user specified an explicit promo code, only evaluate that code (supports SCOPE and legacy REDOPAY prefix)
-		if cleanCode != "" && strings.ToUpper(promo.PromoCode) != cleanCode && strings.ToUpper(promo.PromoCode) != aliasCode {
-			continue
+		// If user specified an explicit promo code, evaluate code (supports CINE, SCOPE, and REDOPAY aliases)
+		if cleanCode != "" {
+			upperPromo := strings.ToUpper(promo.PromoCode)
+			if upperPromo != cleanCode && upperPromo != normalizedCode {
+				continue
+			}
 		}
 
 		// Tier eligibility check

@@ -51,8 +51,8 @@ func TestRootEndpointServesUI(t *testing.T) {
 		t.Fatalf("expected status 200, got %d", w.Code)
 	}
 
-	if !bytes.Contains(w.Body.Bytes(), []byte("CinemaSnack")) {
-		t.Fatal("expected HTML response to contain CinemaSnack branding")
+	if !bytes.Contains(w.Body.Bytes(), []byte("CineBite")) {
+		t.Fatal("expected HTML response to contain CineBite branding")
 	}
 }
 
@@ -66,8 +66,8 @@ func TestMobileAndPWAEndpoints(t *testing.T) {
 	if wMob.Code != http.StatusOK {
 		t.Fatalf("expected /mobile status 200, got %d", wMob.Code)
 	}
-	if !bytes.Contains(wMob.Body.Bytes(), []byte("CinemaSnack Mobile")) {
-		t.Fatal("expected /mobile to contain CinemaSnack Mobile")
+	if !bytes.Contains(wMob.Body.Bytes(), []byte("CineBite")) {
+		t.Fatal("expected /mobile to contain CineBite")
 	}
 
 	// 2. Manifest.json
@@ -274,8 +274,8 @@ func TestCartEvaluateEndpoint(t *testing.T) {
 		t.Fatalf("failed to parse cart evaluation: %v", err)
 	}
 
-	if res.AppliedPromo != "SCOPE-CINEMA25" {
-		t.Fatalf("expected SCOPE-CINEMA25, got %s", res.AppliedPromo)
+	if res.AppliedPromo != "CINE-CINEMA25" {
+		t.Fatalf("expected CINE-CINEMA25, got %s", res.AppliedPromo)
 	}
 	expectedDiscount := res.OriginalTotal * 0.25
 	if res.DiscountAmount != expectedDiscount {

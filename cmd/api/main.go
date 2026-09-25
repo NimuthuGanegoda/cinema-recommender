@@ -60,8 +60,8 @@ func main() {
 
 func printBanner() {
 	fmt.Println("================================================================================")
-	fmt.Println("🎬 SCOPE CINEMAS CANDY BAR RECOMMENDER 🍿🥤")
-	fmt.Println("   Regional Outstation Scraping Pipeline & Scope Privilege Pass Discount Engine")
+	fmt.Println("🎬 CINEBITE • SRI LANKA CINEMA CONCESSION RECOMMENDER 🍿🥤")
+	fmt.Println("   Universal Cinema Concession Discovery & CinePass VIP Discount Engine")
 	fmt.Println("================================================================================")
 }
 
