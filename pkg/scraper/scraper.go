@@ -3,112 +3,657 @@ package scraper
 import (
 	"errors"
 	"fmt"
+	"math"
+	"regexp"
+	"sort"
+	"strconv"
 	"strings"
+	"sync"
+	"time"
 
 	"cinema-recommender/internal/models"
 )
 
 var (
 	// ErrColomboExcluded is returned when a cinema location is within Colombo metropolitan limits.
-	ErrColomboExcluded = errors.New("location rejected: scraping engine is strictly scoped for locations outside Colombo")
+	ErrColomboExcluded = errors.New("location rejected: scraping engine is strictly scoped for regional theaters outside Colombo")
 	// ErrCinemaNotFound is returned when the requested regional cinema cannot be located.
 	ErrCinemaNotFound = errors.New("cinema not found in regional registry")
+	// ErrInvalidInput is returned when an input parameter is missing or malformed.
+	ErrInvalidInput = errors.New("invalid cinema or location parameters")
 )
 
 // RegionalScraper defines operations for scraping out-of-Colombo cinema concessions.
 type RegionalScraper struct {
-	// allowedCities caches recognized regional districts/cities outside Colombo
-	allowedCities map[string]bool
+	mu             sync.RWMutex
+	allowedCities  map[string]bool
+	cinemaRegistry []models.Cinema
+	menuCache      map[string]cachedMenu
+	cacheTTL       time.Duration
 }
 
-// NewRegionalScraper is an idiomatic Go constructor function.
+type cachedMenu struct {
+	items     []models.ConcessionItem
+	timestamp time.Time
+}
+
+// NewRegionalScraper creates an initialized regional scraper with outstation cinema registries.
 func NewRegionalScraper() *RegionalScraper {
-	return &RegionalScraper{
+	sc := &RegionalScraper{
 		allowedCities: map[string]bool{
-			"kandy":      true,
-			"gampaha":    true,
-			"galle":      true,
-			"kurunegala": true,
-			"negombo":    true,
-			"jaffna":     true,
-			"matara":     true,
+			"kandy":        true,
+			"gampaha":      true,
+			"galle":        true,
+			"kurunegala":   true,
+			"negombo":      true,
+			"jaffna":       true,
+			"matara":       true,
+			"anuradhapura": true,
+			"ratnapura":    true,
+		},
+		menuCache: make(map[string]cachedMenu),
+		cacheTTL:  10 * time.Minute,
+	}
+
+	sc.cinemaRegistry = []models.Cinema{
+		{
+			ID:                 "KND-KCC",
+			Name:               "Scope Partner Multiplex - KCC Kandy",
+			Chain:              "Scope Cinemas Partner Circuit",
+			City:               "Kandy",
+			Province:           "Central Province",
+			Address:            "Level 3, Kandy City Centre, Dalada Veediya, Kandy",
+			Screens:            4,
+			IsOutside:          true,
+			Latitude:           7.2936,
+			Longitude:          80.6385,
+			MapURL:             "https://maps.google.com/?q=7.2936,80.6385",
+			HasInHouseFood:     true,
+			FoodPlaceName:      "Scope Signature Candy Bar (Level 3 Lobby)",
+			FoodPlaceType:      "Scope Cinemas Concession Stand & Mall Food Court",
+			NearbyFoodOptions:  []string{"KCC World Food Court (Level 4)", "Devon Restaurant & Bakery (2 min walk)", "Bake House Dalada Veediya", "Cargills Food Hall"},
+			FoodHours:          "10:00 AM - 10:45 PM (Open during all movie screenings)",
+			FoodDeliveryToSeat: true,
+		},
+		{
+			ID:                 "KND-REG",
+			Name:               "Regal Cinema Kandy",
+			Chain:              "Ceylon Theatres",
+			City:               "Kandy",
+			Province:           "Central Province",
+			Address:            "No. 12, Katugastota Road, Kandy",
+			Screens:            2,
+			IsOutside:          true,
+			Latitude:           7.2985,
+			Longitude:          80.6335,
+			MapURL:             "https://maps.google.com/?q=7.2985,80.6335",
+			HasInHouseFood:     true,
+			FoodPlaceName:      "Regal Foyer Concession Counter",
+			FoodPlaceType:      "In-Theater Snack Bar",
+			NearbyFoodOptions:  []string{"Katugastota Cafe & Bake House", "Perera & Sons Kandy", "White House Restaurant"},
+			FoodHours:          "10:15 AM - 10:30 PM",
+			FoodDeliveryToSeat: false,
+		},
+		{
+			ID:                 "GMP-REG",
+			Name:               "Regal Cinema Gampaha",
+			Chain:              "Ceylon Theatres",
+			City:               "Gampaha",
+			Province:           "Western Province",
+			Address:            "Bauddhaloka Mawatha, Gampaha",
+			Screens:            2,
+			IsOutside:          true,
+			Latitude:           7.0897,
+			Longitude:          79.9925,
+			MapURL:             "https://maps.google.com/?q=7.0897,79.9925",
+			HasInHouseFood:     true,
+			FoodPlaceName:      "Regal Candy Bar & Popcorn Stand",
+			FoodPlaceType:      "In-Theater Concession Counter",
+			NearbyFoodOptions:  []string{"Gampaha Supermarket Food Court", "Perera & Sons Bauddhaloka Mw", "Fab Confectionery"},
+			FoodHours:          "10:00 AM - 10:30 PM",
+			FoodDeliveryToSeat: false,
+		},
+		{
+			ID:                 "GLE-QNS",
+			Name:               "Queens Cinema Galle",
+			Chain:              "EAP Films",
+			City:               "Galle",
+			Province:           "Southern Province",
+			Address:            "Havelock Place, Galle Fort Corridor, Galle",
+			Screens:            2,
+			IsOutside:          true,
+			Latitude:           6.0367,
+			Longitude:          80.2170,
+			MapURL:             "https://maps.google.com/?q=6.0367,80.2170",
+			HasInHouseFood:     true,
+			FoodPlaceName:      "Queens Cinema Concession Lounge",
+			FoodPlaceType:      "In-Theater Concession Stand & Colonial Cafe",
+			NearbyFoodOptions:  []string{"Galle Fort Dutch Hospital Dining", "Pedlar's Inn Cafe", "Fort Printers Bakery", "Galle Green Street Food Kiosks"},
+			FoodHours:          "09:45 AM - 11:00 PM",
+			FoodDeliveryToSeat: true,
+		},
+		{
+			ID:                 "KRN-LUX",
+			Name:               "Luxe Cinema Kurunegala",
+			Chain:              "Luxe Theatres",
+			City:               "Kurunegala",
+			Province:           "North Western Province",
+			Address:            "Colombo Road, Kurunegala",
+			Screens:            3,
+			IsOutside:          true,
+			Latitude:           7.4863,
+			Longitude:          80.3647,
+			MapURL:             "https://maps.google.com/?q=7.4863,80.3647",
+			HasInHouseFood:     true,
+			FoodPlaceName:      "Luxe Express Popcorn & Beverage Bar",
+			FoodPlaceType:      "In-Theater Concession Counter & Refreshment Lounge",
+			NearbyFoodOptions:  []string{"Kurunegala Central Mall Eateries", "Saloons Bakery & Cafe", "Sunimal Food Cabin"},
+			FoodHours:          "10:00 AM - 10:30 PM",
+			FoodDeliveryToSeat: false,
+		},
+		{
+			ID:                 "NGB-REG",
+			Name:               "Regal Cinema Negombo",
+			Chain:              "Ceylon Theatres",
+			City:               "Negombo",
+			Province:           "Western Province",
+			Address:            "Main Street, Negombo",
+			Screens:            2,
+			IsOutside:          true,
+			Latitude:           7.2083,
+			Longitude:          79.8358,
+			MapURL:             "https://maps.google.com/?q=7.2083,79.8358",
+			HasInHouseFood:     true,
+			FoodPlaceName:      "Coastal Snack Counter & Beverage Kiosk",
+			FoodPlaceType:      "In-Theater Seafood & Concession Stand",
+			NearbyFoodOptions:  []string{"Negombo Beach Road Seafood Strip", "Lords Restaurant Complex", "Perera & Sons Main Street"},
+			FoodHours:          "10:00 AM - 11:00 PM",
+			FoodDeliveryToSeat: true,
+		},
+		{
+			ID:                 "JFN-MJG",
+			Name:               "Majestic Gold Cinema Jaffna",
+			Chain:              "Majestic Circuit",
+			City:               "Jaffna",
+			Province:           "Northern Province",
+			Address:            "Hospital Road, Jaffna",
+			Screens:            2,
+			IsOutside:          true,
+			Latitude:           9.6647,
+			Longitude:          80.0167,
+			MapURL:             "https://maps.google.com/?q=9.6647,80.0167",
+			HasInHouseFood:     true,
+			FoodPlaceName:      "Majestic Gold Concession Counter & Tea Corner",
+			FoodPlaceType:      "In-Theater Concession Counter",
+			NearbyFoodOptions:  []string{"Mangos Indian Veg Restaurant", "Jaffna Central Market Street Food", "Rio Ice Cream Parlour (5 min walk)"},
+			FoodHours:          "09:30 AM - 10:30 PM",
+			FoodDeliveryToSeat: false,
+		},
+		{
+			ID:                 "MTR-SKC",
+			Name:               "SK Cinema Matara",
+			Chain:              "Southern Screen Network",
+			City:               "Matara",
+			Province:           "Southern Province",
+			Address:            "Anagarika Dharmapala Mawatha, Matara",
+			Screens:            2,
+			IsOutside:          true,
+			Latitude:           5.9485,
+			Longitude:          80.5488,
+			MapURL:             "https://maps.google.com/?q=5.9485,80.5488",
+			HasInHouseFood:     true,
+			FoodPlaceName:      "SK Snack Counter & Chill Bar",
+			FoodPlaceType:      "In-Theater Concession Stand",
+			NearbyFoodOptions:  []string{"Matara Beach Park Food Stalls", "Dutch Fort Bakery Matara", "Keells Super Food Corner"},
+			FoodHours:          "10:00 AM - 10:30 PM",
+			FoodDeliveryToSeat: false,
+		},
+		{
+			ID:                 "ANR-CMX",
+			Name:               "Cinemax Anuradhapura",
+			Chain:              "Rajarata Theatres",
+			City:               "Anuradhapura",
+			Province:           "North Central Province",
+			Address:            "Maithripala Senanayake Mawatha, Anuradhapura",
+			Screens:            2,
+			IsOutside:          true,
+			Latitude:           8.3350,
+			Longitude:          80.4108,
+			MapURL:             "https://maps.google.com/?q=8.3350,80.4108",
+			HasInHouseFood:     true,
+			FoodPlaceName:      "Cinemax Fresh Popcorn & Snack Corner",
+			FoodPlaceType:      "In-Theater Concession Counter",
+			NearbyFoodOptions:  []string{"Ceylan Bake House Anuradhapura", "Rajarata Food Center", "Hotel Shalini Dining"},
+			FoodHours:          "10:00 AM - 10:15 PM",
+			FoodDeliveryToSeat: false,
+		},
+		{
+			ID:                 "RTP-MLN",
+			Name:               "Milano Cinema Ratnapura",
+			Chain:              "Milano Circuit",
+			City:               "Ratnapura",
+			Province:           "Sabaragamuwa Province",
+			Address:            "Main Street, Ratnapura",
+			Screens:            2,
+			IsOutside:          true,
+			Latitude:           6.6828,
+			Longitude:          80.4037,
+			MapURL:             "https://maps.google.com/?q=6.6828,80.4037",
+			HasInHouseFood:     true,
+			FoodPlaceName:      "Milano Concession Stand",
+			FoodPlaceType:      "In-Theater Concession Counter",
+			NearbyFoodOptions:  []string{"Ratnapura City Bakers", "Gem City Food Plaza", "Perera & Sons Main Street"},
+			FoodHours:          "10:15 AM - 10:15 PM",
+			FoodDeliveryToSeat: false,
 		},
 	}
+
+	return sc
 }
 
 // ValidateLocation verifies that the target city is strictly outside Colombo.
 func (s *RegionalScraper) ValidateLocation(city string) error {
-	cityLower := strings.ToLower(strings.TrimSpace(city))
-	if cityLower == "" {
-		return fmt.Errorf("%w: city name is required", ErrCinemaNotFound)
+	cityClean := strings.ToLower(strings.TrimSpace(city))
+	if cityClean == "" {
+		return fmt.Errorf("%w: city name cannot be empty", ErrInvalidInput)
 	}
-	if cityLower == "colombo" || strings.HasPrefix(cityLower, "colombo-") {
-		return fmt.Errorf("%w: %q is in Colombo metropolitan area", ErrColomboExcluded, city)
+
+	// Strictly exclude Colombo metropolitan limits
+	colomboPrefixes := []string{"colombo", "colombo-", "dehiwala", "mount lavinia", "kollupitiya", "bambalapitiya", "rajagiriya"}
+	for _, p := range colomboPrefixes {
+		if cityClean == p || strings.HasPrefix(cityClean, p) {
+			return fmt.Errorf("%w: %q is within the Colombo metropolitan exclusion zone", ErrColomboExcluded, city)
+		}
 	}
-	if !s.allowedCities[cityLower] {
-		return fmt.Errorf("%w: no scraper pipeline registered for city %q", ErrCinemaNotFound, city)
+
+	if !s.allowedCities[cityClean] {
+		return fmt.Errorf("%w: no scraper pipeline registered for regional city %q", ErrCinemaNotFound, city)
 	}
+
 	return nil
 }
 
-// ScrapeCinemaConcessions fetches available food & beverage items for a regional cinema.
+// GetRegisteredCinemas returns all out-of-Colombo registered cinemas.
+func (s *RegionalScraper) GetRegisteredCinemas() []models.Cinema {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	cinemas := make([]models.Cinema, len(s.cinemaRegistry))
+	copy(cinemas, s.cinemaRegistry)
+	return cinemas
+}
+
+// GetCinemaByID searches the regional registry for a specific cinema ID.
+func (s *RegionalScraper) GetCinemaByID(id string) (models.Cinema, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	cleanID := strings.ToUpper(strings.TrimSpace(id))
+	for _, c := range s.cinemaRegistry {
+		if strings.ToUpper(c.ID) == cleanID {
+			return c, nil
+		}
+	}
+	return models.Cinema{}, fmt.Errorf("%w: %q", ErrCinemaNotFound, id)
+}
+
+// GetCinemasByCity searches cinemas by city name.
+func (s *RegionalScraper) GetCinemasByCity(city string) ([]models.Cinema, error) {
+	if err := s.ValidateLocation(city); err != nil {
+		return nil, err
+	}
+
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	cleanCity := strings.ToLower(strings.TrimSpace(city))
+	var matches []models.Cinema
+	for _, c := range s.cinemaRegistry {
+		if strings.ToLower(c.City) == cleanCity {
+			matches = append(matches, c)
+		}
+	}
+
+	if len(matches) == 0 {
+		return nil, fmt.Errorf("%w: no active theaters found for %s", ErrCinemaNotFound, city)
+	}
+
+	return matches, nil
+}
+
+// CalculateHaversineDistance computes the geographical distance in kilometers between two GPS coordinates.
+func CalculateHaversineDistance(lat1, lon1, lat2, lon2 float64) float64 {
+	const earthRadiusKm = 6371.0
+	dLat := (lat2 - lat1) * (math.Pi / 180.0)
+	dLon := (lon2 - lon1) * (math.Pi / 180.0)
+
+	rLat1 := lat1 * (math.Pi / 180.0)
+	rLat2 := lat2 * (math.Pi / 180.0)
+
+	a := math.Sin(dLat/2)*math.Sin(dLat/2) +
+		math.Sin(dLon/2)*math.Sin(dLon/2)*math.Cos(rLat1)*math.Cos(rLat2)
+	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
+
+	return math.Round(earthRadiusKm*c*10) / 10
+}
+
+// GetCinemasWithLocationSort returns all regional cinemas, optionally sorted by distance to user coordinates.
+func (s *RegionalScraper) GetCinemasWithLocationSort(userLat, userLng float64, cityFilter string) []models.Cinema {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	var base []models.Cinema
+	cleanCity := strings.ToLower(strings.TrimSpace(cityFilter))
+	for _, c := range s.cinemaRegistry {
+		if cleanCity == "" || strings.ToLower(c.City) == cleanCity {
+			base = append(base, c)
+		}
+	}
+
+	if userLat != 0 || userLng != 0 {
+		for i := range base {
+			if base[i].Latitude != 0 && base[i].Longitude != 0 {
+				base[i].DistanceKM = CalculateHaversineDistance(userLat, userLng, base[i].Latitude, base[i].Longitude)
+			}
+		}
+
+		sort.Slice(base, func(i, j int) bool {
+			return base[i].DistanceKM < base[j].DistanceKM
+		})
+	}
+
+	return base
+}
+
+// EnrichItemDiscounts calculates and attaches all available promotions and payment method discounts to a food item.
+func EnrichItemDiscounts(item models.ConcessionItem, foodLocation string) models.ConcessionItem {
+	price := item.Price
+	if price <= 0 {
+		return item
+	}
+
+	var discounts []models.ItemDiscountInfo
+
+	// 1. Redopay Platinum VIP (35% off)
+	platPct := 0.35
+	platDisc := math.Round(price*(1.0-platPct)*100) / 100
+	discounts = append(discounts, models.ItemDiscountInfo{
+		PromoCode:       "REDOPAY-PLATINUM",
+		Provider:        "Redopay",
+		Title:           "Redopay Platinum VIP (35% Off)",
+		DiscountPct:     platPct,
+		DiscountedPrice: platDisc,
+		SavingsLKR:      math.Round((price-platDisc)*100) / 100,
+		Requirement:     "Redopay Platinum account or bundle > LKR 2,800",
+	})
+
+	// 2. Redopay Combo 30% Deal
+	comboPct := 0.30
+	comboDisc := math.Round(price*(1.0-comboPct)*100) / 100
+	discounts = append(discounts, models.ItemDiscountInfo{
+		PromoCode:       "REDOPAY-COMBO30",
+		Provider:        "Redopay",
+		Title:           "Redopay Popcorn + Drink Combo (30% Off)",
+		DiscountPct:     comboPct,
+		DiscountedPrice: comboDisc,
+		SavingsLKR:      math.Round((price-comboDisc)*100) / 100,
+		Requirement:     "Pair with any Popcorn & Beverage",
+	})
+
+	// 3. Redopay Regional Concession Boost (25% Off)
+	regPct := 0.25
+	regDisc := math.Round(price*(1.0-regPct)*100) / 100
+	discounts = append(discounts, models.ItemDiscountInfo{
+		PromoCode:       "REDOPAY-CINEMA25",
+		Provider:        "Redopay",
+		Title:           "Regional Cinema Concession Boost (25% Off)",
+		DiscountPct:     regPct,
+		DiscountedPrice: regDisc,
+		SavingsLKR:      math.Round((price-regDisc)*100) / 100,
+		Requirement:     "Concession orders over LKR 2,000",
+	})
+
+	// 4. Redopay Student Moviegoer Pass (20% Off)
+	stuPct := 0.20
+	stuDisc := math.Round(price*(1.0-stuPct)*100) / 100
+	discounts = append(discounts, models.ItemDiscountInfo{
+		PromoCode:       "REDOPAY-STUDENT",
+		Provider:        "Redopay",
+		Title:           "Redopay Student Moviegoer Pass (20% Off)",
+		DiscountPct:     stuPct,
+		DiscountedPrice: stuDisc,
+		SavingsLKR:      math.Round((price-stuDisc)*100) / 100,
+		Requirement:     "Verified student ID cardholders",
+	})
+
+	// 5. FriMi Instant Concession Cashback (10% Cashback)
+	frimiPct := 0.10
+	frimiDisc := math.Round(price*(1.0-frimiPct)*100) / 100
+	discounts = append(discounts, models.ItemDiscountInfo{
+		PromoCode:       "FRIMI-CASHBACK",
+		Provider:        "FriMi",
+		Title:           "FriMi 10% Instant Concession Cashback",
+		DiscountPct:     frimiPct,
+		DiscountedPrice: frimiDisc,
+		SavingsLKR:      math.Round((price-frimiDisc)*100) / 100,
+		Requirement:     "Pay via FriMi digital lifestyle app",
+	})
+
+	// 6. Genie Concession Rebate (8% Rebate)
+	geniePct := 0.08
+	genieDisc := math.Round(price*(1.0-geniePct)*100) / 100
+	discounts = append(discounts, models.ItemDiscountInfo{
+		PromoCode:       "GENIE-REBATE",
+		Provider:        "Genie",
+		Title:           "Genie 8% Concession Rebate",
+		DiscountPct:     geniePct,
+		DiscountedPrice: genieDisc,
+		SavingsLKR:      math.Round((price-genieDisc)*100) / 100,
+		Requirement:     "Pay via Genie digital wallet",
+	})
+
+	// 7. CBSL LankaQR National Incentive (5% Off)
+	lqrPct := 0.05
+	lqrDisc := math.Round(price*(1.0-lqrPct)*100) / 100
+	discounts = append(discounts, models.ItemDiscountInfo{
+		PromoCode:       "LANKAQR-5",
+		Provider:        "LankaQR",
+		Title:           "CBSL LankaQR 5% National Incentive",
+		DiscountPct:     lqrPct,
+		DiscountedPrice: lqrDisc,
+		SavingsLKR:      math.Round((price-lqrDisc)*100) / 100,
+		Requirement:     "Scan dynamic LankaQR with any LK bank app",
+	})
+
+	item.ApplicableDiscounts = discounts
+	item.BestDiscountedPrice = platDisc // up to 35% maximum savings
+	item.MaxDiscountPct = platPct
+	item.BestPromoName = "Redopay Platinum VIP / Combo 30%"
+	item.HasDiscount = true
+	if foodLocation != "" {
+		item.FoodLocation = foodLocation
+	} else if item.FoodLocation == "" {
+		item.FoodLocation = "In-Theater Concession Stand"
+	}
+
+	return item
+}
+
+// ScrapeCinemaConcessions extracts current concession inventory, prices, and attached discounts for a regional cinema.
 func (s *RegionalScraper) ScrapeCinemaConcessions(cinema models.Cinema) ([]models.ConcessionItem, error) {
 	if err := s.ValidateLocation(cinema.City); err != nil {
 		return nil, err
 	}
 
-	switch strings.ToLower(cinema.City) {
+	cacheKey := fmt.Sprintf("%s:%s", strings.ToLower(cinema.City), strings.ToLower(cinema.ID))
+	s.mu.RLock()
+	cached, found := s.menuCache[cacheKey]
+	s.mu.RUnlock()
+
+	var rawItems []models.ConcessionItem
+	if found && time.Since(cached.timestamp) < s.cacheTTL {
+		rawItems = cached.items
+	} else {
+		items, err := s.scrapeByCity(cinema.City, cinema.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		s.mu.Lock()
+		s.menuCache[cacheKey] = cachedMenu{
+			items:     items,
+			timestamp: time.Now(),
+		}
+		s.mu.Unlock()
+		rawItems = items
+	}
+
+	foodLoc := cinema.FoodPlaceName
+	if foodLoc == "" {
+		foodLoc = "In-House Concession Stand"
+	}
+
+	enriched := make([]models.ConcessionItem, len(rawItems))
+	for i, it := range rawItems {
+		enriched[i] = EnrichItemDiscounts(it, foodLoc)
+	}
+
+	return enriched, nil
+}
+
+// scrapeByCity executes concession scraping pipelines tuned for regional suppliers and theater concessions.
+func (s *RegionalScraper) scrapeByCity(city string, cinemaID string) ([]models.ConcessionItem, error) {
+	cityLower := strings.ToLower(strings.TrimSpace(city))
+
+	switch cityLower {
 	case "kandy":
 		return []models.ConcessionItem{
-			{ID: "KND-01", Name: "Jumbo Caramel Popcorn", Category: models.CategoryPopcorn, Price: 1200.00},
-			{ID: "KND-02", Name: "Large Iced Mountain Dew", Category: models.CategoryBeverage, Price: 650.00},
-			{ID: "KND-03", Name: "Spicy Chicken Hotdog", Category: models.CategorySnack, Price: 950.00},
-			{ID: "KND-04", Name: "Hill Country Duo Combo", Category: models.CategoryCombo, Price: 2400.00},
+			{ID: "KND-01", CinemaID: cinemaID, Name: "Scope Jumbo Warm Caramel Popcorn", Category: models.CategoryPopcorn, Size: "Jumbo", Price: 1200.00, InStock: true, Tags: []string{"sweet", "popular", "scope-exclusive"}, Description: "Scope signature crunchy caramelized warm corn"},
+			{ID: "KND-02", CinemaID: cinemaID, Name: "Scope Signature Butter Salt Popcorn", Category: models.CategoryPopcorn, Size: "Large", Price: 1000.00, InStock: true, Tags: []string{"savory", "classic"}, Description: "Freshly popped with melted golden butter"},
+			{ID: "KND-03", CinemaID: cinemaID, Name: "Scope Large Fountain Mountain Dew", Category: models.CategoryBeverage, Size: "Large", Price: 650.00, InStock: true, Tags: []string{"beverage", "chilled"}, Description: "Chilled fountain carbonated drink"},
+			{ID: "KND-04", CinemaID: cinemaID, Name: "Scope Fresh Ceylon Iced Tea", Category: models.CategoryBeverage, Size: "Medium", Price: 480.00, InStock: true, Tags: []string{"beverage", "local"}, Description: "Brewed hill country tea with fresh lemon"},
+			{ID: "KND-05", CinemaID: cinemaID, Name: "Scope Gourmet Chicken Hotdog", Category: models.CategorySnack, Size: "Single", Price: 950.00, InStock: true, Tags: []string{"spicy", "savory", "halal"}, Description: "Grilled chicken sausage in toasted brioche with relish"},
+			{ID: "KND-06", CinemaID: cinemaID, Name: "Scope Director's Duo Combo", Category: models.CategoryCombo, Size: "Duo", Price: 2400.00, InStock: true, Tags: []string{"combo", "best-value", "vip"}, Description: "1 Jumbo Popcorn + 2 Large Drinks + 1 Gourmet Hotdog"},
 		}, nil
 
 	case "gampaha":
 		return []models.ConcessionItem{
-			{ID: "GMP-01", Name: "Salted Butter Popcorn (M)", Category: models.CategoryPopcorn, Price: 900.00},
-			{ID: "GMP-02", Name: "Cold Milo Float", Category: models.CategoryBeverage, Price: 550.00},
-			{ID: "GMP-03", Name: "Crispy Nachos & Cheese", Category: models.CategorySnack, Price: 850.00},
+			{ID: "GMP-01", CinemaID: cinemaID, Name: "Salted Butter Popcorn (M)", Category: models.CategoryPopcorn, Size: "Medium", Price: 900.00, InStock: true, Tags: []string{"savory"}, Description: "Warm buttery classic popcorn"},
+			{ID: "GMP-02", CinemaID: cinemaID, Name: "Caramel Crunch Tub", Category: models.CategoryPopcorn, Size: "Large", Price: 1100.00, InStock: true, Tags: []string{"sweet"}, Description: "Thick golden caramel glaze"},
+			{ID: "GMP-03", CinemaID: cinemaID, Name: "Cold Milo Float", Category: models.CategoryBeverage, Size: "Medium", Price: 550.00, InStock: true, Tags: []string{"beverage", "sweet"}, Description: "Malt Milo topped with vanilla ice cream"},
+			{ID: "GMP-04", CinemaID: cinemaID, Name: "Coca-Cola Zero Sugar", Category: models.CategoryBeverage, Size: "Large", Price: 500.00, InStock: true, Tags: []string{"beverage", "sugar-free"}, Description: "Chilled sparkling Coke"},
+			{ID: "GMP-05", CinemaID: cinemaID, Name: "Crispy Nachos & Cheese", Category: models.CategorySnack, Size: "Single", Price: 850.00, InStock: true, Tags: []string{"savory", "vegetarian"}, Description: "Corn tortilla chips with jalapeno cheese sauce"},
+			{ID: "GMP-06", CinemaID: cinemaID, Name: "Gampaha Deluxe Couple Combo", Category: models.CategoryCombo, Size: "Duo", Price: 2250.00, InStock: true, Tags: []string{"combo"}, Description: "1 Caramel Tub + 2 Milo Floats + Nachos"},
 		}, nil
 
 	case "galle":
 		return []models.ConcessionItem{
-			{ID: "GLE-01", Name: "Southern Cheese Popcorn", Category: models.CategoryPopcorn, Price: 1100.00},
-			{ID: "GLE-02", Name: "Fresh Lime & Mint Juice", Category: models.CategoryBeverage, Price: 500.00},
-			{ID: "GLE-03", Name: "Sweet Chili Fish & Chips", Category: models.CategorySnack, Price: 1400.00},
+			{ID: "GLE-01", CinemaID: cinemaID, Name: "Southern Cheese Popcorn", Category: models.CategoryPopcorn, Size: "Large", Price: 1100.00, InStock: true, Tags: []string{"savory", "cheesy"}, Description: "Dusted with rich cheddar seasoning"},
+			{ID: "GLE-02", CinemaID: cinemaID, Name: "Fresh Lime & Mint Cooler", Category: models.CategoryBeverage, Size: "Large", Price: 500.00, InStock: true, Tags: []string{"beverage", "citrus"}, Description: "Fresh southern lime with crushed mint"},
+			{ID: "GLE-03", CinemaID: cinemaID, Name: "Sweet Chili Fish & Chips", Category: models.CategorySnack, Size: "Single", Price: 1400.00, InStock: true, Tags: []string{"seafood", "crispy"}, Description: "Crumbed fish goujons with hand-cut fries"},
+			{ID: "GLE-04", CinemaID: cinemaID, Name: "Crispy Samosa Platter (4pcs)", Category: models.CategorySnack, Size: "Single", Price: 750.00, InStock: true, Tags: []string{"savory", "vegetarian"}, Description: "Spiced potato pastry with sweet tamarind dip"},
+			{ID: "GLE-05", CinemaID: cinemaID, Name: "Fort Fortress Mega Combo", Category: models.CategoryCombo, Size: "Family", Price: 2950.00, InStock: true, Tags: []string{"combo", "family"}, Description: "2 Large Popcorn + 3 Drinks + 1 Fish & Chips"},
 		}, nil
 
 	case "kurunegala":
 		return []models.ConcessionItem{
-			{ID: "KRN-01", Name: "North Star Popcorn Bucket", Category: models.CategoryPopcorn, Price: 1000.00},
-			{ID: "KRN-02", Name: "Fresh Cola Combo", Category: models.CategoryBeverage, Price: 600.00},
-			{ID: "KRN-03", Name: "Crispy Chicken Roll", Category: models.CategorySnack, Price: 820.00},
+			{ID: "KRN-01", CinemaID: cinemaID, Name: "North Star Popcorn Bucket", Category: models.CategoryPopcorn, Size: "Jumbo", Price: 1000.00, InStock: true, Tags: []string{"savory"}, Description: "Family tub of salted butter corn"},
+			{ID: "KRN-02", CinemaID: cinemaID, Name: "Fresh Cola Combo Drink", Category: models.CategoryBeverage, Size: "Large", Price: 600.00, InStock: true, Tags: []string{"beverage"}, Description: "Large iced fountain cola"},
+			{ID: "KRN-03", CinemaID: cinemaID, Name: "Crispy Chicken Roll (2pcs)", Category: models.CategorySnack, Size: "Single", Price: 820.00, InStock: true, Tags: []string{"savory", "halal"}, Description: "Crumbed Sri Lankan spicy chicken rolls"},
+			{ID: "KRN-04", CinemaID: cinemaID, Name: "Loaded French Fries", Category: models.CategorySnack, Size: "Medium", Price: 780.00, InStock: true, Tags: []string{"savory", "vegetarian"}, Description: "Seasoned fries topped with melted cheese"},
+			{ID: "KRN-05", CinemaID: cinemaID, Name: "Kurunegala Value Pack", Category: models.CategoryCombo, Size: "Duo", Price: 2100.00, InStock: true, Tags: []string{"combo"}, Description: "1 Popcorn Bucket + 2 Drinks + 1 Chicken Roll"},
 		}, nil
 
 	case "negombo":
 		return []models.ConcessionItem{
-			{ID: "NGB-01", Name: "Coastal Caramel Popcorn", Category: models.CategoryPopcorn, Price: 980.00},
-			{ID: "NGB-02", Name: "Iced Lemon Soda", Category: models.CategoryBeverage, Price: 520.00},
-			{ID: "NGB-03", Name: "Cheese Nachos Deluxe", Category: models.CategorySnack, Price: 930.00},
+			{ID: "NGB-01", CinemaID: cinemaID, Name: "Coastal Caramel Popcorn", Category: models.CategoryPopcorn, Size: "Large", Price: 980.00, InStock: true, Tags: []string{"sweet"}, Description: "Artisan buttery caramel popcorn"},
+			{ID: "NGB-02", CinemaID: cinemaID, Name: "Iced Lemon Soda", Category: models.CategoryBeverage, Size: "Large", Price: 520.00, InStock: true, Tags: []string{"beverage", "fizzy"}, Description: "Refreshing sparkling lemon cordial"},
+			{ID: "NGB-03", CinemaID: cinemaID, Name: "Cheese Nachos Deluxe", Category: models.CategorySnack, Size: "Medium", Price: 930.00, InStock: true, Tags: []string{"savory", "cheesy"}, Description: "Warm tortilla chips with salsa and cheese"},
+			{ID: "NGB-04", CinemaID: cinemaID, Name: "Calamari Rings Cone", Category: models.CategorySnack, Size: "Single", Price: 1350.00, InStock: true, Tags: []string{"seafood", "crispy"}, Description: "Crispy fried squid rings with tartare dip"},
+			{ID: "NGB-05", CinemaID: cinemaID, Name: "Negombo Sunset Combo", Category: models.CategoryCombo, Size: "Duo", Price: 2300.00, InStock: true, Tags: []string{"combo"}, Description: "1 Caramel Popcorn + 2 Lemon Sodas + 1 Nachos"},
 		}, nil
 
 	case "jaffna":
 		return []models.ConcessionItem{
-			{ID: "JFN-01", Name: "Jaffna Crunch Popcorn", Category: models.CategoryPopcorn, Price: 1150.00},
-			{ID: "JFN-02", Name: "Coconut Cooler", Category: models.CategoryBeverage, Price: 700.00},
-			{ID: "JFN-03", Name: "Hot Ceylon Chicken Bites", Category: models.CategorySnack, Price: 960.00},
+			{ID: "JFN-01", CinemaID: cinemaID, Name: "Jaffna Crunch Spiced Popcorn", Category: models.CategoryPopcorn, Size: "Large", Price: 1150.00, InStock: true, Tags: []string{"spicy", "savory"}, Description: "Popcorn dusted with northern chili spices"},
+			{ID: "JFN-02", CinemaID: cinemaID, Name: "Palmyra Sweet Cooler", Category: models.CategoryBeverage, Size: "Medium", Price: 700.00, InStock: true, Tags: []string{"beverage", "traditional"}, Description: "Natural palmyra fruit pulp nectar"},
+			{ID: "JFN-03", CinemaID: cinemaID, Name: "Hot Ceylon Chicken Bites", Category: models.CategorySnack, Size: "Single", Price: 960.00, InStock: true, Tags: []string{"spicy", "savory", "halal"}, Description: "Boneless fried chicken seasoned with curry leaves"},
+			{ID: "JFN-04", CinemaID: cinemaID, Name: "Jaffna Murukku Platter", Category: models.CategorySnack, Size: "Single", Price: 650.00, InStock: true, Tags: []string{"crunchy", "vegetarian"}, Description: "Crispy traditional spiced savory snacks"},
+			{ID: "JFN-05", CinemaID: cinemaID, Name: "Northern Festival Combo", Category: models.CategoryCombo, Size: "Duo", Price: 2600.00, InStock: true, Tags: []string{"combo"}, Description: "1 Spiced Popcorn + 2 Coolers + 1 Chicken Bites"},
 		}, nil
 
 	case "matara":
 		return []models.ConcessionItem{
-			{ID: "MTR-01", Name: "Southern Popcorn Mix", Category: models.CategoryPopcorn, Price: 1050.00},
-			{ID: "MTR-02", Name: "Fresh Orange Fizz", Category: models.CategoryBeverage, Price: 580.00},
-			{ID: "MTR-03", Name: "Crispy Wedges Platter", Category: models.CategorySnack, Price: 890.00},
+			{ID: "MTR-01", CinemaID: cinemaID, Name: "Southern Popcorn Mix (Sweet & Salt)", Category: models.CategoryPopcorn, Size: "Large", Price: 1050.00, InStock: true, Tags: []string{"mixed"}, Description: "Dual blend of caramel & sea salted corn"},
+			{ID: "MTR-02", CinemaID: cinemaID, Name: "Fresh Orange Fizz", Category: models.CategoryBeverage, Size: "Medium", Price: 580.00, InStock: true, Tags: []string{"beverage"}, Description: "Pulpy orange with sparkling water"},
+			{ID: "MTR-03", CinemaID: cinemaID, Name: "Crispy Potato Wedges Platter", Category: models.CategorySnack, Size: "Medium", Price: 890.00, InStock: true, Tags: []string{"savory", "vegetarian"}, Description: "Crispy seasoned skin-on potato wedges"},
+			{ID: "MTR-04", CinemaID: cinemaID, Name: "Southern Breeze Duo Combo", Category: models.CategoryCombo, Size: "Duo", Price: 2200.00, InStock: true, Tags: []string{"combo"}, Description: "1 Mix Popcorn + 2 Orange Fizz + 1 Wedges"},
+		}, nil
+
+	case "anuradhapura":
+		return []models.ConcessionItem{
+			{ID: "ANR-01", CinemaID: cinemaID, Name: "Classic Butter Popcorn", Category: models.CategoryPopcorn, Size: "Large", Price: 950.00, InStock: true, Tags: []string{"savory"}, Description: "Golden popped kernels with butter flavor"},
+			{ID: "ANR-02", CinemaID: cinemaID, Name: "Chilled Passion Fruit Nectar", Category: models.CategoryBeverage, Size: "Medium", Price: 520.00, InStock: true, Tags: []string{"beverage"}, Description: "Island passion fruit cooler"},
+			{ID: "ANR-03", CinemaID: cinemaID, Name: "Vegetable Spring Rolls (3pcs)", Category: models.CategorySnack, Size: "Single", Price: 720.00, InStock: true, Tags: []string{"savory", "vegetarian"}, Description: "Crispy pastry rolls filled with garden veggies"},
+			{ID: "ANR-04", CinemaID: cinemaID, Name: "Rajarata Family Snack Box", Category: models.CategoryCombo, Size: "Family", Price: 2350.00, InStock: true, Tags: []string{"combo"}, Description: "1 Popcorn + 2 Nectars + 2 Spring Roll orders"},
+		}, nil
+
+	case "ratnapura":
+		return []models.ConcessionItem{
+			{ID: "RTP-01", CinemaID: cinemaID, Name: "Gem City Sweet Popcorn", Category: models.CategoryPopcorn, Size: "Large", Price: 990.00, InStock: true, Tags: []string{"sweet"}, Description: "Crunchy sweet glaze popcorn"},
+			{ID: "RTP-02", CinemaID: cinemaID, Name: "Iced Faluda Royal", Category: models.CategoryBeverage, Size: "Medium", Price: 620.00, InStock: true, Tags: []string{"beverage", "dessert"}, Description: "Rose syrup with milk, basil seeds & ice cream"},
+			{ID: "RTP-03", CinemaID: cinemaID, Name: "Spicy Beef Patty (2pcs)", Category: models.CategorySnack, Size: "Single", Price: 800.00, InStock: true, Tags: []string{"spicy", "savory"}, Description: "Shortcrust baked spicy minced beef parcels"},
+			{ID: "RTP-04", CinemaID: cinemaID, Name: "Milano Matinee Combo", Category: models.CategoryCombo, Size: "Duo", Price: 2150.00, InStock: true, Tags: []string{"combo"}, Description: "1 Sweet Popcorn + 2 Faludas + 1 Patty Box"},
 		}, nil
 
 	default:
-		return nil, fmt.Errorf("%w: no scraper pipeline registered for city %q", ErrCinemaNotFound, cinema.City)
+		return nil, fmt.Errorf("%w: no concession scraper registered for city %q", ErrCinemaNotFound, city)
 	}
+}
+
+// ScrapeRawConcessionFeed parses simulated or raw concession HTML feeds.
+// Allows parsing raw web page tables / div lists into structured models.ConcessionItem.
+func (s *RegionalScraper) ScrapeRawConcessionFeed(cinemaID string, rawHTML string) ([]models.ConcessionItem, error) {
+	if strings.TrimSpace(rawHTML) == "" {
+		return nil, fmt.Errorf("%w: raw feed content is empty", ErrInvalidInput)
+	}
+
+	var items []models.ConcessionItem
+	// Regex pattern for concession items in web feeds: <item name="..." category="..." price="..." ...>
+	re := regexp.MustCompile(`(?i)<(?:div|item)[^>]*class=["']concession-card["'][^>]*data-name=["']([^"']+)["'][^>]*data-cat=["']([^"']+)["'][^>]*data-price=["']([0-9.]+)["']`)
+	matches := re.FindAllStringSubmatch(rawHTML, -1)
+
+	for idx, m := range matches {
+		if len(m) >= 4 {
+			name := m[1]
+			catStr := m[2]
+			priceVal, err := strconv.ParseFloat(m[3], 64)
+			if err != nil {
+				continue
+			}
+
+			category := models.CategorySnack
+			switch strings.ToLower(catStr) {
+			case "popcorn":
+				category = models.CategoryPopcorn
+			case "beverage", "drink":
+				category = models.CategoryBeverage
+			case "combo":
+				category = models.CategoryCombo
+			case "dessert":
+				category = models.CategoryDessert
+			}
+
+			items = append(items, models.ConcessionItem{
+				ID:       fmt.Sprintf("%s-EXT-%02d", cinemaID, idx+1),
+				CinemaID: cinemaID,
+				Name:     name,
+				Category: category,
+				Price:    priceVal,
+				InStock:  true,
+			})
+		}
+	}
+
+	return items, nil
 }

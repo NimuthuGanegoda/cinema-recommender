@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#080c14">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>CinemaSnack Mobile &bull; Redopay Deals</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/jpeg" href="/ui/app-icon.jpg">
+  <link rel="apple-touch-icon" href="/ui/app-icon.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #080c14;
+      --bg-card: rgba(18, 24, 38, 0.95);
+      --bg-surface: #0f172a;
+      --accent-gold: #f59e0b;
+      --accent-redopay: #6366f1;
+      --accent-redopay-hover: #4f46e5;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(99, 102, 241, 0.35);
+      --safe-bottom: env(safe-area-inset-bottom, 16px);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    h1, h2, h3, h4, .brand-font {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* Mobile Header */
+    .mobile-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(8, 12, 20, 0.92);
+      backdrop-filter: blur(12px);
+      padding: 0.8rem 1.1rem;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .app-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: url('/ui/app-icon.jpg') center/cover;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+      border: 1px solid var(--border-glow);
+    }
+
+    .location-selector {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .loc-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent-gold);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .loc-dropdown {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .loc-dropdown option {
+      background: #0f172a;
+      color: #fff;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .tier-pill {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(245, 158, 11, 0.2));
+      border: 1px solid var(--border-glow);
+      color: #e2e8f0;
+      padding: 0.25rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    /* Screen Views */
+    .screen-view {
+      display: none;
+      flex: 1;
+      padding: 1rem 1rem calc(75px + var(--safe-bottom));
+      overflow-y: auto;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .screen-view.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hero Mini Banner */
+    .mobile-hero {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.95));
+      border: 1px solid var(--border-glow);
+      border-radius: 18px;
+      padding: 1.2rem;
+      margin-bottom: 1.2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mobile-hero h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 0.3rem;
+      background: linear-gradient(135deg, #fff, #cbd5e1);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .mobile-hero p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+      margin-bottom: 0.8rem;
+    }
+
+    .hero-quick-btn {
+      background: linear-gradient(135deg, var(--accent-redopay), var(--accent-redopay-hover));
+      border: none;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.8rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* Category Chips Carousel */
+    .chips-bar {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.7rem;
+      margin-bottom: 1rem;
+      scrollbar-width: none;
+    }
+
+    .chips-bar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .chip-btn {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 0.45rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .chip-btn.active {
+      background: var(--accent-redopay);
+      border-color: var(--accent-redopay);
+      color: #fff;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.35);
+    }
+
+    /* Concession Item Card (Mobile) */
+    .items-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .m-item-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 0.95rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .m-item-info {
+      flex: 1;
+    }
+
+    .m-item-title {
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: #fff;
+      margin-bottom: 0.2rem;
+    }
+
+    .m-item-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+      line-height: 1.2;
+    }
+
+    .m-item-price {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--accent-gold);
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .m-add-btn {
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      color: #c7d2fe;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s active;
+    }
+
+    .m-add-btn:active {
+      background: var(--accent-redopay);
+      color: #fff;
+      transform: scale(0.92);
+    }
+
+    /* Optimizer Screen */
+    .opt-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 1.2rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .opt-card h3 {
+      font-size: 1.05rem;
+      margin-bottom: 1rem;
+    }
+
+    .m-party-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .m-party-btn {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 0.55rem 0;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .m-party-btn.active {
+      background: var(--accent-redopay);
+      color: #fff;
+      border-color: var(--accent-redopay);
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.35);
+    }
+
+    .m-slider-box {
+      margin-bottom: 1.2rem;
+    }
+
+    .m-slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .m-slider-val {
+      color: var(--accent-gold);
+      font-weight: 700;
+    }
+
+    input[type=range] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.15);
+      outline: none;
+    }
+
+    .btn-calc-mobile {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent-redopay), var(--accent-redopay-hover));
+      border: none;
+      color: #fff;
+      padding: 0.8rem;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.4rem;
+      box-shadow: 0 6px 16px -2px rgba(99, 102, 241, 0.4);
+    }
+
+    /* Result Card (Mobile) */
+    .m-deal-result {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.95));
+      border: 1px solid var(--border-glow);
+      border-radius: 16px;
+      padding: 1.2rem;
+      margin-top: 1rem;
+    }
+
+    .m-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 10px;
+      padding: 0.8rem;
+      text-align: center;
+      margin: 0.8rem 0;
+    }
+
+    .m-sum-val {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 1.05rem;
+    }
+
+    /* Redopay Digital Card (Wallet Screen) */
+    .digital-card {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+      border: 1px solid rgba(165, 180, 252, 0.3);
+      border-radius: 18px;
+      padding: 1.4rem;
+      color: #fff;
+      box-shadow: 0 15px 30px -10px rgba(99, 102, 241, 0.4);
+      margin-bottom: 1.3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .digital-card::after {
+      content: '';
+      position: absolute;
+      top: -30%;
+      right: -20%;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.8rem;
+    }
+
+    .card-brand {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+    }
+
+    .card-num {
+      font-family: monospace;
+      font-size: 1.05rem;
+      letter-spacing: 0.15em;
+      margin-bottom: 1.2rem;
+      color: #e0e7ff;
+    }
+
+    .card-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      font-size: 0.78rem;
+    }
+
+    /* Cart Screen (Mobile) */
+    .cart-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .qty-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    /* Bottom App Tab Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      background: rgba(8, 12, 20, 0.95);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border-subtle);
+      padding: 0.45rem 0.5rem calc(0.45rem + var(--safe-bottom));
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.2rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      position: relative;
+      padding: 0.25rem 0.8rem;
+      transition: all 0.15s;
+    }
+
+    .nav-item.active {
+      color: #a5b4fc;
+    }
+
+    .nav-icon {
+      font-size: 1.3rem;
+      transition: transform 0.2s;
+    }
+
+    .nav-item.active .nav-icon {
+      transform: scale(1.15);
+      filter: drop-shadow(0 0 6px rgba(99, 102, 241, 0.5));
+    }
+
+    .nav-badge {
+      position: absolute;
+      top: 0;
+      right: 0.6rem;
+      background: var(--accent-red);
+      color: #fff;
+      font-size: 0.62rem;
+      font-weight: 800;
+      padding: 0.1rem 0.35rem;
+      border-radius: 9999px;
+    }
+
+    /* Toast */
+    .m-toast {
+      position: fixed;
+      top: 4.5rem;
+      left: 1rem;
+      right: 1rem;
+      z-index: 100;
+      background: rgba(239, 68, 68, 0.92);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .m-gps-btn {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(16, 185, 129, 0.25));
+      border: 1px solid var(--border-subtle);
+      color: #a5b4fc;
+      border-radius: 6px;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .m-food-info-card {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 14px;
+      padding: 0.85rem;
+      margin-bottom: 1.2rem;
+    }
+    .m-fg-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #f8fafc;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.35rem;
+    }
+    .m-fg-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+      margin-bottom: 0.4rem;
+    }
+    .m-fg-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+    .m-fg-pill {
+      font-size: 0.65rem;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      color: #cbd5e1;
+    }
+    .m-fg-pill.green {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .m-fg-pill.blue {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      text-decoration: none;
+    }
+
+    .m-save-tag {
+      display: inline-block;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #ffffff;
+      font-size: 0.62rem;
+      font-weight: 800;
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+    }
+    .m-discounts-panel {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+      padding: 0.4rem;
+      margin: 0.4rem 0;
+    }
+    .m-disc-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.68rem;
+      color: #cbd5e1;
+      margin-bottom: 0.2rem;
+    }
+    .m-btn-add-food {
+      width: 100%;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.4));
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: #e0e7ff;
+      border-radius: 6px;
+      padding: 0.45rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 0.25rem;
+    }
+    .m-btn-add-food:active {
+      background: var(--accent-redopay);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top App Bar -->
+  <header class="mobile-header">
+    <div class="header-left">
+      <div class="app-avatar"></div>
+      <div class="location-selector">
+        <span class="loc-label">📍 Outstation Circuit</span>
+        <select class="loc-dropdown" id="m-cinema-select">
+          <option value="">Loading...</option>
+        </select>
+      </div>
+    </div>
+    <div class="header-right" style="display:flex; align-items:center; gap:0.4rem;">
+      <button id="m-btn-gps" class="m-gps-btn" title="Auto-detect nearest cinema" onclick="mAutoDetectLocation()">📍 Auto</button>
+      <span class="tier-pill" id="m-header-tier">Standard</span>
+    </div>
+  </header>
+
+  <div class="m-toast" id="m-alert">
+    <span>⚠️</span>
+    <span id="m-alert-text">Colombo theaters are excluded by regional policy.</span>
+  </div>
+
+  <!-- Screen 1: Explore & Menu -->
+  <main class="screen-view active" id="view-explore">
+    <div class="mobile-hero">
+      <h2>Cinema Concessions 🍿</h2>
+      <p>Save up to 35% on snacks & drinks with automated Redopay deals.</p>
+      <button class="hero-quick-btn" onclick="switchNav('optimizer')">⚡ Run Deal Optimizer</button>
+    </div>
+
+    <!-- Cinema Food & Refreshment Location Guide -->
+    <div class="m-food-info-card" id="m-food-info-card" style="display:none;"></div>
+
+    <!-- Category Chips -->
+    <div class="chips-bar">
+      <button class="chip-btn active" onclick="filterCategory('all', this)">All Items</button>
+      <button class="chip-btn" onclick="filterCategory('Popcorn', this)">🍿 Popcorn</button>
+      <button class="chip-btn" onclick="filterCategory('Beverage', this)">🥤 Beverages</button>
+      <button class="chip-btn" onclick="filterCategory('Snack', this)">🌭 Snacks</button>
+      <button class="chip-btn" onclick="filterCategory('Combo', this)">✨ Combos</button>
+    </div>
+
+    <div class="items-container" id="m-concessions-list">
+      <!-- Concessions dynamically loaded -->
+    </div>
+  </main>
+
+  <!-- Screen 2: Deal Optimizer -->
+  <section class="screen-view" id="view-optimizer">
+    <div class="opt-card">
+      <h3>⚡ AI Concession Bundle Optimizer</h3>
+
+      <div style="font-size:0.78rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.4rem; font-weight:700;">
+        Party Size
+      </div>
+      <div class="m-party-grid">
+        <button class="m-party-btn" data-val="1">Solo (1)</button>
+        <button class="m-party-btn active" data-val="2">Couple (2)</button>
+        <button class="m-party-btn" data-val="3">Trio (3)</button>
+        <button class="m-party-btn" data-val="4">4+ Group</button>
+      </div>
+      <input type="hidden" id="m-party-size" value="2">
+
+      <div class="m-slider-box">
+        <div class="m-slider-label">
+          <span>Target Budget:</span>
+          <span class="m-slider-val" id="m-budget-text">LKR 2,500</span>
+        </div>
+        <input type="range" id="m-budget-slider" min="1000" max="6000" step="250" value="2500">
+      </div>
+
+      <div style="margin-bottom:1.2rem;">
+        <label style="display:block; font-size:0.78rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.4rem; font-weight:700;">
+          Redopay Card Tier
+        </label>
+        <select id="m-tier-select" style="width:100%; background:#090d16; border:1px solid var(--border-subtle); color:#fff; padding:0.6rem; border-radius:8px; font-family:inherit;">
+          <option value="Standard">Standard Account</option>
+          <option value="Student">Student Cardholder (20% off)</option>
+          <option value="Silver">Silver Tier</option>
+          <option value="Gold">Gold Tier</option>
+          <option value="Platinum">Platinum VIP (35% off)</option>
+        </select>
+      </div>
+
+      <button class="btn-calc-mobile" id="btn-m-calc">
+        <span>✨ Optimize Deal with Redopay</span>
+      </button>
+    </div>
+
+    <!-- Optimization Results -->
+    <div id="m-deal-result-box" style="display:none;">
+      <!-- Populated via JS -->
+    </div>
+  </section>
+
+  <!-- Screen 3: Redopay Wallet & Promos -->
+  <section class="screen-view" id="view-wallet">
+    <div class="digital-card">
+      <div class="card-top">
+        <span class="card-brand">REDOPAY CINEMA PASS</span>
+        <span id="card-tier-label" style="text-transform:uppercase; font-size:0.75rem; font-weight:800; color:#fbbf24;">STANDARD</span>
+      </div>
+      <div class="card-num">&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 8824</div>
+      <div class="card-bottom">
+        <div>
+          <div style="font-size:0.65rem; color:#94a3b8;">CARDHOLDER</div>
+          <div style="font-weight:700;">MOVIEGOER REWARDS</div>
+        </div>
+        <div>
+          <div style="font-size:0.65rem; color:#94a3b8;">VALID REGION</div>
+          <div style="font-weight:700;">OUTSTATION SL</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1.05rem; margin-bottom:0.8rem;">Active Redopay Vouchers</h3>
+    <div class="items-container" id="m-vouchers-list">
+      <!-- Vouchers loaded dynamically -->
+    </div>
+  </section>
+
+  <!-- Screen 4: In-Person Counter Voucher Pass -->
+  <section class="screen-view" id="view-cart">
+    <h3 style="font-size:1.1rem; margin-bottom:0.4rem;">🎟️ In-Theater Counter Voucher</h3>
+    <div style="background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); border-radius:10px; padding:0.6rem 0.8rem; font-size:0.75rem; color:#fde68a; margin-bottom:1rem; line-height:1.35;">
+      ⚠️ <strong>In-Theater Collection:</strong> This is a recommender and in-person savings pass. Present this voucher to the cashier when you arrive at the cinema snack counter.
+    </div>
+
+    <div id="m-cart-empty" style="text-align:center; padding:2rem; color:var(--text-muted);">
+      Your voucher pass is empty.<br>Add snacks from the Explore tab!
+    </div>
+
+    <div id="m-cart-content" style="display:none;">
+      <div id="m-cart-items-list" style="margin-bottom:1.2rem;"></div>
+
+      <div class="opt-card" id="m-cart-summary-box">
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem; font-size:0.88rem;">
+          <span style="color:var(--text-muted);">Menu Subtotal:</span>
+          <span style="text-decoration:line-through; color:#94a3b8;" id="m-subtotal-val">LKR 0.00</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem; color:var(--accent-green); font-size:0.88rem;">
+          <span id="m-applied-promo-label">Redopay Savings:</span>
+          <strong id="m-discount-val">-LKR 0.00</strong>
+        </div>
+        <div style="margin-top:0.8rem; padding-top:0.8rem; border-top:1px solid var(--border-subtle);">
+          <label style="display:block; font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.4rem; font-weight:700;">
+            🇱🇰 Payment Method
+          </label>
+          <select id="m-pay-select" style="width:100%; background:#090d16; border:1px solid var(--border-subtle); color:#fff; padding:0.6rem; border-radius:8px; font-family:inherit; font-size:0.85rem;">
+            <!-- Loaded dynamically -->
+          </select>
+        </div>
+
+        <div id="m-phone-row" style="display:none; margin-top:0.6rem;">
+          <label style="display:block; font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.3rem; font-weight:700;">
+            Mobile Number (eZ Cash / mCash)
+          </label>
+          <input type="tel" id="m-phone-input" style="width:100%; background:#090d16; border:1px solid var(--border-subtle); color:#fff; padding:0.6rem; border-radius:8px; font-family:inherit; font-size:0.85rem;" placeholder="077 123 4567" value="077 123 4567">
+        </div>
+
+        <button class="btn-calc-mobile" style="margin-top:1rem; background:linear-gradient(135deg, #10b981, #059669);" id="btn-m-checkout">
+          🎟️ Generate Physical Counter Pass
+        </button>
+      </div>
+
+      <!-- Mobile Receipt Sheet -->
+      <div id="m-receipt-sheet" style="display:none; background:#090d16; border:1px solid var(--border-glow); border-radius:16px; padding:1.2rem; margin-top:1rem;">
+        <div style="text-align:center; font-size:2rem; margin-bottom:0.3rem;">🎟️</div>
+        <h4 style="text-align:center; color:var(--accent-green); font-size:1.15rem; margin-bottom:0.2rem;">Counter Voucher Ready!</h4>
+        <p style="text-align:center; font-size:0.78rem; color:var(--text-muted); margin-bottom:1rem;" id="m-receipt-sub"></p>
+
+        <div id="m-receipt-body" style="font-size:0.82rem; margin-bottom:1rem;"></div>
+
+        <button class="btn-calc-mobile" onclick="dismissMobileReceipt()" style="background:rgba(255,255,255,0.1);">Done & Save Pass</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="nav-explore" onclick="switchNav('explore')">
+      <span class="nav-icon">🍿</span>
+      <span>Explore</span>
+    </button>
+    <button class="nav-item" id="nav-optimizer" onclick="switchNav('optimizer')">
+      <span class="nav-icon">⚡</span>
+      <span>Optimizer</span>
+    </button>
+    <button class="nav-item" id="nav-wallet" onclick="switchNav('wallet')">
+      <span class="nav-icon">💳</span>
+      <span>Redopay</span>
+    </button>
+    <button class="nav-item" id="nav-cart" onclick="switchNav('cart')">
+      <span class="nav-icon">🎟️</span>
+      <span>Voucher Pass</span>
+      <span class="nav-badge" id="m-cart-badge" style="display:none;">0</span>
+    </button>
+  </nav>
+
+  <script>
+    let registeredCinemas = [];
+    let currentCinema = null;
+    let menuItems = [];
+    let activeCategory = 'all';
+    let cart = [];
+
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration error:', err));
+      });
+    }
+
+    let paymentMethods = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      setupPartyButtons();
+      setupBudgetSlider();
+      await loadCinemas();
+      await loadPromotions();
+      await loadPaymentMethods();
+
+      document.getElementById('btn-m-calc').addEventListener('click', calculateDeal);
+      document.getElementById('btn-m-checkout').addEventListener('click', processMobileCheckout);
+      document.getElementById('m-pay-select').addEventListener('change', handlePayMethodChange);
+      document.getElementById('m-tier-select').addEventListener('change', (e) => {
+        document.getElementById('m-header-tier').innerText = e.target.value;
+        document.getElementById('card-tier-label').innerText = e.target.value;
+      });
+    });
+
+    async function loadPaymentMethods() {
+      try {
+        const res = await fetch('/api/v1/payment-methods');
+        paymentMethods = await res.json();
+        const select = document.getElementById('m-pay-select');
+        select.innerHTML = '';
+        paymentMethods.forEach(m => {
+          const opt = document.createElement('option');
+          opt.value = m.id;
+          opt.innerText = `${m.icon} ${m.name}`;
+          select.appendChild(opt);
+        });
+      } catch (err) {
+        console.error('Failed to load payment methods', err);
+      }
+    }
+
+    function handlePayMethodChange(e) {
+      const isMobileWallet = (e.target.value === 'EZCASH' || e.target.value === 'MCASH');
+      document.getElementById('m-phone-row').style.display = isMobileWallet ? 'block' : 'none';
+    }
+
+    function setupPartyButtons() {
+      const btns = document.querySelectorAll('.m-party-btn');
+      btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          btns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          document.getElementById('m-party-size').value = btn.dataset.val;
+        });
+      });
+    }
+
+    function setupBudgetSlider() {
+      const slider = document.getElementById('m-budget-slider');
+      const text = document.getElementById('m-budget-text');
+      slider.addEventListener('input', () => {
+        text.innerText = `LKR ${Number(slider.value).toLocaleString()}`;
+      });
+    }
+
+    function mRenderFoodGuide(cinema) {
+      const card = document.getElementById('m-food-info-card');
+      if (!cinema) {
+        card.style.display = 'none';
+        return;
+      }
+
+      card.style.display = 'block';
+      const distTag = cinema.distance_km ? `<span class="m-fg-pill green">📍 ${cinema.distance_km.toFixed(1)} km</span>` : '';
+      const nearbyTags = (cinema.nearby_food_options || []).map(opt => `<span class="m-fg-pill">🍽️ ${opt}</span>`).join(' ');
+
+      card.innerHTML = `
+        <div class="m-fg-title">
+          <span>🍿 ${cinema.food_place_name || 'In-Theater Concession Stand'}</span>
+          ${distTag}
+        </div>
+        <div class="m-fg-sub">
+          ${cinema.food_place_type || 'Concession Stand'} &bull; ⏰ ${cinema.food_hours || '10:00 AM - 10:30 PM'}
+        </div>
+        <div class="m-fg-pills" style="margin-bottom:0.4rem;">
+          <span class="m-fg-pill green">🟢 Concessions Open</span>
+          ${cinema.food_delivery_to_seat ? '<span class="m-fg-pill">💺 Seat Delivery</span>' : '<span class="m-fg-pill">🛍️ Counter Pickup</span>'}
+          ${cinema.map_url ? `<a href="${cinema.map_url}" target="_blank" class="m-fg-pill blue">🗺️ Maps</a>` : ''}
+        </div>
+        ${cinema.nearby_food_options && cinema.nearby_food_options.length > 0 ? `
+          <div style="background:rgba(0,0,0,0.25); border-radius:6px; padding:0.4rem; font-size:0.68rem;">
+            <div style="color:var(--text-muted); margin-bottom:0.2rem; font-weight:700;">Nearby Food Courts & Stalls:</div>
+            <div class="m-fg-pills">${nearbyTags}</div>
+          </div>
+        ` : ''}
+      `;
+    }
+
+    function mAutoDetectLocation() {
+      const btn = document.getElementById('m-btn-gps');
+      if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser.');
+        return;
+      }
+
+      btn.innerText = '⏳...';
+      btn.disabled = true;
+
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          try {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            const res = await fetch(`/api/v1/cinemas?lat=${lat}&lng=${lng}`);
+            if (!res.ok) throw new Error('Failed to find nearby cinemas');
+            registeredCinemas = await res.json();
+
+            const select = document.getElementById('m-cinema-select');
+            select.innerHTML = '';
+            registeredCinemas.forEach(c => {
+              const opt = document.createElement('option');
+              opt.value = c.id;
+              const dist = c.distance_km ? ` [${c.distance_km.toFixed(1)} km]` : '';
+              opt.innerText = `${c.name} (${c.city})${dist}`;
+              select.appendChild(opt);
+            });
+
+            if (registeredCinemas.length > 0) {
+              currentCinema = registeredCinemas[0];
+              select.value = currentCinema.id;
+              mRenderFoodGuide(currentCinema);
+              await loadMenu(currentCinema.id);
+              btn.innerText = `📍 ${currentCinema.city}`;
+            }
+          } catch (err) {
+            console.error('Geo detect failed', err);
+            btn.innerText = '📍 Auto';
+          } finally {
+            btn.disabled = false;
+          }
+        },
+        (err) => {
+          console.warn('Geolocation denied', err);
+          btn.innerText = '📍 Auto';
+          btn.disabled = false;
+          alert('Location permission was denied. Select your cinema from the dropdown.');
+        },
+        { timeout: 8000 }
+      );
+    }
+
+    async function loadCinemas() {
+      try {
+        const res = await fetch('/api/v1/cinemas');
+        registeredCinemas = await res.json();
+        const select = document.getElementById('m-cinema-select');
+        select.innerHTML = '';
+
+        registeredCinemas.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.innerText = `${c.name} (${c.city})`;
+          select.appendChild(opt);
+        });
+
+        if (registeredCinemas.length > 0) {
+          currentCinema = registeredCinemas[0];
+          mRenderFoodGuide(currentCinema);
+          await loadMenu(currentCinema.id);
+        }
+
+        select.addEventListener('change', async () => {
+          const found = registeredCinemas.find(c => c.id === select.value);
+          if (found) {
+            currentCinema = found;
+            mRenderFoodGuide(currentCinema);
+            await loadMenu(found.id);
+          }
+        });
+      } catch (err) {
+        console.error('Cinema loading failed', err);
+      }
+    }
+
+    async function loadMenu(cinemaId) {
+      try {
+        const res = await fetch(`/api/v1/cinemas/${cinemaId}/concessions`);
+        menuItems = await res.json();
+        renderMenu();
+      } catch (err) {
+        console.error('Failed to load menu', err);
+      }
+    }
+
+    function renderMenu() {
+      const container = document.getElementById('m-concessions-list');
+      container.innerHTML = '';
+
+      const filtered = activeCategory === 'all' 
+        ? menuItems 
+        : menuItems.filter(i => i.category === activeCategory);
+
+      filtered.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'm-item-card';
+
+        const maxPct = item.max_discount_pct ? Math.round(item.max_discount_pct * 100) : 35;
+        const discountedPrice = item.best_discounted_price_lkr || (item.price_lkr * 0.65);
+
+        const discountsList = (item.applicable_discounts || []).map(d => `
+          <div class="m-disc-row">
+            <span>${d.provider === 'Redopay' ? '💳' : d.provider === 'FriMi' ? '💎' : d.provider === 'Genie' ? '⚡' : '🇱🇰'} ${d.title}</span>
+            <strong style="color:var(--accent-green);">LKR ${d.discounted_price_lkr.toFixed(0)}</strong>
+          </div>
+        `).join('');
+
+        card.innerHTML = `
+          <div style="width:100%;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <div class="m-item-info">
+                <div class="m-item-title">${item.name}</div>
+                <div class="m-item-sub">${item.description || item.category} ${item.size ? '&bull; ' + item.size : ''}</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="text-decoration:line-through; font-size:0.75rem; color:#94a3b8;">LKR ${item.price_lkr.toFixed(0)}</div>
+                <div style="color:var(--accent-green); font-weight:800; font-size:1.05rem;">LKR ${discountedPrice.toFixed(0)}</div>
+                <span class="m-save-tag">SAVE ${maxPct}%</span>
+              </div>
+            </div>
+
+            <div style="font-size:0.7rem; color:#a5b4fc; margin-top:0.3rem;">
+              📍 Served at: <strong style="color:#e0e7ff;">${item.food_location || (currentCinema ? currentCinema.food_place_name : 'In-Theater Candy Bar')}</strong>
+            </div>
+
+            <div class="m-discounts-panel">
+              <div style="font-size:0.68rem; font-weight:700; color:#cbd5e1; margin-bottom:0.25rem;">Discounts Available on This Item:</div>
+              ${discountsList}
+            </div>
+
+            <button class="m-btn-add-food" onclick="addToCart('${item.id}')">+ Add with Best Discounts</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function filterCategory(cat, el) {
+      activeCategory = cat;
+      document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      renderMenu();
+    }
+
+    async function calculateDeal() {
+      const budget = parseFloat(document.getElementById('m-budget-slider').value);
+      const partySize = parseInt(document.getElementById('m-party-size').value);
+      const tier = document.getElementById('m-tier-select').value;
+
+      const resBox = document.getElementById('m-deal-result-box');
+      resBox.style.display = 'block';
+      resBox.innerHTML = `<div style="text-align:center; padding:1.5rem; color:var(--text-muted);">✨ Optimizing Redopay Combo...</div>`;
+
+      try {
+        const res = await fetch('/api/v1/recommend', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            cinema_id: currentCinema ? currentCinema.id : 'KND-KCC',
+            budget_lkr: budget,
+            party_size: partySize,
+            redopay_tier: tier
+          })
+        });
+
+        const deal = await res.json();
+        if (!res.ok) {
+          resBox.innerHTML = `<div style="color:var(--accent-red); padding:1rem;">❌ ${deal.error}</div>`;
+          return;
+        }
+
+        const itemsList = deal.selected_items.map(it => `
+          <div style="display:flex; justify-content:space-between; font-size:0.82rem; margin-bottom:0.35rem;">
+            <span>${it.name}</span>
+            <strong style="color:var(--accent-gold);">LKR ${it.price_lkr.toFixed(0)}</strong>
+          </div>
+        `).join('');
+
+        resBox.innerHTML = `
+          <div class="m-deal-result">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <h4 style="font-size:1.05rem;">Recommended Bundle</h4>
+              <span style="font-size:0.75rem; background:rgba(245,158,11,0.2); color:var(--accent-gold); padding:0.2rem 0.5rem; border-radius:6px; font-weight:700;">Score ${deal.value_score || 8.5}/10</span>
+            </div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.7rem;">Party of ${deal.party_size || 2} &bull; ${deal.selected_items.length} items</div>
+
+            <div style="border-bottom:1px solid var(--border-subtle); padding-bottom:0.5rem; margin-bottom:0.6rem;">
+              ${itemsList}
+            </div>
+
+            <div class="m-summary-grid">
+              <div>
+                <div style="font-size:0.65rem; color:var(--text-muted);">MENU</div>
+                <div class="m-sum-val" style="color:#94a3b8; text-decoration:line-through;">LKR ${deal.original_total_lkr.toFixed(0)}</div>
+              </div>
+              <div>
+                <div style="font-size:0.65rem; color:var(--accent-green);">SAVED</div>
+                <div class="m-sum-val" style="color:var(--accent-green);">-LKR ${deal.discount_amount_lkr.toFixed(0)}</div>
+              </div>
+              <div>
+                <div style="font-size:0.65rem; color:#fff;">PAYABLE</div>
+                <div class="m-sum-val" style="color:#fff;">LKR ${deal.final_total_lkr.toFixed(0)}</div>
+              </div>
+            </div>
+
+            <div style="font-size:0.75rem; color:#c7d2fe; margin-top:0.4rem;">
+              🏷️ ${deal.message}
+            </div>
+
+            <button class="m-btn-add-food" style="margin-top:0.8rem; background:linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; padding:0.65rem; border-radius:8px; font-weight:700;" onclick="loadDealIntoMobileVoucherPass()">
+              🎟️ Redeem Bundle as Counter Voucher Pass
+            </button>
+          </div>
+        `;
+        window.currentMobileDeal = deal;
+      } catch (err) {
+        resBox.innerHTML = `<div style="color:var(--accent-red); padding:1rem;">❌ Calculation failed</div>`;
+      }
+    }
+
+    function loadDealIntoMobileVoucherPass() {
+      if (!window.currentMobileDeal || !window.currentMobileDeal.selected_items) return;
+      cart = window.currentMobileDeal.selected_items.map(it => ({ item: it, quantity: 1 }));
+      updateCartUI();
+      switchNav('cart');
+    }
+
+    async function loadPromotions() {
+      try {
+        const res = await fetch('/api/v1/promotions/redopay');
+        const promos = await res.json();
+        const container = document.getElementById('m-vouchers-list');
+        container.innerHTML = '';
+
+        promos.forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'm-item-card';
+          card.innerHTML = `
+            <div class="m-item-info">
+              <div style="display:inline-block; font-family:monospace; font-size:0.75rem; background:rgba(99,102,241,0.25); color:#a5b4fc; padding:0.15rem 0.4rem; border-radius:4px; margin-bottom:0.25rem;">
+                ${p.promo_code}
+              </div>
+              <div class="m-item-title">${p.title}</div>
+              <div class="m-item-sub">${p.description}</div>
+              <div style="font-size:0.75rem; color:var(--accent-gold); font-weight:700;">Min Spend: LKR ${p.min_spend_lkr.toFixed(0)}</div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // Cart System
+    function addToCart(itemId) {
+      const item = menuItems.find(i => i.id === itemId);
+      if (!item) return;
+
+      const found = cart.find(c => c.item.id === itemId);
+      if (found) {
+        found.quantity += 1;
+      } else {
+        cart.push({ item: item, quantity: 1 });
+      }
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      const totalCount = cart.reduce((s, c) => s + c.quantity, 0);
+      const badge = document.getElementById('m-cart-badge');
+      if (totalCount > 0) {
+        badge.style.display = 'block';
+        badge.innerText = totalCount;
+      } else {
+        badge.style.display = 'none';
+      }
+      renderCartScreen();
+    }
+
+    async function renderCartScreen() {
+      const emptyDiv = document.getElementById('m-cart-empty');
+      const contentDiv = document.getElementById('m-cart-content');
+      const listDiv = document.getElementById('m-cart-items-list');
+
+      if (cart.length === 0) {
+        emptyDiv.style.display = 'block';
+        contentDiv.style.display = 'none';
+        return;
+      }
+
+      emptyDiv.style.display = 'none';
+      contentDiv.style.display = 'block';
+
+      listDiv.innerHTML = cart.map((c, idx) => `
+        <div class="cart-row">
+          <div>
+            <div style="font-weight:700; font-size:0.9rem;">${c.item.name}</div>
+            <div style="font-size:0.75rem; color:var(--accent-gold);">LKR ${(c.item.price_lkr * c.quantity).toFixed(0)}</div>
+          </div>
+          <div class="qty-controls">
+            <button class="qty-btn" onclick="changeQty(${idx}, -1)">-</button>
+            <span style="font-weight:700; font-size:0.85rem;">${c.quantity}</span>
+            <button class="qty-btn" onclick="changeQty(${idx}, 1)">+</button>
+          </div>
+        </div>
+      `).join('');
+
+      // Evaluate cart through Go REST API
+      const itemsPayload = cart.map(c => ({ item_id: c.item.id, quantity: c.quantity }));
+      try {
+        const res = await fetch('/api/v1/cart/evaluate', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            cinema_id: currentCinema ? currentCinema.id : 'KND-KCC',
+            items: itemsPayload,
+            redopay_tier: document.getElementById('m-tier-select').value
+          })
+        });
+        const evalRes = await res.json();
+        if (evalRes) {
+          document.getElementById('m-subtotal-val').innerText = `LKR ${evalRes.original_total_lkr.toFixed(2)}`;
+          document.getElementById('m-discount-val').innerText = `-LKR ${evalRes.discount_amount_lkr.toFixed(2)}`;
+          document.getElementById('m-applied-promo-label').innerText = `Redopay Savings (${evalRes.applied_promo}):`;
+          document.getElementById('m-final-val').innerText = `LKR ${evalRes.final_total_lkr.toFixed(2)}`;
+          document.getElementById('m-upsell-msg').innerText = evalRes.next_tier_upsell || '';
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function changeQty(idx, delta) {
+      cart[idx].quantity += delta;
+      if (cart[idx].quantity <= 0) {
+        cart.splice(idx, 1);
+      }
+      updateCartUI();
+    }
+
+    async function processMobileCheckout() {
+      if (cart.length === 0) {
+        alert("Your cart is empty. Please add items first.");
+        return;
+      }
+
+      const method = document.getElementById('m-pay-select').value;
+      const phone = document.getElementById('m-phone-input').value;
+      const itemsPayload = cart.map(c => ({ item_id: c.item.id, quantity: c.quantity }));
+
+      const btn = document.getElementById('btn-m-checkout');
+      btn.innerHTML = '<span>⏳ Processing Payment...</span>';
+
+      try {
+        const res = await fetch('/api/v1/checkout', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            cinema_id: currentCinema ? currentCinema.id : 'KND-KCC',
+            items: itemsPayload,
+            payment_method: method,
+            redopay_tier: document.getElementById('m-tier-select').value,
+            customer_phone: phone
+          })
+        });
+
+        const order = await res.json();
+        if (!res.ok) {
+          alert("Payment failed: " + (order.error || "error"));
+          btn.innerHTML = '💳 Pay with Sri Lankan Gateway';
+          return;
+        }
+
+        renderMobileReceipt(order);
+      } catch (err) {
+        alert("Payment network error: " + err.message);
+      } finally {
+        btn.innerHTML = '💳 Pay with Sri Lankan Gateway';
+      }
+    }
+
+    function renderMobileReceipt(order) {
+      document.getElementById('m-cart-summary-box').style.display = 'none';
+      const sheet = document.getElementById('m-receipt-sheet');
+      sheet.style.display = 'block';
+
+      document.getElementById('m-receipt-sub').innerText = 
+        `${order.cinema_name} &bull; Order ID: ${order.order_id}`;
+
+      let extra = '';
+      if (order.payment_method === 'LANKAQR' && order.lanka_qr_emv) {
+        extra = `
+          <div style="background:#000; border:1px solid var(--accent-redopay); border-radius:10px; padding:0.8rem; text-align:center; margin:0.8rem 0;">
+            <div style="font-weight:700; color:var(--accent-gold); font-size:0.75rem; margin-bottom:0.4rem;">📱 LANKAQR DYNAMIC CODE</div>
+            <div style="background:#fff; display:inline-block; padding:8px; border-radius:6px;">
+              <svg width="100" height="100" viewBox="0 0 100 100">
+                <rect width="100" height="100" fill="#fff" />
+                <path d="M10 10h30v30h-30z M60 10h30v30h-30z M10 60h30v30h-30z M20 20h10v10h-10z M70 20h10v10h-10z M20 70h10v10h-10z M45 20h10v10h-10z M45 45h10v10h-10z M60 60h10v10h-10z M80 60h10v10h-10z M70 75h15v15h-15z M45 70h10v20h-10z" fill="#0f172a" />
+              </svg>
+            </div>
+            <div style="font-size:0.68rem; color:#94a3b8; margin-top:0.4rem;">Scan with Q+, WePay, FriMi, SOLO, SmartPay</div>
+          </div>
+        `;
+      } else if (order.payment_method === 'KOKO_BNPL') {
+        extra = `<div style="background:rgba(99,102,241,0.15); border-radius:8px; padding:0.5rem; margin:0.5rem 0; font-size:0.75rem; color:#a5b4fc;">${order.installment_note}</div>`;
+      }
+
+      document.getElementById('m-receipt-body').innerHTML = `
+        <div style="background:rgba(99,102,241,0.2); border:1px dashed var(--accent-redopay); border-radius:10px; padding:0.7rem; text-align:center; margin-bottom:0.8rem;">
+          <div style="font-size:0.68rem; text-transform:uppercase; letter-spacing:0.06em; color:#a5b4fc; font-weight:700;">🎟️ Physical Counter Voucher Code</div>
+          <div style="font-size:1.25rem; font-weight:900; color:#fff; font-family:monospace; margin:0.2rem 0;">${order.voucher_code || order.order_id}</div>
+          <div style="font-size:0.7rem; color:var(--accent-gold);">Present at physical cinema concession counter</div>
+        </div>
+
+        <div style="background:rgba(245,158,11,0.12); border-left:3px solid var(--accent-gold); border-radius:0 6px 6px 0; padding:0.5rem 0.7rem; margin-bottom:0.7rem; font-size:0.75rem; color:#fde68a;">
+          <div style="font-weight:700;">📍 Counter Location: ${order.counter_pickup_location || 'Main Candy Bar Counter'}</div>
+          <div>⚠️ ${order.physical_redemption_notice || 'Food is collected physically at the cinema.'}</div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
+          <span style="color:var(--text-muted);">Gateway:</span>
+          <strong>${order.payment_method_name}</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
+          <span style="color:var(--text-muted);">Status:</span>
+          <span style="color:var(--accent-green); font-weight:700;">${order.status}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
+          <span style="color:var(--text-muted);">Transaction Ref:</span>
+          <span style="font-family:monospace; color:#a5b4fc;">${order.transaction_reference}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
+          <span style="color:var(--text-muted);">Concession Savings:</span>
+          <span style="color:var(--accent-green); font-weight:700;">-LKR ${order.discount_lkr.toFixed(2)}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:1.05rem; font-weight:800; border-top:1px solid var(--border-subtle); padding-top:0.4rem; margin-top:0.3rem;">
+          <span>Net Counter Payable:</span>
+          <span style="color:var(--accent-gold);">LKR ${order.final_payable_lkr.toFixed(2)}</span>
+        </div>
+        ${extra}
+        <div style="margin-top:0.6rem; padding:0.5rem; background:rgba(255,255,255,0.05); border-radius:6px; font-size:0.72rem; color:#cbd5e1;">
+          💁 <strong>Cashier Note:</strong> ${order.cashier_instructions || order.instructions}
+        </div>
+      `;
+
+      cart = [];
+      updateCartUI();
+    }
+
+    function dismissMobileReceipt() {
+      document.getElementById('m-receipt-sheet').style.display = 'none';
+      document.getElementById('m-cart-summary-box').style.display = 'block';
+      renderCartScreen();
+    }
+
+    // Tab Navigation
+    function switchNav(tabId) {
+      document.querySelectorAll('.screen-view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+
+      document.getElementById(`view-${tabId}`).classList.add('active');
+      document.getElementById(`nav-${tabId}`).classList.add('active');
+
+      if (tabId === 'cart') {
+        renderCartScreen();
+      }
+    }
+  </script>
+</body>
+</html>

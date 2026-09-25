@@ -1,0 +1,19 @@
+{
+  "name": "Scope Cinemas - Concession & Candy Bar Pass",
+  "short_name": "ScopeCinemas",
+  "description": "Scope Cinemas & Regional Outstation Concession Recommender, GPS Cinema Detection, and Candy Bar Savings Pass.",
+  "start_url": "/mobile",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#07070a",
+  "theme_color": "#d4af37",
+  "icons": [
+    {
+      "src": "/ui/app-icon.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["entertainment", "food", "lifestyle"]
+}

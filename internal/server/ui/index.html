@@ -1,0 +1,2613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scope Cinemas &bull; Concession Recommender & Candy Bar Pass</title>
+  <link rel="icon" type="image/jpeg" href="/ui/app-icon.jpg">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Montserrat:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #07070a;
+      --bg-surface: #0e0e14;
+      --bg-card: rgba(16, 16, 22, 0.9);
+      --bg-card-hover: rgba(26, 26, 36, 0.96);
+      --scope-gold: #d4af37;
+      --scope-gold-bright: #f59e0b;
+      --scope-gold-light: #fef08a;
+      --scope-gold-glow: rgba(212, 175, 55, 0.35);
+      --scope-red: #e50914;
+      --scope-red-hover: #b91c1c;
+      --scope-red-glow: rgba(229, 9, 20, 0.35);
+      --accent-gold: #d4af37;
+      --accent-redopay: #d4af37;
+      --accent-redopay-hover: #b8860b;
+      --accent-redopay-glow: rgba(212, 175, 55, 0.35);
+      --accent-red: #e50914;
+      --accent-green: #10b981;
+      --accent-cyan: #38bdf8;
+      --text-main: #f8fafc;
+      --text-muted: #9ca3af;
+      --border-subtle: rgba(212, 175, 55, 0.22);
+      --border-gold: rgba(212, 175, 55, 0.45);
+      --border-glow: rgba(212, 175, 55, 0.35);
+      --glass-blur: blur(16px);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(212, 175, 55, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(229, 9, 20, 0.08) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(212, 175, 55, 0.06) 0px, transparent 50%);
+      color: var(--text-main);
+      font-family: 'Montserrat', sans-serif;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    h1, h2, h3, h4, .brand-title, .cf-title, .cf-badge {
+      font-family: 'Cinzel', serif;
+      letter-spacing: 0.03em;
+    }
+
+    /* Top Navigation (Scope Cinemas) */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(7, 7, 10, 0.88);
+      backdrop-filter: var(--glass-blur);
+      border-bottom: 1px solid var(--border-gold);
+      padding: 0.9rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .scope-logo-icon {
+      font-size: 1.8rem;
+      color: var(--scope-gold);
+      filter: drop-shadow(0 0 10px var(--scope-gold-glow));
+    }
+
+    .brand-title {
+      font-size: 1.35rem;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      background: linear-gradient(135deg, #ffffff 40%, var(--scope-gold-light) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-subtitle {
+      font-size: 0.64rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--scope-gold);
+      font-weight: 700;
+      margin-top: -3px;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(229, 9, 20, 0.25));
+      border: 1px solid var(--border-gold);
+      color: var(--scope-gold-light);
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* Cinema Finder Step 1 Section (Scope Cinemas Theme) */
+    .cinema-finder-card {
+      background: linear-gradient(135deg, rgba(20, 20, 28, 0.95) 0%, rgba(10, 10, 15, 0.98) 100%);
+      border: 1.5px solid var(--border-gold);
+      border-radius: 20px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      backdrop-filter: var(--glass-blur);
+      box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.8), 0 0 25px rgba(212, 175, 55, 0.12);
+      position: relative;
+    }
+
+    .cf-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(229, 9, 20, 0.25));
+      border: 1px solid var(--border-gold);
+      color: var(--scope-gold-light);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      margin-bottom: 0.6rem;
+      text-transform: uppercase;
+    }
+
+    .cf-title {
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      background: linear-gradient(135deg, #ffffff 40%, var(--scope-gold-light) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.35rem;
+    }
+
+    .cf-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .cf-interactive-bar {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 1.2rem;
+      position: relative;
+    }
+
+    @media (max-width: 768px) {
+      .cf-interactive-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+
+    .cf-search-box-wrapper {
+      flex: 1;
+      position: relative;
+    }
+
+    .cf-input-container {
+      display: flex;
+      align-items: center;
+      background: #09090e;
+      border: 1.5px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 0.3rem 0.9rem;
+      transition: all 0.25s ease;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .cf-input-container:focus-within {
+      border-color: var(--scope-gold);
+      box-shadow: 0 0 15px var(--scope-gold-glow), inset 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .cf-input-icon {
+      font-size: 1.15rem;
+      color: var(--scope-gold);
+      margin-right: 0.6rem;
+    }
+
+    .cf-search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 0.95rem;
+      font-family: inherit;
+      padding: 0.6rem 0;
+      outline: none;
+    }
+
+    .cf-search-input::placeholder {
+      color: #6b7280;
+    }
+
+    .cf-clear-icon {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0 0.3rem;
+    }
+
+    .cf-clear-icon:hover {
+      color: #fff;
+    }
+
+    .cf-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: #0d0d14;
+      border: 1.5px solid var(--border-gold);
+      border-radius: 12px;
+      max-height: 320px;
+      overflow-y: auto;
+      z-index: 100;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.85), 0 0 25px rgba(212, 175, 55, 0.2);
+    }
+
+    .cf-dropdown-item {
+      padding: 0.85rem 1.1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      transition: background 0.15s ease;
+    }
+
+    .cf-dropdown-item:last-child {
+      border-bottom: none;
+    }
+
+    .cf-dropdown-item:hover, .cf-dropdown-item.active {
+      background: rgba(212, 175, 55, 0.18);
+    }
+
+    .cf-divider-pill {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--scope-gold);
+      background: rgba(212, 175, 55, 0.1);
+      padding: 0.45rem 0.75rem;
+      border-radius: 9999px;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      text-align: center;
+    }
+
+    .btn-scope-gps {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      background: linear-gradient(135deg, var(--scope-gold) 0%, #b8860b 100%);
+      color: #07070a;
+      font-weight: 800;
+      font-size: 0.9rem;
+      padding: 0.9rem 1.5rem;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.25s ease;
+      box-shadow: 0 6px 18px -2px rgba(212, 175, 55, 0.4);
+    }
+
+    .btn-scope-gps:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -4px rgba(212, 175, 55, 0.6);
+      background: linear-gradient(135deg, #f5d77f 0%, #d4af37 100%);
+    }
+
+    .cf-alert-banner {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #6ee7b7;
+      border-radius: 10px;
+      padding: 0.8rem 1.1rem;
+      font-size: 0.88rem;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    /* Active Cinema Spotlight Card */
+    .active-spotlight-card {
+      background: linear-gradient(135deg, rgba(25, 25, 35, 0.85) 0%, rgba(14, 14, 20, 0.98) 100%);
+      border: 1.5px solid var(--border-gold);
+      border-radius: 14px;
+      padding: 1.3rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .asc-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .asc-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .asc-name {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 0.02em;
+    }
+
+    .asc-city-pill {
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid var(--border-gold);
+      color: var(--scope-gold-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .asc-dist-badge {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .asc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+      background: rgba(8, 8, 12, 0.6);
+      border-radius: 10px;
+      padding: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .asc-info-item {
+      display: flex;
+      gap: 0.7rem;
+      align-items: flex-start;
+    }
+
+    .asc-icon {
+      font-size: 1.25rem;
+      line-height: 1;
+      margin-top: 2px;
+    }
+
+    .asc-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+      margin-bottom: 0.15rem;
+      font-weight: 700;
+    }
+
+    .asc-val {
+      font-size: 0.88rem;
+      color: #f1f5f9;
+      font-weight: 600;
+    }
+
+    .asc-nearby-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.3rem;
+    }
+
+    .asc-nearby-tag {
+      background: rgba(255, 255, 255, 0.06);
+      color: #cbd5e1;
+      font-size: 0.72rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .asc-actions {
+      display: flex;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 0.3rem;
+    }
+
+    .btn-asc-action {
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid var(--border-gold);
+      color: var(--scope-gold-light);
+      padding: 0.45rem 0.95rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-asc-action:hover {
+      background: var(--scope-gold);
+      color: #07070a;
+    }
+
+    .btn-asc-map {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: #38bdf8;
+      padding: 0.45rem 0.95rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.8rem;
+      color: var(--accent-green);
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 0.45rem 0.95rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Hero Banner */
+    .hero {
+      position: relative;
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.8) 100%);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      backdrop-filter: var(--glass-blur);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--accent-gold);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.6rem;
+    }
+
+    .hero-title {
+      font-size: 2.4rem;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 0.8rem;
+      background: linear-gradient(135deg, #ffffff 30%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 780px;
+    }
+
+    /* Promotions Marquee/Cards */
+    .promos-section {
+      margin-bottom: 2rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .promos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .promo-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 1rem 1.2rem;
+      transition: all 0.25s ease;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .promo-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-glow);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.2);
+    }
+
+    .promo-code-badge {
+      display: inline-block;
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px dashed var(--accent-redopay);
+      color: #a5b4fc;
+      font-family: monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+    }
+
+    .promo-card h4 {
+      font-size: 0.95rem;
+      color: var(--text-main);
+      margin-bottom: 0.3rem;
+    }
+
+    .promo-card p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Main Grid Layout */
+    .app-layout {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      .app-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Configuration Panel */
+    .control-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 1.6rem;
+      backdrop-filter: var(--glass-blur);
+    }
+
+    .control-card h3 {
+      font-size: 1.15rem;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.3rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .form-select, .form-input {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 0.65rem 0.85rem;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-select:focus, .form-input:focus {
+      border-color: var(--accent-redopay);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    }
+
+    .party-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+    }
+
+    .party-btn {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 0.55rem 0;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .party-btn.active {
+      background: var(--accent-redopay);
+      border-color: var(--accent-redopay);
+      color: #fff;
+      box-shadow: 0 0 12px var(--accent-redopay-glow);
+    }
+
+    .budget-slider-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .budget-display {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .budget-value {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--accent-gold);
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.15);
+      outline: none;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-gold);
+      cursor: pointer;
+      box-shadow: 0 0 8px var(--accent-gold-glow);
+      transition: transform 0.1s;
+    }
+
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent-redopay) 0%, var(--accent-redopay-hover) 100%);
+      border: none;
+      color: #ffffff;
+      padding: 0.85rem;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      box-shadow: 0 8px 20px -4px var(--accent-redopay-glow);
+      transition: all 0.2s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px -4px var(--accent-redopay-glow);
+    }
+
+    /* Content Area */
+    .content-area {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .tabs-nav {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 0.5rem;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.92rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: rgba(99, 102, 241, 0.15);
+      color: #a5b4fc;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+
+    /* Recommendation Showcase */
+    .deal-card {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+      border: 1px solid var(--border-glow);
+      border-radius: 18px;
+      padding: 1.8rem;
+      box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    .deal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 1.2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .cinema-meta h2 {
+      font-size: 1.45rem;
+      color: #fff;
+    }
+
+    .cinema-meta p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .score-badge {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: var(--accent-gold);
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .items-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .concession-pill {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .concession-pill .item-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #f1f5f9;
+    }
+
+    .concession-pill .item-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .concession-pill .item-price {
+      font-weight: 700;
+      color: var(--accent-gold);
+      font-size: 0.95rem;
+    }
+
+    /* Financials & Savings Summary */
+    .summary-box {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 1.3rem;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      text-align: center;
+      margin-bottom: 1.2rem;
+    }
+
+    @media (max-width: 768px) {
+      .summary-box {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .sum-metric-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .sum-metric-val {
+      font-size: 1.3rem;
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .sum-metric-val.original {
+      color: #94a3b8;
+      text-decoration: line-through;
+    }
+
+    .sum-metric-val.discount {
+      color: var(--accent-green);
+    }
+
+    .sum-metric-val.final {
+      color: #ffffff;
+      background: linear-gradient(135deg, #a5b4fc, #818cf8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .sum-metric-val.applied {
+      font-size: 0.95rem;
+      color: #c084fc;
+      font-family: monospace;
+      margin-top: 0.3rem;
+    }
+
+    .upsell-alert {
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      font-size: 0.85rem;
+      color: #c7d2fe;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    /* Menu Browser */
+    .menu-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 1.5rem;
+      backdrop-filter: var(--glass-blur);
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .menu-item-card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.7rem;
+      transition: all 0.2s;
+    }
+
+    .menu-item-card:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(30, 41, 59, 0.6);
+    }
+
+    .item-tags {
+      display: flex;
+      gap: 0.3rem;
+      flex-wrap: wrap;
+    }
+
+    .tag-badge {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+    }
+
+    .btn-add-cart {
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #c7d2fe;
+      padding: 0.45rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-add-cart:hover {
+      background: var(--accent-redopay);
+      color: #fff;
+    }
+
+    /* Cinema Food & Concession Location Guide */
+    .btn-geo-detect {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(16, 185, 129, 0.2));
+      border: 1px solid var(--border-glow);
+      color: #a5b4fc;
+      border-radius: 8px;
+      padding: 0.35rem 0.65rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s;
+    }
+    .btn-geo-detect:hover {
+      background: var(--accent-redopay);
+      color: #fff;
+    }
+
+    .food-guide-card {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 12px;
+      padding: 0.85rem;
+      margin-top: 0.75rem;
+      display: none;
+    }
+    .fg-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.6rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .dist-badge {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+      font-size: 0.7rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: 9999px;
+      font-weight: 700;
+    }
+    .fg-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .fg-icon {
+      font-size: 1.1rem;
+    }
+    .fg-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #f1f5f9;
+    }
+    .fg-sub {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+    .fg-badges-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 0.5rem;
+      align-items: center;
+    }
+    .fg-badge {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.06);
+      color: #cbd5e1;
+    }
+    .fg-badge.open {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .fg-badge.seat {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .fg-badge.counter {
+      background: rgba(99, 102, 241, 0.15);
+      color: #a5b4fc;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+    .fg-map-link {
+      font-size: 0.7rem;
+      color: #38bdf8;
+      text-decoration: none;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      background: rgba(56, 189, 248, 0.1);
+      transition: all 0.2s;
+    }
+    .fg-map-link:hover {
+      background: #38bdf8;
+      color: #0f172a;
+    }
+    .fg-nearby-box {
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 8px;
+      padding: 0.5rem;
+      margin-top: 0.4rem;
+    }
+    .fg-nearby-lbl {
+      display: block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.3rem;
+      font-weight: 700;
+    }
+    .fg-nearby-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+    .nearby-pill {
+      font-size: 0.68rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+    }
+
+    /* Every Food Item Discounts Box */
+    .save-tag {
+      display: inline-block;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #ffffff;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 0.12rem 0.4rem;
+      border-radius: 4px;
+      letter-spacing: 0.03em;
+    }
+    .item-discounts-box {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 8px;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+    }
+    .discounts-header {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #cbd5e1;
+      margin-bottom: 0.35rem;
+    }
+    .discounts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .disc-pill {
+      font-size: 0.68rem;
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 4px;
+      padding: 0.2rem 0.4rem;
+      color: #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Modal / API Docs */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-window {
+      background: #0f172a;
+      border: 1px solid var(--border-glow);
+      border-radius: 16px;
+      max-width: 720px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 2rem;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1.2rem;
+      right: 1.2rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    pre code {
+      display: block;
+      background: #090d16;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 0.9rem;
+      font-family: monospace;
+      font-size: 0.82rem;
+      color: #38bdf8;
+      overflow-x: auto;
+      margin: 0.6rem 0 1.2rem;
+    }
+
+    /* Colombo Exclusion Banner */
+    .colombo-toast {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      padding: 0.9rem 1.2rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      display: none;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+    }
+    /* Mobile Device Simulator Modal */
+    .simulator-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(14px);
+      z-index: 200;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .simulator-overlay.open {
+      display: flex;
+    }
+
+    .simulator-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8rem;
+      position: relative;
+    }
+
+    .phone-mockup {
+      width: 395px;
+      height: 790px;
+      background: #000;
+      border: 11px solid #1e293b;
+      border-radius: 50px;
+      position: relative;
+      box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.9), 0 0 30px rgba(99, 102, 241, 0.35);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .phone-island {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 105px;
+      height: 24px;
+      background: #000;
+      border-radius: 20px;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 12px;
+      box-shadow: 0 0 2px rgba(255, 255, 255, 0.1);
+    }
+
+    .phone-camera {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #111827;
+      border: 1px solid #1f2937;
+    }
+
+    .phone-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: var(--bg-dark);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header (Scope Cinemas Theme) -->
+  <header>
+    <div class="brand-group">
+      <div class="scope-logo-icon">👑</div>
+      <div>
+        <div class="brand-title">SCOPE CINEMAS</div>
+        <div class="brand-subtitle">CANDY BAR & CONCESSION PASS</div>
+      </div>
+      <span class="brand-badge">VIP REWARDS</span>
+    </div>
+
+    <div class="nav-actions">
+      <div class="status-badge" id="system-status">
+        <span class="status-dot"></span>
+        <span>Cinema Network Active</span>
+      </div>
+      <button class="btn-primary" id="btn-open-simulator" style="width:auto; padding:0.45rem 0.95rem; font-size:0.82rem; background:linear-gradient(135deg, var(--scope-gold), #b8860b); color:#07070a; font-weight:800; box-shadow:0 0 12px var(--scope-gold-glow);">
+        📱 Mobile Simulator
+      </button>
+      <a href="/mobile" target="_blank" class="btn-secondary" style="text-decoration:none; display:inline-flex; align-items:center; gap:0.3rem;">
+        <span>↗ Mobile Fullscreen</span>
+      </a>
+      <button class="btn-secondary" id="btn-open-docs">API Docs</button>
+      <button class="btn-secondary" id="btn-test-colombo">Test Colombo</button>
+    </div>
+  </header>
+
+  <!-- Container -->
+  <main class="container">
+
+    <div class="colombo-toast" id="colombo-alert">
+      <strong>⚠️ Regional Policy Restriction:</strong>
+      <span id="colombo-msg">Theaters inside the Colombo metropolitan area are excluded by system design.</span>
+    </div>
+
+    <!-- Hero Section (Scope Cinemas) -->
+    <section class="hero" style="border: 1px solid var(--border-gold); background: linear-gradient(135deg, rgba(20, 20, 28, 0.7) 0%, rgba(10, 10, 15, 0.9) 100%);">
+      <div class="hero-tag" style="color:var(--scope-gold);">👑 SCOPE CINEMAS VIP EXPERIENCE &bull; CANDY BAR RECOMMENDER</div>
+      <h1 class="hero-title" style="background: linear-gradient(135deg, #ffffff 40%, var(--scope-gold-light) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+        Cinema Concessions & Savings Pass
+      </h1>
+      <p class="hero-subtitle">
+        First choose your cinema or tap location services to auto-detect where you are! Explore candy bar menus, unlock in-theater discounts, and generate an <strong>In-Person Physical Counter Voucher</strong> to present at the snack counter.
+        <span style="color:var(--scope-gold-light); display:block; margin-top:0.4rem; font-size:0.88rem; font-weight:600;">⚠️ In-Theater Counter Redemption: Food is not delivered online. Collect and redeem physically at the candy bar upon your arrival.</span>
+      </p>
+    </section>
+
+    <!-- STEP 1: Cinema Discovery & Location Detector -->
+    <section class="cinema-finder-card" id="cinema-finder">
+      <div class="cf-header">
+        <div class="cf-badge">👑 STEP 1: SELECT YOUR CINEMA</div>
+        <h2 class="cf-title">FIND YOUR THEATER & CANDY BAR</h2>
+        <p class="cf-subtitle">
+          Search by cinema name, city, or tap location services to automatically detect where you are at!
+        </p>
+      </div>
+
+      <div class="cf-interactive-bar">
+        <!-- Live Search Box with Instant Suggestions -->
+        <div class="cf-search-box-wrapper">
+          <div class="cf-input-container">
+            <span class="cf-input-icon">🔍</span>
+            <input type="text" id="cinema-search-input" class="cf-search-input" placeholder="Type cinema name (e.g. KCC Kandy, Regal, Queens, Jaffna...), city, or mall..." autocomplete="off">
+            <button type="button" id="btn-clear-search" class="cf-clear-icon" onclick="clearCinemaSearch()" style="display:none;" title="Clear search">&times;</button>
+          </div>
+          <!-- Dropdown menu -->
+          <div id="cinema-search-dropdown" class="cf-dropdown-menu" style="display:none;"></div>
+        </div>
+
+        <div class="cf-divider-pill">OR</div>
+
+        <!-- Location Services (GPS) Button -->
+        <button type="button" class="btn-scope-gps" id="btn-detect-gps" onclick="autoDetectLocation()">
+          <span class="gps-beacon-icon">📍</span>
+          <span id="gps-btn-text">Detect My Cinema (GPS)</span>
+        </button>
+      </div>
+
+      <!-- Detection Status Banner -->
+      <div id="detection-status-alert" class="cf-alert-banner" style="display:none;"></div>
+
+      <!-- Active Cinema Spotlight Card -->
+      <div id="active-cinema-spotlight" class="active-spotlight-card">
+        <div style="text-align:center; padding:1.5rem; color:var(--text-muted);">
+          <span>Loading active theater information...</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Redopay Campaigns Strip -->
+    <section class="promos-section">
+      <div class="section-header">
+        <h3 class="section-title">💳 Active Redopay Concession Promotions</h3>
+        <span style="font-size: 0.8rem; color: var(--text-muted);">Automatically matched at checkout</span>
+      </div>
+      <div class="promos-grid" id="promos-container">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+
+    <!-- Main Grid -->
+    <div class="app-layout">
+
+      <!-- Left: Planner Control Panel -->
+      <aside class="control-card">
+        <h3>⚙️ Recommendation Planner</h3>
+
+        <form id="recommend-form">
+          <div class="form-group">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+              <label class="form-label" for="cinema-select" style="margin:0;">Regional Cinema</label>
+              <button type="button" class="btn-geo-detect" id="btn-detect-gps" onclick="autoDetectLocation()">
+                📍 Auto-Detect Location
+              </button>
+            </div>
+            <select class="form-select" id="cinema-select">
+              <option value="">Loading theaters...</option>
+            </select>
+            <!-- Cinema Food & Refreshment Location Guide -->
+            <div id="cinema-food-guide" class="food-guide-card"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Party Size</label>
+            <div class="party-buttons" id="party-buttons">
+              <button type="button" class="party-btn" data-val="1">Solo</button>
+              <button type="button" class="party-btn active" data-val="2">Couple</button>
+              <button type="button" class="party-btn" data-val="3">Trio</button>
+              <button type="button" class="party-btn" data-val="4">4+ Group</button>
+            </div>
+            <input type="hidden" id="party-size" value="2">
+          </div>
+
+          <div class="form-group">
+            <div class="budget-slider-wrap">
+              <div class="budget-display">
+                <span class="form-label" style="margin:0;">Target Budget</span>
+                <span class="budget-value" id="budget-val-text">LKR 2,500</span>
+              </div>
+              <input type="range" id="budget-range" min="1000" max="6000" step="250" value="2500">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="tier-select">Redopay Card Tier</label>
+            <select class="form-select" id="tier-select">
+              <option value="Standard">Standard Account</option>
+              <option value="Student">Student Moviegoer Pass (20% off)</option>
+              <option value="Silver">Silver Tier</option>
+              <option value="Gold">Gold Tier</option>
+              <option value="Platinum">Platinum VIP (35% off)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="promo-override">Promo Code (Optional)</label>
+            <input type="text" class="form-input" id="promo-override" placeholder="e.g. REDOPAY-COMBO30">
+          </div>
+
+          <button type="submit" class="btn-primary" id="btn-submit-recommend">
+            <span>✨ Calculate Best Redopay Deal</span>
+          </button>
+        </form>
+      </aside>
+
+      <!-- Right: Results & Concession Menu -->
+      <section class="content-area">
+        <div class="tabs-nav">
+          <button class="tab-btn active" id="tab-rec" onclick="switchTab('rec')">Recommended Deal</button>
+          <button class="tab-btn" id="tab-menu" onclick="switchTab('menu')">Full Concession Menu</button>
+          <button class="tab-btn" id="tab-cart" onclick="switchTab('cart')">Custom Cart (<span id="cart-count">0</span>)</button>
+        </div>
+
+        <!-- View 1: Recommendation Showcase -->
+        <div id="view-rec">
+          <div class="deal-card" id="deal-container">
+            <div style="text-align:center; padding: 2rem; color: var(--text-muted);">
+              Select options and click "Calculate Best Redopay Deal" to compute the optimal bundle.
+            </div>
+          </div>
+        </div>
+
+        <!-- View 2: Full Concession Menu Browser -->
+        <div id="view-menu" style="display:none;">
+          <div class="menu-card">
+            <div class="section-header">
+              <h3 class="section-title">🍿 Live Regional Concessions Menu</h3>
+              <span id="menu-cinema-badge" style="font-size:0.85rem; color:var(--accent-gold);"></span>
+            </div>
+            <div class="menu-grid" id="menu-items-grid">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- View 3: Custom Cart -->
+        <div id="view-cart" style="display:none;">
+          <div class="menu-card">
+            <div class="section-header">
+              <h3 class="section-title">🛒 Custom Concession Cart</h3>
+              <button class="btn-secondary" onclick="clearCart()">Clear Cart</button>
+            </div>
+            <div id="cart-content">
+              <p style="color:var(--text-muted); text-align:center; padding:2rem;">Your cart is empty. Add items from the Full Concession Menu tab.</p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- API Docs Modal -->
+  <div class="modal-overlay" id="docs-modal">
+    <div class="modal-window">
+      <button class="modal-close" id="btn-close-docs">&times;</button>
+      <h2>📖 REST API Documentation</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">
+        The Go backend service exposes production-ready REST endpoints for out-of-Colombo cinema concessions.
+      </p>
+
+      <h4>1. Health Check</h4>
+      <pre><code>GET /api/v1/health
+curl -i http://localhost:8080/api/v1/health</code></pre>
+
+      <h4>2. List Regional Out-of-Colombo Cinemas</h4>
+      <pre><code>GET /api/v1/cinemas
+curl -i http://localhost:8080/api/v1/cinemas</code></pre>
+
+      <h4>3. Scrape Concession Menu</h4>
+      <pre><code>GET /api/v1/cinemas/{id}/concessions
+curl -i http://localhost:8080/api/v1/cinemas/KND-KCC/concessions</code></pre>
+
+      <h4>4. Calculate Value-Optimized Recommendation</h4>
+      <pre><code>POST /api/v1/recommend
+Content-Type: application/json
+
+curl -X POST http://localhost:8080/api/v1/recommend \
+  -H "Content-Type: application/json" \
+  -d '{"cinema_id":"KND-KCC","budget_lkr":2500,"party_size":2,"redopay_tier":"Standard"}'</code></pre>
+
+      <h4>5. Evaluate User Cart & Redopay Discounts</h4>
+      <pre><code>POST /api/v1/cart/evaluate
+Content-Type: application/json
+
+curl -X POST http://localhost:8080/api/v1/cart/evaluate \
+  -H "Content-Type: application/json" \
+  -d '{"cinema_id":"KND-KCC","items":[{"item_id":"KND-01","quantity":1},{"item_id":"KND-03","quantity":2}]}'</code></pre>
+    </div>
+  </div>
+
+  <!-- Mobile Simulator Modal -->
+  <div class="simulator-overlay" id="simulator-modal">
+    <div class="simulator-content">
+      <div style="display:flex; justify-content:space-between; width:100%; max-width:395px; align-items:center;">
+        <span style="font-weight:700; font-size:0.95rem; color:#fff; display:flex; align-items:center; gap:0.4rem;">
+          <span>📱</span> CinemaSnack Mobile Simulator
+        </span>
+        <div style="display:flex; gap:0.5rem; align-items:center;">
+          <a href="/mobile" target="_blank" class="btn-secondary" style="font-size:0.75rem; text-decoration:none; padding:0.3rem 0.6rem;">
+            Open Tab ↗
+          </a>
+          <button class="modal-close" id="btn-close-simulator" style="position:static; font-size:1.4rem;">&times;</button>
+        </div>
+      </div>
+
+      <div class="phone-mockup">
+        <div class="phone-island">
+          <div class="phone-camera"></div>
+        </div>
+        <iframe src="/mobile" class="phone-iframe" id="simulator-frame"></iframe>
+      </div>
+
+      <p style="font-size:0.78rem; color:var(--text-muted); text-align:center;">
+        💡 Native mobile PWA with touch tabs, live menu, deal optimizer, and Redopay wallet.
+      </p>
+    </div>
+  </div>
+
+  <!-- In-Person Concession Counter Voucher Modal -->
+  <div class="modal-overlay" id="checkout-modal">
+    <div class="modal-window" style="max-width: 620px;">
+      <button class="modal-close" id="btn-close-checkout">&times;</button>
+      <h2 style="font-size:1.35rem; margin-bottom:0.3rem;">🎟️ Physical Concession Counter Voucher</h2>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.8rem;">
+        Generate your in-theater savings pass & choose your payment method for physical counter collection:
+      </p>
+
+      <div style="background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.35); border-radius:10px; padding:0.7rem 0.9rem; font-size:0.78rem; color:#fde68a; margin-bottom:1.1rem; line-height:1.4;">
+        <strong>⚠️ Physical Visit Reminder:</strong> Food is <strong>not delivered online</strong>. This voucher locks in your promotional discounts for in-person pickup at the cinema candy bar counter.
+      </div>
+
+      <div id="checkout-step-pay">
+        <div style="background:rgba(15,23,42,0.85); border:1px solid var(--border-subtle); border-radius:12px; padding:1rem; margin-bottom:1.2rem;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem; font-size:0.88rem;">
+            <span style="color:var(--text-muted);">Concession Subtotal:</span>
+            <strong id="ck-subtotal" style="color:#fff;">LKR 0.00</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:0.88rem; color:var(--accent-green); margin-bottom:0.3rem;">
+            <span id="ck-discount-label">Gateway Discount:</span>
+            <strong id="ck-discount">-LKR 0.00</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:800; border-top:1px solid var(--border-subtle); padding-top:0.5rem; margin-top:0.3rem;">
+            <span>Counter Payable:</span>
+            <span style="color:var(--accent-gold);" id="ck-payable">LKR 0.00</span>
+          </div>
+        </div>
+
+        <label class="form-label">Payment & Counter Voucher Channel</label>
+        <div id="lk-payment-methods-grid" style="display:grid; grid-template-columns:1fr; gap:0.6rem; margin-bottom:1.2rem; max-height:270px; overflow-y:auto; padding-right:0.3rem;">
+          <!-- Loaded dynamically -->
+        </div>
+
+        <div id="ck-phone-group" style="display:none; margin-bottom:1rem;">
+          <label class="form-label" for="ck-customer-phone">Sri Lankan Mobile Number (for USSD/PIN Push)</label>
+          <input type="tel" id="ck-customer-phone" class="form-input" placeholder="e.g. 077 123 4567" value="077 123 4567">
+        </div>
+
+        <button class="btn-primary" id="btn-confirm-checkout" style="background:linear-gradient(135deg, #10b981, #059669);">
+          <span>🎟️ Generate Physical Counter Voucher</span>
+        </button>
+      </div>
+
+      <!-- Receipt / Counter Voucher Step -->
+      <div id="checkout-step-receipt" style="display:none; text-align:center; padding:0.5rem 0;">
+        <div style="font-size:2.8rem; margin-bottom:0.4rem;">🎟️</div>
+        <h3 style="font-size:1.35rem; color:var(--accent-green); margin-bottom:0.3rem;">Physical Counter Voucher Ready!</h3>
+        <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;" id="receipt-summary-text"></p>
+
+        <div id="receipt-details-box" style="background:#090d16; border:1px solid var(--border-glow); border-radius:14px; padding:1.2rem; text-align:left; margin-bottom:1.2rem; font-size:0.85rem;">
+        </div>
+
+        <button class="btn-primary" onclick="closeCheckoutModal()" style="margin:0 auto; max-width:240px;">Done & Save Pass</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let registeredCinemas = [];
+    let currentCinema = null;
+    let currentMenu = [];
+    let customCart = [];
+    let paymentMethods = [];
+    let selectedPaymentMethod = "REDOPAY";
+    let activeCheckoutPayload = null;
+    let currentRecommendedDeal = null;
+
+    // Initialize
+    document.addEventListener("DOMContentLoaded", async () => {
+      setupPartyButtons();
+      setupBudgetSlider();
+      setupDocsModal();
+      setupSimulatorModal();
+      setupCheckoutModal();
+      setupColomboTest();
+
+      await loadPromotions();
+      await loadCinemas();
+      await loadPaymentMethods();
+
+      // Trigger initial recommendation calculation
+      document.getElementById("recommend-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        calculateRecommendation();
+      });
+    });
+
+    function setupCheckoutModal() {
+      const modal = document.getElementById("checkout-modal");
+      document.getElementById("btn-close-checkout").addEventListener("click", closeCheckoutModal);
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeCheckoutModal();
+      });
+      document.getElementById("btn-confirm-checkout").addEventListener("click", executeConfirmCheckout);
+    }
+
+    function setupSimulatorModal() {
+      const modal = document.getElementById("simulator-modal");
+      document.getElementById("btn-open-simulator").addEventListener("click", () => modal.classList.add("open"));
+      document.getElementById("btn-close-simulator").addEventListener("click", () => modal.classList.remove("open"));
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) modal.classList.remove("open");
+      });
+    }
+
+    function setupPartyButtons() {
+      const btns = document.querySelectorAll(".party-btn");
+      btns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          btns.forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          document.getElementById("party-size").value = btn.dataset.val;
+        });
+      });
+    }
+
+    function setupBudgetSlider() {
+      const slider = document.getElementById("budget-range");
+      const text = document.getElementById("budget-val-text");
+      slider.addEventListener("input", () => {
+        text.innerText = `LKR ${Number(slider.value).toLocaleString()}`;
+      });
+    }
+
+    function setupDocsModal() {
+      const modal = document.getElementById("docs-modal");
+      document.getElementById("btn-open-docs").addEventListener("click", () => modal.classList.add("open"));
+      document.getElementById("btn-close-docs").addEventListener("click", () => modal.classList.remove("open"));
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) modal.classList.remove("open");
+      });
+    }
+
+    function setupColomboTest() {
+      document.getElementById("btn-test-colombo").addEventListener("click", async () => {
+        const toast = document.getElementById("colombo-alert");
+        const msg = document.getElementById("colombo-msg");
+        try {
+          const res = await fetch("/api/v1/recommend", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ city: "Colombo", budget_lkr: 2000, party_size: 2 })
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            msg.innerText = data.error || "Location rejected: strictly scoped outside Colombo.";
+            toast.style.display = "flex";
+            setTimeout(() => { toast.style.display = "none"; }, 6000);
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      });
+    }
+
+    async function loadPromotions() {
+      try {
+        const res = await fetch("/api/v1/promotions/redopay");
+        const promos = await res.json();
+        const container = document.getElementById("promos-container");
+        container.innerHTML = "";
+
+        promos.forEach(p => {
+          const card = document.createElement("div");
+          card.className = "promo-card";
+          card.onclick = () => {
+            document.getElementById("promo-override").value = p.promo_code;
+          };
+          card.innerHTML = `
+            <span class="promo-code-badge">${p.promo_code}</span>
+            <h4>${p.title}</h4>
+            <p>${p.description}</p>
+          `;
+          container.appendChild(card);
+        });
+      } catch (err) {
+        console.error("Failed to load promotions:", err);
+      }
+    }
+
+    function renderFoodGuide(cinema) {
+      const guide = document.getElementById("cinema-food-guide");
+      if (!cinema) {
+        guide.innerHTML = "";
+        guide.style.display = "none";
+        return;
+      }
+
+      guide.style.display = "block";
+      const nearbyTags = (cinema.nearby_food_options || []).map(opt => `<span class="nearby-pill">🍽️ ${opt}</span>`).join(" ");
+      const distBadge = cinema.distance_km ? `<span class="dist-badge">📍 ${cinema.distance_km.toFixed(1)} km away</span>` : "";
+
+      guide.innerHTML = `
+        <div class="fg-header">
+          <div style="display:flex; align-items:center; gap:0.4rem;">
+            <span style="font-size:1.05rem;">🍔</span>
+            <strong style="font-size:0.85rem; color:#f8fafc;">Food & Concession Guide</strong>
+          </div>
+          ${distBadge}
+        </div>
+        <div class="fg-body">
+          <div class="fg-row">
+            <span class="fg-icon">🍿</span>
+            <div>
+              <div class="fg-title">${cinema.food_place_name || "In-Theater Concession Stand"}</div>
+              <div class="fg-sub">${cinema.food_place_type || "Concession Stand"} &bull; ⏰ ${cinema.food_hours || "10:00 AM - 10:30 PM"}</div>
+            </div>
+          </div>
+          <div class="fg-badges-row">
+            <span class="fg-badge ${cinema.has_in_house_food ? 'open' : ''}">🟢 Concessions Stand Open</span>
+            ${cinema.food_delivery_to_seat ? '<span class="fg-badge seat">💺 Seat Delivery in VIP</span>' : '<span class="fg-badge counter">🛍️ Counter Pickup</span>'}
+            ${cinema.map_url ? `<a href="${cinema.map_url}" target="_blank" class="fg-map-link">🗺️ Google Maps</a>` : ''}
+          </div>
+          ${cinema.nearby_food_options && cinema.nearby_food_options.length > 0 ? `
+            <div class="fg-nearby-box">
+              <span class="fg-nearby-lbl">Nearby Mall Food Court & Stalls:</span>
+              <div class="fg-nearby-pills">${nearbyTags}</div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    function autoDetectLocation() {
+    function renderActiveCinemaSpotlight(cinema) {
+      const container = document.getElementById("active-cinema-spotlight");
+      if (!cinema) {
+        container.innerHTML = `<div style="text-align:center; padding:1rem; color:var(--text-muted);">Please select a cinema above.</div>`;
+        return;
+      }
+
+      const distTag = cinema.distance_km !== undefined && cinema.distance_km !== null 
+        ? `<span class="asc-dist-badge">📍 ${cinema.distance_km.toFixed(1)} km away</span>` 
+        : '';
+      const nearbyTags = (cinema.nearby_food_options || []).map(opt => `<span class="asc-nearby-tag">🍽️ ${opt}</span>`).join(" ");
+
+      container.innerHTML = `
+        <div class="asc-top">
+          <div class="asc-title-wrap">
+            <span style="font-size:1.4rem;">🎬</span>
+            <div>
+              <div class="asc-name">${cinema.name}</div>
+              <div style="font-size:0.78rem; color:var(--text-muted);">${cinema.address || cinema.city}</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <span class="asc-city-pill">${cinema.city} &bull; ${cinema.province || 'Regional'}</span>
+            ${distTag}
+          </div>
+        </div>
+
+        <div class="asc-grid">
+          <div class="asc-info-item">
+            <span class="asc-icon">🍿</span>
+            <div>
+              <div class="asc-label">In-Theater Concession Stand</div>
+              <div class="asc-val">${cinema.food_place_name || 'Main Cinema Candy Bar'}</div>
+              <div style="font-size:0.75rem; color:#cbd5e1; margin-top:0.2rem;">⏰ ${cinema.food_hours || '10:00 AM - 10:30 PM'}</div>
+            </div>
+          </div>
+
+          <div class="asc-info-item">
+            <span class="asc-icon">🛍️</span>
+            <div>
+              <div class="asc-label">Concession Pickup Style</div>
+              <div class="asc-val">${cinema.food_delivery_to_seat ? '💺 VIP In-Seat Delivery & 🛍️ Counter Pickup' : '🛍️ Physical Counter Pickup'}</div>
+              <div style="font-size:0.75rem; color:#34d399; margin-top:0.2rem;">🟢 Concessions Stand Open</div>
+            </div>
+          </div>
+
+          ${cinema.nearby_food_options && cinema.nearby_food_options.length > 0 ? `
+            <div class="asc-info-item" style="grid-column: 1 / -1;">
+              <span class="asc-icon">🍽️</span>
+              <div>
+                <div class="asc-label">Nearby Food Court & Dining:</div>
+                <div class="asc-nearby-pills">${nearbyTags}</div>
+              </div>
+            </div>
+          ` : ''}
+        </div>
+
+        <div class="asc-actions">
+          <button class="btn-asc-action" onclick="switchTab('menu')">🍿 View Concession Menu & Discounts</button>
+          <button class="btn-asc-action" onclick="switchTab('rec')">⚡ Calculate Best Deal</button>
+          ${cinema.map_url ? `<a href="${cinema.map_url}" target="_blank" class="btn-asc-map">🗺️ Open in Google Maps ↗</a>` : ''}
+          <button class="btn-asc-action" onclick="focusCinemaSearch()" style="background:none; border-color:var(--border-subtle); color:var(--text-muted);">🔍 Change Cinema</button>
+        </div>
+      `;
+    }
+
+    function setupCinemaSearch() {
+      const input = document.getElementById("cinema-search-input");
+      const dropdown = document.getElementById("cinema-search-dropdown");
+      const clearBtn = document.getElementById("btn-clear-search");
+
+      if (!input) return;
+
+      input.addEventListener("input", () => {
+        const query = input.value.trim().toLowerCase();
+        if (query.length === 0) {
+          clearBtn.style.display = "none";
+          dropdown.style.display = "none";
+          dropdown.innerHTML = "";
+          return;
+        }
+
+        clearBtn.style.display = "block";
+        const matches = registeredCinemas.filter(c => 
+          c.name.toLowerCase().includes(query) ||
+          c.city.toLowerCase().includes(query) ||
+          (c.address && c.address.toLowerCase().includes(query)) ||
+          (c.food_place_name && c.food_place_name.toLowerCase().includes(query))
+        );
+
+        if (matches.length === 0) {
+          dropdown.innerHTML = `
+            <div style="padding:1rem; text-align:center; color:var(--text-muted); font-size:0.85rem;">
+              No regional cinemas found matching "<strong>${input.value}</strong>".<br>
+              <span style="font-size:0.75rem; color:#94a3b8;">Try Kandy, Gampaha, Galle, Kurunegala, Negombo, Jaffna...</span>
+            </div>
+          `;
+          dropdown.style.display = "block";
+          return;
+        }
+
+        dropdown.innerHTML = matches.map(c => {
+          const dist = c.distance_km !== undefined && c.distance_km !== null 
+            ? `<span style="font-size:0.75rem; color:#34d399; font-weight:700;">📍 ${c.distance_km.toFixed(1)} km</span>` 
+            : `<span style="font-size:0.72rem; color:var(--accent-gold);">${c.city}</span>`;
+
+          return `
+            <div class="cf-dropdown-item" onclick="selectCinema('${c.id}')">
+              <div>
+                <div style="font-weight:700; color:#fff; font-size:0.92rem;">${c.name}</div>
+                <div style="font-size:0.75rem; color:var(--text-muted);">
+                  📍 ${c.city} &bull; 🍿 ${c.food_place_name || 'Candy Bar Counter'}
+                </div>
+              </div>
+              <div>${dist}</div>
+            </div>
+          `;
+        }).join("");
+
+        dropdown.style.display = "block";
+      });
+
+      // Close dropdown if clicked outside
+      document.addEventListener("click", (e) => {
+        if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+          dropdown.style.display = "none";
+        }
+      });
+    }
+
+    function clearCinemaSearch() {
+      const input = document.getElementById("cinema-search-input");
+      const clearBtn = document.getElementById("btn-clear-search");
+      const dropdown = document.getElementById("cinema-search-dropdown");
+      input.value = "";
+      clearBtn.style.display = "none";
+      dropdown.style.display = "none";
+      input.focus();
+    }
+
+    function focusCinemaSearch() {
+      const input = document.getElementById("cinema-search-input");
+      if (input) {
+        input.focus();
+        input.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+
+    function selectCinema(cinemaId) {
+      const found = registeredCinemas.find(c => c.id === cinemaId);
+      if (!found) return;
+
+      currentCinema = found;
+
+      // Update search input and hide dropdown
+      const input = document.getElementById("cinema-search-input");
+      const dropdown = document.getElementById("cinema-search-dropdown");
+      if (input) input.value = currentCinema.name;
+      if (dropdown) dropdown.style.display = "none";
+
+      // Sync sidebar select dropdown
+      const select = document.getElementById("cinema-select");
+      if (select) select.value = currentCinema.id;
+
+      // Render spotlights and load menus
+      renderActiveCinemaSpotlight(currentCinema);
+      renderFoodGuide(currentCinema);
+      loadCinemaMenu(currentCinema.id);
+      calculateRecommendation();
+    }
+
+    function autoDetectLocation() {
+      const btn = document.getElementById("btn-detect-gps");
+      const alertBox = document.getElementById("detection-status-alert");
+      if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser.");
+        return;
+      }
+
+      const originalBtnText = btn.innerHTML;
+      btn.innerHTML = `<span>⏳ Detecting location...</span>`;
+      btn.disabled = true;
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          try {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const res = await fetch(`/api/v1/cinemas?lat=${lat}&lng=${lng}`);
+            if (!res.ok) throw new Error("Failed to fetch nearby cinemas");
+            registeredCinemas = await res.json();
+
+            // Refresh the sidebar select
+            const select = document.getElementById("cinema-select");
+            select.innerHTML = "";
+            registeredCinemas.forEach(c => {
+              const opt = document.createElement("option");
+              opt.value = c.id;
+              const dist = c.distance_km ? ` [${c.distance_km.toFixed(1)} km]` : "";
+              opt.innerText = `${c.name} (${c.city})${dist}`;
+              select.appendChild(opt);
+            });
+
+            if (registeredCinemas.length > 0) {
+              const nearest = registeredCinemas[0];
+              selectCinema(nearest.id);
+
+              if (alertBox) {
+                if (nearest.distance_km !== undefined && nearest.distance_km <= 0.5) {
+                  alertBox.innerHTML = `<span>🎯 <strong>Detected:</strong> You are currently at <strong>${nearest.name}</strong> in ${nearest.city}! In-theater candy bar is ready.</span>`;
+                } else {
+                  alertBox.innerHTML = `<span>📍 <strong>Location Detected:</strong> Nearest cinema is <strong>${nearest.name}</strong> (${nearest.distance_km ? nearest.distance_km.toFixed(1) + ' km away' : ''} in ${nearest.city}).</span>`;
+                }
+                alertBox.style.display = "flex";
+              }
+
+              btn.innerHTML = `<span>📍 ${nearest.city} (${nearest.distance_km ? nearest.distance_km.toFixed(1) + 'km' : 'Nearest'})</span>`;
+            }
+          } catch (err) {
+            console.error("Geo search failed:", err);
+            btn.innerHTML = originalBtnText;
+          } finally {
+            btn.disabled = false;
+          }
+        },
+        (err) => {
+          console.warn("Geolocation error:", err);
+          btn.innerHTML = originalBtnText;
+          btn.disabled = false;
+          alert("Location access was denied or unavailable. You can search or select any cinema manually.");
+        },
+        { timeout: 8000 }
+      );
+    }
+
+    async function loadCinemas() {
+      try {
+        const res = await fetch("/api/v1/cinemas");
+        registeredCinemas = await res.json();
+        const select = document.getElementById("cinema-select");
+        select.innerHTML = "";
+
+        registeredCinemas.forEach(c => {
+          const opt = document.createElement("option");
+          opt.value = c.id;
+          opt.innerText = `${c.name} (${c.city})`;
+          select.appendChild(opt);
+        });
+
+        setupCinemaSearch();
+
+        if (registeredCinemas.length > 0) {
+          currentCinema = registeredCinemas[0];
+          selectCinema(currentCinema.id);
+        }
+
+        select.addEventListener("change", () => {
+          selectCinema(select.value);
+        });
+      } catch (err) {
+        console.error("Failed to load cinemas:", err);
+      }
+    }
+
+    async function loadCinemaMenu(cinemaId) {
+      try {
+        const res = await fetch(`/api/v1/cinemas/${cinemaId}/concessions`);
+        currentMenu = await res.json();
+        document.getElementById("menu-cinema-badge").innerText = currentCinema ? `${currentCinema.name} &bull; ${currentCinema.city}` : "";
+
+        const grid = document.getElementById("menu-items-grid");
+        grid.innerHTML = "";
+
+        currentMenu.forEach(item => {
+          const card = document.createElement("div");
+          card.className = "menu-item-card";
+          const tags = (item.tags || []).map(t => `<span class="tag-badge">${t}</span>`).join("");
+
+          // Every food discount pill list
+          const discountsHtml = (item.applicable_discounts || []).map(d => `
+            <div class="disc-pill" title="${d.requirement}">
+              <span>${d.provider === 'Redopay' ? '💳' : d.provider === 'FriMi' ? '💎' : d.provider === 'Genie' ? '⚡' : '🇱🇰'} <strong>${d.title}</strong></span>
+              <span style="color:#34d399; font-weight:700;">LKR ${d.discounted_price_lkr.toFixed(0)}</span>
+            </div>
+          `).join("");
+
+          const maxPct = item.max_discount_pct ? Math.round(item.max_discount_pct * 100) : 35;
+          const discountedPrice = item.best_discounted_price_lkr || (item.price_lkr * 0.65);
+
+          card.innerHTML = `
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.3rem;">
+                <div>
+                  <strong style="font-size:1.02rem; color:#f8fafc;">${item.name}</strong>
+                  <div style="font-size:0.75rem; color:var(--text-muted);">${item.category} ${item.size ? '&bull; ' + item.size : ''}</div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="text-decoration:line-through; font-size:0.8rem; color:#94a3b8;">LKR ${item.price_lkr.toFixed(0)}</div>
+                  <div style="color:var(--accent-green); font-weight:800; font-size:1.15rem;">LKR ${discountedPrice.toFixed(0)}</div>
+                  <span class="save-tag">SAVE ${maxPct}%</span>
+                </div>
+              </div>
+              <p style="font-size:0.78rem; color:#cbd5e1; margin-bottom:0.5rem; line-height:1.35;">${item.description || item.category}</p>
+              
+              <div style="font-size:0.72rem; color:#a5b4fc; margin-bottom:0.4rem; display:flex; align-items:center; gap:0.3rem;">
+                <span>📍 Available at:</span>
+                <strong style="color:#e0e7ff;">${item.food_location || (currentCinema ? currentCinema.food_place_name : "Cinema Concession Stand")}</strong>
+              </div>
+
+              <!-- Every Food Discount Details Box -->
+              <div class="item-discounts-box">
+                <div class="discounts-header">
+                  <span>✨ Applicable Discounts on this item:</span>
+                </div>
+                <div class="discounts-list">
+                  ${discountsHtml}
+                </div>
+              </div>
+
+              <div class="item-tags" style="margin-top:0.4rem;">${tags}</div>
+            </div>
+            <button class="btn-add-cart" onclick="addToCart('${item.id}')" style="margin-top:0.6rem;">+ Add to Cart & Apply Deals</button>
+          `;
+          grid.appendChild(card);
+        });
+      } catch (err) {
+        console.error("Failed to load concessions:", err);
+      }
+    }
+
+    async function calculateRecommendation() {
+      const cinemaId = document.getElementById("cinema-select").value;
+      const budget = parseFloat(document.getElementById("budget-range").value);
+      const partySize = parseInt(document.getElementById("party-size").value);
+      const tier = document.getElementById("tier-select").value;
+      const promoOverride = document.getElementById("promo-override").value;
+
+      const payload = {
+        cinema_id: cinemaId,
+        budget_lkr: budget,
+        party_size: partySize,
+        redopay_tier: tier,
+        promo_code: promoOverride
+      };
+
+      const container = document.getElementById("deal-container");
+      container.innerHTML = `<div style="text-align:center; padding:2rem;"><span class="status-dot"></span> Optimizing Redopay Concession Bundle...</div>`;
+
+      try {
+        const res = await fetch("/api/v1/recommend", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(payload)
+        });
+        const deal = await res.json();
+
+        if (!res.ok) {
+          container.innerHTML = `<div style="color:var(--accent-red); padding:1rem;">❌ ${deal.error}</div>`;
+          return;
+        }
+
+        renderDeal(deal);
+      } catch (err) {
+        container.innerHTML = `<div style="color:var(--accent-red); padding:1rem;">❌ Network error</div>`;
+      }
+    }
+
+    function renderDeal(deal) {
+      const container = document.getElementById("deal-container");
+
+      const itemsHtml = deal.selected_items.map(it => `
+        <div class="concession-pill">
+          <div>
+            <div class="item-title">${it.name}</div>
+            <div class="item-sub">${it.category} ${it.size ? '&bull; ' + it.size : ''}</div>
+          </div>
+          <div class="item-price">LKR ${it.price_lkr.toFixed(0)}</div>
+        </div>
+      `).join("");
+
+      const promoDisplay = deal.applied_promo !== "NONE" ? deal.applied_promo : "None Applicable";
+
+      container.innerHTML = `
+        <div class="deal-header">
+          <div class="cinema-meta">
+            <h2>${deal.cinema_name}</h2>
+            <p>📍 ${deal.location} (Out-of-Colombo Regional Circuit) &bull; Party of ${deal.party_size || 2}</p>
+          </div>
+          <div class="score-badge">
+            <span>⚡ Value Score:</span>
+            <strong>${deal.value_score || 8.5}/10</strong>
+          </div>
+        </div>
+
+        <h4 style="font-size:0.9rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted); margin-bottom:0.8rem;">
+          Recommended Snack & Beverage Bundle (${deal.selected_items.length} items)
+        </h4>
+        <div class="items-list">
+          ${itemsHtml}
+        </div>
+
+        <div class="summary-box">
+          <div>
+            <div class="sum-metric-label">Menu Subtotal</div>
+            <div class="sum-metric-val original">LKR ${deal.original_total_lkr.toFixed(2)}</div>
+          </div>
+          <div>
+            <div class="sum-metric-label">Redopay Savings</div>
+            <div class="sum-metric-val discount">-LKR ${deal.discount_amount_lkr.toFixed(2)}</div>
+          </div>
+          <div>
+            <div class="sum-metric-label">Net Payable</div>
+            <div class="sum-metric-val final">LKR ${deal.final_total_lkr.toFixed(2)}</div>
+          </div>
+          <div>
+            <div class="sum-metric-label">Applied Coupon</div>
+            <div class="sum-metric-val applied">${promoDisplay}</div>
+          </div>
+        </div>
+
+        ${deal.next_tier_upsell ? `
+          <div class="upsell-alert">
+            <span>${deal.next_tier_upsell}</span>
+          </div>
+        ` : ''}
+
+        <button class="btn-primary" style="margin-top:1.2rem; background:linear-gradient(135deg, #10b981, #059669); box-shadow:0 8px 20px -4px rgba(16,185,129,0.4);" onclick="openCheckoutModal('deal')">
+          <span>🎟️ Generate Physical Counter Voucher</span>
+        </button>
+      `;
+    }
+
+    // Custom Cart Management
+    function addToCart(itemId) {
+      const item = currentMenu.find(i => i.id === itemId);
+      if (!item) return;
+
+      const existing = customCart.find(c => c.item.id === itemId);
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        customCart.push({ item: item, quantity: 1 });
+      }
+      updateCartBadge();
+      renderCart();
+    }
+
+    function updateCartBadge() {
+      const totalCount = customCart.reduce((sum, c) => sum + c.quantity, 0);
+      document.getElementById("cart-count").innerText = totalCount;
+    }
+
+    function clearCart() {
+      customCart = [];
+      updateCartBadge();
+      renderCart();
+    }
+
+    async function renderCart() {
+      const content = document.getElementById("cart-content");
+      if (customCart.length === 0) {
+        content.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding:2rem;">Your cart is empty. Add items from the Full Concession Menu tab.</p>`;
+        return;
+      }
+
+      const rows = customCart.map(c => `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:0.6rem 0; border-bottom:1px solid var(--border-subtle);">
+          <div>
+            <strong>${c.item.name}</strong>
+            <span style="color:var(--text-muted); font-size:0.8rem;"> &times; ${c.quantity}</span>
+          </div>
+          <div style="font-weight:700; color:var(--accent-gold);">
+            LKR ${(c.item.price_lkr * c.quantity).toFixed(0)}
+          </div>
+        </div>
+      `).join("");
+
+      content.innerHTML = `
+        <div style="margin-bottom:1.5rem;">${rows}</div>
+        <div id="cart-evaluation-results" style="padding:1rem; background:rgba(15,23,42,0.8); border-radius:10px;">
+          Evaluating Redopay savings...
+        </div>
+      `;
+
+      // Evaluate custom cart with backend
+      const itemsPayload = customCart.map(c => ({ item_id: c.item.id, quantity: c.quantity }));
+      try {
+        const res = await fetch("/api/v1/cart/evaluate", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({
+            cinema_id: currentCinema ? currentCinema.id : "KND-KCC",
+            items: itemsPayload,
+            redopay_tier: document.getElementById("tier-select").value,
+            promo_code: document.getElementById("promo-override").value
+          })
+        });
+        const evalRes = await res.json();
+        const evalDiv = document.getElementById("cart-evaluation-results");
+        if (evalRes) {
+          evalDiv.innerHTML = `
+            <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+              <span style="color:var(--text-muted);">Subtotal:</span>
+              <strong style="text-decoration:line-through; color:#94a3b8;">LKR ${evalRes.original_total_lkr.toFixed(2)}</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem; color:var(--accent-green);">
+              <span>Redopay Discount (${evalRes.applied_promo}):</span>
+              <strong>-LKR ${evalRes.discount_amount_lkr.toFixed(2)}</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:1.15rem; margin-top:0.5rem; padding-top:0.5rem; border-top:1px solid var(--border-subtle);">
+              <span>Final Total:</span>
+              <strong style="color:#fff;">LKR ${evalRes.final_total_lkr.toFixed(2)}</strong>
+            </div>
+            ${evalRes.next_tier_upsell ? `<div style="margin-top:0.8rem; font-size:0.8rem; color:#a5b4fc;">${evalRes.next_tier_upsell}</div>` : ''}
+            <div style="font-size:0.75rem; color:#fde68a; background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.25); border-radius:8px; padding:0.6rem; margin-top:0.8rem; text-align:center;">
+              🛍️ <strong>In-Theater Collection:</strong> This generates a physical candy bar counter voucher with locked-in discounts.
+            </div>
+            <button class="btn-primary" style="margin-top:0.8rem; background:linear-gradient(135deg, #10b981, #059669); box-shadow:0 8px 20px -4px rgba(16,185,129,0.4);" onclick="openCheckoutModal('cart')">
+              <span>🎟️ Generate In-Person Counter Voucher</span>
+            </button>
+          `;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loadPaymentMethods() {
+      try {
+        const res = await fetch("/api/v1/payment-methods");
+        paymentMethods = await res.json();
+      } catch (err) {
+        console.error("Payment methods loading failed", err);
+      }
+    }
+
+    function openCheckoutModal(mode) {
+      const modal = document.getElementById("checkout-modal");
+      document.getElementById("checkout-step-pay").style.display = "block";
+      document.getElementById("checkout-step-receipt").style.display = "none";
+
+      let itemsPayload = [];
+      let subtotal = 0;
+
+      if (mode === 'deal' && currentRecommendedDeal) {
+        itemsPayload = currentRecommendedDeal.selected_items.map(it => ({ item_id: it.id, quantity: 1 }));
+        subtotal = currentRecommendedDeal.original_total_lkr;
+      } else {
+        if (customCart.length === 0) {
+          alert("Please add items to your cart first.");
+          return;
+        }
+        itemsPayload = customCart.map(c => ({ item_id: c.item.id, quantity: c.quantity }));
+        subtotal = customCart.reduce((sum, c) => sum + (c.item.price_lkr * c.quantity), 0);
+      }
+
+      activeCheckoutPayload = {
+        cinema_id: currentCinema ? currentCinema.id : "KND-KCC",
+        items: itemsPayload,
+        subtotal: subtotal
+      };
+
+      document.getElementById("ck-subtotal").innerText = `LKR ${subtotal.toFixed(2)}`;
+      renderPaymentMethodOptions();
+      recalculateCheckout();
+
+      modal.classList.add("open");
+    }
+
+    function closeCheckoutModal() {
+      document.getElementById("checkout-modal").classList.remove("open");
+    }
+
+    function renderPaymentMethodOptions() {
+      const grid = document.getElementById("lk-payment-methods-grid");
+      grid.innerHTML = "";
+
+      paymentMethods.forEach((m, idx) => {
+        const isSelected = m.id === selectedPaymentMethod || (!selectedPaymentMethod && idx === 0);
+        if (isSelected) selectedPaymentMethod = m.id;
+
+        const row = document.createElement("div");
+        row.style.background = isSelected ? "rgba(99,102,241,0.2)" : "rgba(15,23,42,0.7)";
+        row.style.border = isSelected ? "1px solid var(--accent-redopay)" : "1px solid var(--border-subtle)";
+        row.style.borderRadius = "10px";
+        row.style.padding = "0.75rem 0.9rem";
+        row.style.cursor = "pointer";
+        row.style.display = "flex";
+        row.style.justifyContent = "space-between";
+        row.style.alignItems = "center";
+        row.onclick = () => {
+          selectedPaymentMethod = m.id;
+          renderPaymentMethodOptions();
+          recalculateCheckout();
+        };
+
+        const offer = m.special_offer ? `<span style="font-size:0.72rem; color:var(--accent-gold); font-weight:700;"> &bull; ${m.special_offer}</span>` : '';
+
+        row.innerHTML = `
+          <div>
+            <div style="font-weight:700; font-size:0.9rem; color:#fff;">${m.icon} ${m.name} ${offer}</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">${m.description}</div>
+          </div>
+          <input type="radio" name="pm" ${isSelected ? 'checked' : ''} style="accent-color:var(--accent-redopay);">
+        `;
+        grid.appendChild(row);
+      });
+
+      const phoneGroup = document.getElementById("ck-phone-group");
+      phoneGroup.style.display = (selectedPaymentMethod === "EZCASH" || selectedPaymentMethod === "MCASH") ? "block" : "none";
+    }
+
+    function recalculateCheckout() {
+      if (!activeCheckoutPayload) return;
+      const m = paymentMethods.find(p => p.id === selectedPaymentMethod);
+      let disc = 0;
+      if (m && m.discount_pct) {
+        disc = activeCheckoutPayload.subtotal * m.discount_pct;
+      }
+      const payable = Math.max(0, activeCheckoutPayload.subtotal - disc);
+
+      document.getElementById("ck-discount-label").innerText = `${m ? m.name : 'Gateway'} Discount:`;
+      document.getElementById("ck-discount").innerText = `-LKR ${disc.toFixed(2)}`;
+      document.getElementById("ck-payable").innerText = `LKR ${payable.toFixed(2)}`;
+    }
+
+    async function executeConfirmCheckout() {
+      if (!activeCheckoutPayload) return;
+
+      const btn = document.getElementById("btn-confirm-checkout");
+      btn.innerHTML = `<span>⏳ Processing via Sri Lankan Gateway...</span>`;
+
+      try {
+        const payload = {
+          cinema_id: activeCheckoutPayload.cinema_id,
+          items: activeCheckoutPayload.items,
+          payment_method: selectedPaymentMethod,
+          redopay_tier: document.getElementById("tier-select").value,
+          promo_code: document.getElementById("promo-override").value,
+          customer_phone: document.getElementById("ck-customer-phone").value
+        };
+
+        const res = await fetch("/api/v1/checkout", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(payload)
+        });
+        const order = await res.json();
+
+        if (!res.ok) {
+          alert("Checkout error: " + (order.error || "failed"));
+          btn.innerHTML = `<span>🎟️ Generate Physical Counter Voucher</span>`;
+          return;
+        }
+
+        renderReceipt(order);
+      } catch (err) {
+        alert("Payment network error: " + err.message);
+      } finally {
+        btn.innerHTML = `<span>🎟️ Generate Physical Counter Voucher</span>`;
+      }
+    }
+
+    function renderReceipt(order) {
+      document.getElementById("checkout-step-pay").style.display = "none";
+      const receiptDiv = document.getElementById("checkout-step-receipt");
+      receiptDiv.style.display = "block";
+
+      document.getElementById("receipt-summary-text").innerText = 
+        `${order.cinema_name} (${order.cinema_city}) &bull; Order ID: ${order.order_id}`;
+
+      let extraSection = "";
+      if (order.payment_method === "LANKAQR" && order.lanka_qr_emv) {
+        extraSection = `
+          <div style="background:#000; border:2px solid var(--accent-redopay); border-radius:12px; padding:1.2rem; text-align:center; margin:1rem 0;">
+            <div style="color:var(--accent-gold); font-weight:800; font-size:0.9rem; margin-bottom:0.5rem;">📱 CBSL LANKAQR OFFICIAL STANDARD</div>
+            <div style="background:#fff; display:inline-block; padding:12px; border-radius:8px;">
+              <svg width="130" height="130" viewBox="0 0 100 100">
+                <rect width="100" height="100" fill="#fff" />
+                <path d="M10 10h30v30h-30z M60 10h30v30h-30z M10 60h30v30h-30z M20 20h10v10h-10z M70 20h10v10h-10z M20 70h10v10h-10z M45 20h10v10h-10z M45 45h10v10h-10z M60 60h10v10h-10z M80 60h10v10h-10z M70 75h15v15h-15z M45 70h10v20h-10z" fill="#0f172a" />
+              </svg>
+            </div>
+            <p style="font-size:0.75rem; color:#94a3b8; margin-top:0.6rem;">
+              Scan with Commercial Bank Q+, Sampath WePay, FriMi, HNB SOLO, or BOC SmartPay
+            </p>
+          </div>
+        `;
+      } else if (order.payment_method === "KOKO_BNPL") {
+        extraSection = `
+          <div style="background:rgba(99,102,241,0.15); border:1px solid var(--accent-redopay); border-radius:10px; padding:0.8rem; margin:0.8rem 0;">
+            <strong>🛍️ ${order.installment_note}</strong>
+          </div>
+        `;
+      }
+
+      document.getElementById("receipt-details-box").innerHTML = `
+        <div style="background:rgba(99,102,241,0.15); border:1px dashed var(--accent-redopay); border-radius:10px; padding:0.8rem; margin-bottom:1rem; text-align:center;">
+          <div style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color:#a5b4fc; font-weight:700;">🎟️ Physical Counter Voucher Code</div>
+          <div style="font-size:1.4rem; font-weight:900; color:#fff; font-family:monospace; letter-spacing:0.05em; margin:0.2rem 0;">${order.voucher_code || order.order_id}</div>
+          <div style="font-size:0.75rem; color:var(--accent-gold);">Present this voucher to cashier at the candy bar counter</div>
+        </div>
+
+        <div style="background:rgba(245,158,11,0.12); border-left:3px solid var(--accent-gold); border-radius:0 8px 8px 0; padding:0.7rem 0.9rem; margin-bottom:0.9rem; font-size:0.8rem; color:#fde68a;">
+          <div style="font-weight:700; margin-bottom:0.2rem;">📍 Concession Pickup Stand: ${order.counter_pickup_location || 'Main Candy Bar Counter'}</div>
+          <div>⚠️ <strong>In-Person Collection:</strong> ${order.physical_redemption_notice || 'Please visit the theater concession counter physically to collect snacks.'}</div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+          <span style="color:var(--text-muted);">Payment Channel:</span>
+          <strong style="color:#fff;">${order.payment_method_name}</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+          <span style="color:var(--text-muted);">Status:</span>
+          <span style="color:var(--accent-green); font-weight:700;">${order.status}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+          <span style="color:var(--text-muted);">Transaction Ref:</span>
+          <span style="font-family:monospace; color:#a5b4fc;">${order.transaction_reference}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+          <span style="color:var(--text-muted);">Concession Items:</span>
+          <span>${order.items.length} snacks/drinks</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+          <span style="color:var(--text-muted);">Savings Unlocked:</span>
+          <span style="color:var(--accent-green); font-weight:700;">-LKR ${order.discount_lkr.toFixed(2)}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:1.15rem; font-weight:800; border-top:1px solid var(--border-subtle); padding-top:0.5rem; margin-top:0.4rem;">
+          <span>Net Amount Payable:</span>
+          <span style="color:var(--accent-gold);">LKR ${order.final_payable_lkr.toFixed(2)}</span>
+        </div>
+        ${extraSection}
+        <div style="font-size:0.8rem; color:#cbd5e1; margin-top:0.8rem; background:rgba(255,255,255,0.05); padding:0.6rem; border-radius:8px;">
+          💁 <strong>Cashier Instructions:</strong> ${order.cashier_instructions || order.instructions}
+        </div>
+      `;
+
+      if (customCart.length > 0) {
+        customCart = [];
+        updateCartBadge();
+      }
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.getElementById("view-rec").style.display = "none";
+      document.getElementById("view-menu").style.display = "none";
+      document.getElementById("view-cart").style.display = "none";
+
+      if (tab === 'rec') {
+        document.getElementById("tab-rec").classList.add("active");
+        document.getElementById("view-rec").style.display = "block";
+      } else if (tab === 'menu') {
+        document.getElementById("tab-menu").classList.add("active");
+        document.getElementById("view-menu").style.display = "block";
+      } else if (tab === 'cart') {
+        document.getElementById("tab-cart").classList.add("active");
+        document.getElementById("view-cart").style.display = "block";
+        renderCart();
+      }
+    }
+  </script>
+</body>
+</html>
