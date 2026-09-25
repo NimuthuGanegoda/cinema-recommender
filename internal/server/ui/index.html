@@ -713,10 +713,10 @@
     }
 
     .party-btn.active {
-      background: var(--accent-redopay);
-      border-color: var(--accent-redopay);
-      color: #fff;
-      box-shadow: 0 0 12px var(--accent-redopay-glow);
+      background: linear-gradient(135deg, var(--scope-gold), #b8860b);
+      border-color: var(--border-gold);
+      color: #07070a;
+      box-shadow: 0 0 12px var(--scope-gold-glow);
     }
 
     .budget-slider-wrap {
@@ -765,15 +765,15 @@
 
     .btn-primary {
       width: 100%;
-      background: linear-gradient(135deg, var(--accent-redopay) 0%, var(--accent-redopay-hover) 100%);
-      border: none;
-      color: #ffffff;
+      background: linear-gradient(135deg, var(--scope-gold) 0%, #b8860b 100%);
+      border: 1px solid var(--border-gold);
+      color: #07070a;
       padding: 0.85rem;
       border-radius: 10px;
-      font-weight: 700;
+      font-weight: 800;
       font-size: 0.95rem;
       cursor: pointer;
-      box-shadow: 0 8px 20px -4px var(--accent-redopay-glow);
+      box-shadow: 0 8px 20px -4px var(--scope-gold-glow);
       transition: all 0.2s ease;
       display: flex;
       justify-content: center;
@@ -783,7 +783,8 @@
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 12px 24px -4px var(--accent-redopay-glow);
+      box-shadow: 0 12px 24px -4px var(--scope-gold-glow);
+      background: linear-gradient(135deg, #f5d77f 0%, #d4af37 100%);
     }
 
     /* Content Area */
@@ -813,18 +814,19 @@
     }
 
     .tab-btn.active {
-      background: rgba(99, 102, 241, 0.15);
-      color: #a5b4fc;
-      border: 1px solid rgba(99, 102, 241, 0.3);
+      background: rgba(212, 175, 55, 0.18);
+      color: var(--scope-gold-light);
+      border: 1px solid var(--border-gold);
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.25);
     }
 
     /* Recommendation Showcase */
     .deal-card {
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
-      border: 1px solid var(--border-glow);
+      background: linear-gradient(135deg, rgba(24, 24, 34, 0.8) 0%, rgba(12, 12, 18, 0.95) 100%);
+      border: 1px solid var(--border-gold);
       border-radius: 18px;
       padding: 1.8rem;
-      box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.6);
     }
 
     .deal-header {

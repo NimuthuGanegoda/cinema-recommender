@@ -3,30 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#080c14">
+  <meta name="theme-color" content="#07070a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>CinemaSnack Mobile &bull; Redopay Deals</title>
+  <title>Scope Cinemas &bull; CinemaSnack Mobile Candy Bar Pass</title>
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" type="image/jpeg" href="/ui/app-icon.jpg">
   <link rel="apple-touch-icon" href="/ui/app-icon.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Montserrat:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #080c14;
-      --bg-card: rgba(18, 24, 38, 0.95);
-      --bg-surface: #0f172a;
-      --accent-gold: #f59e0b;
-      --accent-redopay: #6366f1;
-      --accent-redopay-hover: #4f46e5;
+      --bg-dark: #07070a;
+      --bg-card: rgba(16, 16, 22, 0.94);
+      --bg-surface: #0e0e14;
+      --scope-gold: #d4af37;
+      --scope-gold-light: #fef08a;
+      --scope-gold-glow: rgba(212, 175, 55, 0.35);
+      --scope-red: #e50914;
+      --scope-red-glow: rgba(229, 9, 20, 0.35);
+      --accent-gold: #d4af37;
+      --accent-redopay: #d4af37;
+      --accent-redopay-hover: #b8860b;
       --accent-green: #10b981;
-      --accent-red: #ef4444;
+      --accent-red: #e50914;
       --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --border-subtle: rgba(255, 255, 255, 0.08);
-      --border-glow: rgba(99, 102, 241, 0.35);
+      --text-muted: #9ca3af;
+      --border-subtle: rgba(212, 175, 55, 0.22);
+      --border-gold: rgba(212, 175, 55, 0.45);
+      --border-glow: rgba(212, 175, 55, 0.35);
       --safe-bottom: env(safe-area-inset-bottom, 16px);
     }
 
@@ -40,8 +46,11 @@
 
     body {
       background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(212, 175, 55, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(229, 9, 20, 0.08) 0px, transparent 50%);
       color: var(--text-main);
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Montserrat', sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
       display: flex;
@@ -49,8 +58,9 @@
       position: relative;
     }
 
-    h1, h2, h3, h4, .brand-font {
-      font-family: 'Outfit', sans-serif;
+    h1, h2, h3, h4, .brand-font, .m-cf-title {
+      font-family: 'Cinzel', serif;
+      letter-spacing: 0.03em;
     }
 
     /* Mobile Header */
@@ -551,19 +561,88 @@
     }
 
     .m-gps-btn {
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(16, 185, 129, 0.25));
-      border: 1px solid var(--border-subtle);
-      color: #a5b4fc;
-      border-radius: 6px;
-      padding: 0.25rem 0.5rem;
-      font-size: 0.72rem;
-      font-weight: 700;
+      background: linear-gradient(135deg, var(--scope-gold), #b8860b);
+      border: none;
+      color: #07070a;
+      border-radius: 8px;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 800;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
+    }
+
+    .m-cf-card {
+      background: linear-gradient(135deg, rgba(22, 22, 30, 0.95) 0%, rgba(10, 10, 15, 0.98) 100%);
+      border: 1.5px solid var(--border-gold);
+      border-radius: 14px;
+      padding: 1rem;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+      position: relative;
+    }
+
+    .m-cf-badge {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--scope-gold);
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid var(--border-gold);
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+      letter-spacing: 0.06em;
+    }
+
+    .m-cf-search-box {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #09090e;
+      border: 1px solid var(--border-gold);
+      border-radius: 10px;
+      padding: 0.5rem 0.8rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .m-cf-search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 0.85rem;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .m-cf-dropdown {
+      background: #0e0e16;
+      border: 1.5px solid var(--border-gold);
+      border-radius: 10px;
+      max-height: 220px;
+      overflow-y: auto;
+      margin-bottom: 0.8rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+    }
+
+    .m-cf-drop-item {
+      padding: 0.65rem 0.85rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .m-cf-drop-item:hover, .m-cf-drop-item:active {
+      background: rgba(212, 175, 55, 0.2);
     }
 
     .m-food-info-card {
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(99, 102, 241, 0.25);
+      background: rgba(16, 16, 22, 0.9);
+      border: 1px solid var(--border-gold);
       border-radius: 14px;
       padding: 0.85rem;
       margin-bottom: 1.2rem;
@@ -633,9 +712,9 @@
     }
     .m-btn-add-food {
       width: 100%;
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.4));
-      border: 1px solid rgba(99, 102, 241, 0.4);
-      color: #e0e7ff;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.4));
+      border: 1px solid var(--border-gold);
+      color: var(--scope-gold-light);
       border-radius: 6px;
       padding: 0.45rem;
       font-size: 0.78rem;
@@ -644,26 +723,25 @@
       margin-top: 0.25rem;
     }
     .m-btn-add-food:active {
-      background: var(--accent-redopay);
+      background: var(--scope-gold);
+      color: #07070a;
     }
   </style>
 </head>
 <body>
 
-  <!-- Top App Bar -->
+  <!-- Top App Bar (Scope Cinemas) -->
   <header class="mobile-header">
     <div class="header-left">
-      <div class="app-avatar"></div>
-      <div class="location-selector">
-        <span class="loc-label">📍 Outstation Circuit</span>
-        <select class="loc-dropdown" id="m-cinema-select">
-          <option value="">Loading...</option>
-        </select>
+      <span style="font-size:1.5rem; color:var(--scope-gold); filter:drop-shadow(0 0 8px var(--scope-gold-glow));">👑</span>
+      <div>
+        <div style="font-weight:900; font-size:0.95rem; letter-spacing:0.04em; color:#fff; font-family:'Cinzel', serif;">SCOPE CINEMAS</div>
+        <div style="font-size:0.62rem; color:var(--scope-gold); text-transform:uppercase; letter-spacing:0.1em; font-weight:700;">CANDY BAR PASS</div>
       </div>
     </div>
     <div class="header-right" style="display:flex; align-items:center; gap:0.4rem;">
-      <button id="m-btn-gps" class="m-gps-btn" title="Auto-detect nearest cinema" onclick="mAutoDetectLocation()">📍 Auto</button>
-      <span class="tier-pill" id="m-header-tier">Standard</span>
+      <select class="loc-dropdown" id="m-cinema-select" style="display:none;"></select>
+      <span class="tier-pill" id="m-header-tier" style="background:rgba(212,175,55,0.18); border-color:var(--border-gold); color:var(--scope-gold-light);">VIP PASS</span>
     </div>
   </header>
 
@@ -674,10 +752,38 @@
 
   <!-- Screen 1: Explore & Menu -->
   <main class="screen-view active" id="view-explore">
-    <div class="mobile-hero">
-      <h2>Cinema Concessions 🍿</h2>
-      <p>Save up to 35% on snacks & drinks with automated Redopay deals.</p>
-      <button class="hero-quick-btn" onclick="switchNav('optimizer')">⚡ Run Deal Optimizer</button>
+    <!-- Step 1: Mobile Cinema Finder & Detector -->
+    <div class="m-cf-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+        <span class="m-cf-badge">👑 STEP 1: SELECT CINEMA</span>
+        <button id="m-btn-gps" class="m-gps-btn" onclick="mAutoDetectLocation()">
+          <span>📍 Detect GPS</span>
+        </button>
+      </div>
+      <div style="font-size:1.05rem; font-weight:800; color:#fff; font-family:'Cinzel', serif; margin-bottom:0.2rem;">
+        FIND YOUR THEATER
+      </div>
+      <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.7rem;">
+        Search cinema by name or tap "Detect GPS" to locate where you are at:
+      </p>
+
+      <!-- Search Input -->
+      <div class="m-cf-search-box">
+        <span style="color:var(--scope-gold); font-size:0.95rem;">🔍</span>
+        <input type="text" id="m-cinema-search-input" class="m-cf-search-input" placeholder="Type cinema name or city (Kandy, Galle...)" autocomplete="off">
+        <button id="m-btn-clear-search" onclick="mClearCinemaSearch()" style="display:none; background:none; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer;">&times;</button>
+      </div>
+
+      <!-- Live Search Suggestions Dropdown -->
+      <div id="m-cinema-dropdown" class="m-cf-dropdown" style="display:none;"></div>
+
+      <!-- Detection alert -->
+      <div id="m-gps-alert" style="display:none; margin-top:0.6rem; background:rgba(16,185,129,0.18); border:1px solid rgba(16,185,129,0.4); border-radius:8px; padding:0.5rem 0.7rem; font-size:0.75rem; color:#6ee7b7;"></div>
+
+      <!-- Mobile Active Cinema Spotlight -->
+      <div id="m-active-spotlight" style="margin-top:0.8rem; background:rgba(8,8,12,0.7); border:1px solid var(--border-gold); border-radius:10px; padding:0.75rem;">
+        <div style="text-align:center; font-size:0.75rem; color:var(--text-muted);">Loading active theater...</div>
+      </div>
     </div>
 
     <!-- Cinema Food & Refreshment Location Guide -->
@@ -922,6 +1028,115 @@
       });
     }
 
+    function renderMobileActiveSpotlight(cinema) {
+      const box = document.getElementById('m-active-spotlight');
+      if (!box || !cinema) return;
+
+      const dist = cinema.distance_km !== undefined && cinema.distance_km !== null
+        ? `<span style="font-size:0.7rem; color:#34d399; font-weight:700; background:rgba(16,185,129,0.15); padding:0.15rem 0.4rem; border-radius:4px;">📍 ${cinema.distance_km.toFixed(1)} km</span>`
+        : '';
+
+      box.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.4rem;">
+          <div>
+            <div style="font-weight:800; font-size:0.92rem; color:#fff;">${cinema.name}</div>
+            <div style="font-size:0.72rem; color:var(--text-muted);">${cinema.address || cinema.city}</div>
+          </div>
+          <div>${dist}</div>
+        </div>
+
+        <div style="background:rgba(0,0,0,0.3); border-radius:8px; padding:0.5rem; font-size:0.72rem; margin-bottom:0.5rem;">
+          <div style="color:var(--scope-gold-light); font-weight:700; margin-bottom:0.2rem;">🍿 ${cinema.food_place_name || 'Concession Stand'}</div>
+          <div style="color:#cbd5e1;">⏰ ${cinema.food_hours || '10:00 AM - 10:30 PM'}</div>
+          <div style="color:#34d399; margin-top:0.2rem;">🟢 Concessions Open &bull; ${cinema.food_delivery_to_seat ? '💺 VIP In-Seat Delivery' : '🛍️ Counter Pickup'}</div>
+        </div>
+
+        <div style="display:flex; gap:0.4rem;">
+          ${cinema.map_url ? `<a href="${cinema.map_url}" target="_blank" style="flex:1; text-align:center; background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.3); color:#38bdf8; padding:0.4rem; border-radius:6px; font-size:0.72rem; font-weight:700; text-decoration:none;">🗺️ Maps Directions</a>` : ''}
+          <button onclick="document.getElementById('m-cinema-search-input').focus()" style="flex:1; background:rgba(212,175,55,0.15); border:1px solid var(--border-gold); color:var(--scope-gold-light); padding:0.4rem; border-radius:6px; font-size:0.72rem; font-weight:700; cursor:pointer;">🔍 Switch Cinema</button>
+        </div>
+      `;
+    }
+
+    function setupMobileCinemaSearch() {
+      const input = document.getElementById('m-cinema-search-input');
+      const dropdown = document.getElementById('m-cinema-dropdown');
+      const clearBtn = document.getElementById('m-btn-clear-search');
+
+      if (!input) return;
+
+      input.addEventListener('input', () => {
+        const q = input.value.trim().toLowerCase();
+        if (q.length === 0) {
+          clearBtn.style.display = 'none';
+          dropdown.style.display = 'none';
+          dropdown.innerHTML = '';
+          return;
+        }
+
+        clearBtn.style.display = 'block';
+        const matches = registeredCinemas.filter(c =>
+          c.name.toLowerCase().includes(q) ||
+          c.city.toLowerCase().includes(q) ||
+          (c.address && c.address.toLowerCase().includes(q)) ||
+          (c.food_place_name && c.food_place_name.toLowerCase().includes(q))
+        );
+
+        if (matches.length === 0) {
+          dropdown.innerHTML = `<div style="padding:0.75rem; text-align:center; color:var(--text-muted); font-size:0.75rem;">No cinemas found matching "${input.value}"</div>`;
+          dropdown.style.display = 'block';
+          return;
+        }
+
+        dropdown.innerHTML = matches.map(c => `
+          <div class="m-cf-drop-item" onclick="selectMobileCinema('${c.id}')">
+            <div>
+              <div style="font-weight:700; color:#fff; font-size:0.82rem;">${c.name}</div>
+              <div style="font-size:0.7rem; color:var(--text-muted);">📍 ${c.city} &bull; 🍿 ${c.food_place_name || 'Candy Bar'}</div>
+            </div>
+            ${c.distance_km ? `<span style="font-size:0.7rem; color:#34d399; font-weight:700;">${c.distance_km.toFixed(1)} km</span>` : ''}
+          </div>
+        `).join('');
+
+        dropdown.style.display = 'block';
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+          dropdown.style.display = 'none';
+        }
+      });
+    }
+
+    function mClearCinemaSearch() {
+      const input = document.getElementById('m-cinema-search-input');
+      const clearBtn = document.getElementById('m-btn-clear-search');
+      const dropdown = document.getElementById('m-cinema-dropdown');
+      input.value = '';
+      clearBtn.style.display = 'none';
+      dropdown.style.display = 'none';
+      input.focus();
+    }
+
+    function selectMobileCinema(cinemaId) {
+      const found = registeredCinemas.find(c => c.id === cinemaId);
+      if (!found) return;
+
+      currentCinema = found;
+
+      const input = document.getElementById('m-cinema-search-input');
+      const dropdown = document.getElementById('m-cinema-dropdown');
+      if (input) input.value = currentCinema.name;
+      if (dropdown) dropdown.style.display = 'none';
+
+      const select = document.getElementById('m-cinema-select');
+      if (select) select.value = currentCinema.id;
+
+      renderMobileActiveSpotlight(currentCinema);
+      mRenderFoodGuide(currentCinema);
+      loadMenu(currentCinema.id);
+    }
+
     function mRenderFoodGuide(cinema) {
       const card = document.getElementById('m-food-info-card');
       if (!cinema) {
@@ -957,12 +1172,14 @@
 
     function mAutoDetectLocation() {
       const btn = document.getElementById('m-btn-gps');
+      const alertBox = document.getElementById('m-gps-alert');
       if (!navigator.geolocation) {
         alert('Geolocation is not supported by your browser.');
         return;
       }
 
-      btn.innerText = '⏳...';
+      const origText = btn.innerHTML;
+      btn.innerHTML = '<span>⏳...</span>';
       btn.disabled = true;
 
       navigator.geolocation.getCurrentPosition(
@@ -985,24 +1202,32 @@
             });
 
             if (registeredCinemas.length > 0) {
-              currentCinema = registeredCinemas[0];
-              select.value = currentCinema.id;
-              mRenderFoodGuide(currentCinema);
-              await loadMenu(currentCinema.id);
-              btn.innerText = `📍 ${currentCinema.city}`;
+              const nearest = registeredCinemas[0];
+              selectMobileCinema(nearest.id);
+
+              if (alertBox) {
+                if (nearest.distance_km !== undefined && nearest.distance_km <= 0.5) {
+                  alertBox.innerHTML = `🎯 <strong>Detected:</strong> You are at <strong>${nearest.name}</strong>!`;
+                } else {
+                  alertBox.innerHTML = `📍 <strong>Nearest:</strong> ${nearest.name} (${nearest.distance_km ? nearest.distance_km.toFixed(1) + ' km away' : ''}).`;
+                }
+                alertBox.style.display = 'block';
+              }
+
+              btn.innerHTML = `<span>📍 ${nearest.city}</span>`;
             }
           } catch (err) {
             console.error('Geo detect failed', err);
-            btn.innerText = '📍 Auto';
+            btn.innerHTML = origText;
           } finally {
             btn.disabled = false;
           }
         },
         (err) => {
           console.warn('Geolocation denied', err);
-          btn.innerText = '📍 Auto';
+          btn.innerHTML = origText;
           btn.disabled = false;
-          alert('Location permission was denied. Select your cinema from the dropdown.');
+          alert('Location permission was denied. You can search any cinema above.');
         },
         { timeout: 8000 }
       );
@@ -1022,19 +1247,15 @@
           select.appendChild(opt);
         });
 
+        setupMobileCinemaSearch();
+
         if (registeredCinemas.length > 0) {
           currentCinema = registeredCinemas[0];
-          mRenderFoodGuide(currentCinema);
-          await loadMenu(currentCinema.id);
+          selectMobileCinema(currentCinema.id);
         }
 
-        select.addEventListener('change', async () => {
-          const found = registeredCinemas.find(c => c.id === select.value);
-          if (found) {
-            currentCinema = found;
-            mRenderFoodGuide(currentCinema);
-            await loadMenu(found.id);
-          }
+        select.addEventListener('change', () => {
+          selectMobileCinema(select.value);
         });
       } catch (err) {
         console.error('Cinema loading failed', err);
