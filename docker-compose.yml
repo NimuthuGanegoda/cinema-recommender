@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  cinema-recommender:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cinema-recommender
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    environment:
+      - PORT=:8080
+      - TZ=Asia/Colombo
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/api/v1/health"]
+      interval: 15s
+      timeout: 3s
+      retries: 3

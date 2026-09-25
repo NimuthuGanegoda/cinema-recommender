@@ -19,29 +19,64 @@ The repository follows standard Go project layout conventions (`cmd/`, `pkg/`, `
 
 ```
 cinema-recommender/
+├── ARCHITECTURE.md                 # 🍏 Apple-grade system architecture & design patterns specification
+├── API.md                          # Complete REST API reference, JSON schemas & cURL examples
+├── CONTRIBUTING.md                 # Developer guide, code conventions & extension instructions
+├── Makefile                        # Developer automation (make build, make test, make run)
+├── Dockerfile                      # Multi-stage minimal container build
+├── docker-compose.yml              # Local container deployment
 ├── cmd/
 │   └── api/
 │       └── main.go                 # CLI commands, server bootstrap & graceful shutdown
 ├── internal/
 │   ├── models/
-│   │   └── models.go               # Domain models, Scope Privilege tiers, Sri Lankan payment schemas & DTOs
+│   │   ├── cinema.go               # Theaters, regional circuits, food spots & GPS coordinates
+│   │   ├── concession.go           # Concession catalog items, categories, price trends & discounts
+│   │   ├── promotion.go            # Scope Privilege Club loyalty tiers, discount types & savings
+│   │   ├── recommendation.go       # Knapsack request/response DTOs & basket evaluation schemas
+│   │   ├── payment.go              # Sri Lankan payment channels, method metadata & checkout DTOs
+│   │   ├── ad.go                   # Cinema promotional lobby screen advertisements
+│   │   ├── errors.go               # Domain sentinel errors (ErrColomboExcluded, etc.)
+│   │   └── models.go               # Package overview and architectural documentation
 │   └── server/
-│       ├── server.go               # HTTP REST server, Go 1.22+ routing, CORS, recovery, logging
+│       ├── server.go               # Server struct, configuration, lifecycle & JSON helpers
+│       ├── routes.go               # Pattern-matched HTTP route registration (Go 1.22+)
+│       ├── middleware.go           # Latency logger, CORS headers & panic recovery
+│       ├── handlers_cinema.go      # Regional cinema listing & geolocation lookup handlers
+│       ├── handlers_concession.go  # Concessions, dynamic live rate ticker & lobby ads handlers
+│       ├── handlers_recommend.go   # AI knapsack recommendation & cart evaluation handlers
+│       ├── handlers_checkout.go    # Sri Lankan payment gateway listing & checkout handlers
+│       ├── handlers_static.go      # Desktop Web UI, Mobile PWA, manifest, sw & health handlers
 │       ├── server_test.go          # End-to-end HTTP endpoint, checkout & policy tests
 │       └── ui/
 │           ├── index.html          # Embedded dark-mode interactive web portal & mobile simulator
 │           ├── mobile.html         # Dedicated touch-optimized mobile web app shell (PWA)
+│           ├── apple-design-system.css # Apple HIG glassmorphism design tokens & touch animations
+│           ├── cinema-client.js    # Clean Promise-based JavaScript client SDK
 │           ├── manifest.json       # Web App Manifest for mobile installation
 │           └── sw.js               # Service Worker for offline PWA caching
 ├── pkg/
 │   ├── payment/
-│   │   ├── payment.go              # Sri Lankan payment service (LankaQR, eZ Cash, mCash, FriMi, Koko BNPL, Mintpay)
+│   │   ├── payment.go              # Payment service struct, coordinator & method listing
+│   │   ├── methods.go              # Sri Lankan payment channels catalog (LankaQR, FriMi, etc.)
+│   │   ├── lankaqr.go              # Central Bank of Sri Lanka (CBSL) dynamic EMVCo QR generator
+│   │   ├── bnpl.go                 # Koko & Mintpay 3-month interest-free split payment engine
+│   │   ├── checkout.go             # Transaction processing & counter pickup voucher issuance
 │   │   └── payment_test.go         # CBSL EMV standard, USSD push & BNPL installment tests
 │   ├── recommender/
-│   │   ├── recommender.go          # Knapsack heuristic recommendation & Scope Privilege discount engine
+│   │   ├── recommender.go          # Recommendation engine coordinator & promotion matcher
+│   │   ├── optimizer.go            # Bounded knapsack heuristic algorithm for food & beverage
+│   │   ├── cart.go                 # Basket evaluation & multi-tier promotion calculator
+│   │   ├── upsell.go               # Threshold-gap advice & party value score heuristics
+│   │   ├── promotions.go           # Scope Privilege Club campaigns registry (SCOPE-PLATINUM, etc.)
 │   │   └── recommender_test.go     # Comprehensive promotion tier & optimization unit tests
 │   └── scraper/
-│       ├── scraper.go              # Out-of-Colombo cinema scraping, registry & feed parser
+│       ├── scraper.go              # Scraper coordinator, thread-safe memory cache & validation
+│       ├── registry.go             # Outstation regional theater circuit database & queries
+│       ├── geo.go                  # Haversine spherical distance calculation & proximity sorting
+│       ├── pricing.go              # Real-time dynamic pricing simulator (8-sec cycle) & discounts
+│       ├── feed_parser.go          # Regional supplier concession catalog & raw HTML feed parser
+│       ├── ads.go                  # Cinema lobby screen promotional advertisements generator
 │       └── scraper_test.go         # Policy exclusion, scraping and concurrency tests
 ├── bin/
 │   └── cinema-recommender.exe      # Compiled self-contained executable binary
@@ -49,16 +84,11 @@ cinema-recommender/
 └── README.md                       # Project documentation & architectural specification
 ```
 
-### Module Responsibilities
-
-| Package | Purpose |
-| :--- | :--- |
-| `cmd/api` | Application entrypoint with interactive CLI flags (`-city`, `-budget`, `-party`, `-tier`, `-list-cinemas`, `-list-promos`) and server lifecycle management. |
-| `internal/server` | Go 1.22+ HTTP server with embedded desktop portal (`/`), mobile PWA (`/mobile`), JSON helpers, CORS, and request logging. |
-| `pkg/payment` | Sri Lankan payment gateway integrations (CBSL LankaQR, eZ Cash USSD, mCash SMS, FriMi cashback, Genie rebate, Koko 3x BNPL installments, and Counter Cash). |
-| `pkg/scraper` | Resilient web scraping pipelines targeting outstation circuits with thread-safe caching, raw HTML feed parsing, and strict Colombo exclusion enforcement. |
-| `pkg/recommender` | Promotion heuristics and discount optimization logic for Scope Privilege tiers (Standard, Student, Silver, Gold, Platinum), combo deals, and upsell calculations. |
-| `internal/models` | Rich domain models, concession categories, Sri Lankan payment types, savings breakdown, and request/response DTOs. |
+### 🧩 Module & Architecture Specifications
+For in-depth architectural blueprints and developer documentation:
+- 🍏 **[ARCHITECTURE.md](file:///e:/Github/cinema-recommender/ARCHITECTURE.md)**: System topology, design patterns, algorithmic proofs, and package responsibilities.
+- 📡 **[API.md](file:///e:/Github/cinema-recommender/API.md)**: REST API reference, request/response JSON schemas, and cURL commands.
+- 🤝 **[CONTRIBUTING.md](file:///e:/Github/cinema-recommender/CONTRIBUTING.md)**: Engineering guidelines, adding theaters, and test standards.
 
 ---
 

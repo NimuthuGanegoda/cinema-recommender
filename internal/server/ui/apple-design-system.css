@@ -1,0 +1,103 @@
+/**
+ * 🍏 Apple Human Interface Guidelines (HIG) Design Tokens & Elevation System
+ * Cinema Food & Beverage Recommender
+ */
+
+:root {
+  /* System Backgrounds - Obsidian & Space Gray */
+  --apple-black: #050508;
+  --apple-dark: #09090f;
+  --apple-surface: rgba(18, 18, 26, 0.78);
+  --apple-surface-elevated: rgba(28, 28, 40, 0.88);
+  --apple-glass: rgba(255, 255, 255, 0.05);
+
+  /* Cinema Scope Gold & Accents */
+  --scope-gold: #d4af37;
+  --scope-gold-bright: #f59e0b;
+  --scope-gold-light: #fef08a;
+  --scope-gold-glow: rgba(212, 175, 55, 0.35);
+  --scope-gold-subtle: rgba(212, 175, 55, 0.12);
+
+  /* iOS Semantic Accents */
+  --apple-green: #34c759;
+  --apple-green-glow: rgba(52, 199, 89, 0.35);
+  --apple-red: #ff3b30;
+  --apple-blue: #007aff;
+  --apple-purple: #af52de;
+  --apple-amber: #ff9500;
+
+  /* Typography Colors */
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.72);
+  --text-tertiary: rgba(255, 255, 255, 0.44);
+
+  /* Specular Borders */
+  --border-specular: 1px solid rgba(255, 255, 255, 0.12);
+  --border-gold: 1px solid rgba(212, 175, 55, 0.4);
+  --border-gold-glow: 0 0 16px rgba(212, 175, 55, 0.25);
+
+  /* Apple Glassmorphism Blur */
+  --apple-blur: blur(28px) saturate(190%);
+  --apple-shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.1);
+  --apple-shadow-sm: 0 8px 16px -4px rgba(0, 0, 0, 0.5);
+
+  /* Motion & Springs */
+  --apple-spring: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --apple-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Glassmorphism Card Utility */
+.apple-card {
+  background: var(--apple-surface);
+  backdrop-filter: var(--apple-blur);
+  -webkit-backdrop-filter: var(--apple-blur);
+  border: var(--border-specular);
+  border-radius: 18px;
+  box-shadow: var(--apple-shadow-sm);
+  transition: transform 0.22s var(--apple-spring), border-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+.apple-card:hover {
+  border-color: rgba(212, 175, 55, 0.45);
+  box-shadow: var(--apple-shadow-lg), var(--border-gold-glow);
+  transform: translateY(-2px);
+}
+
+/* Apple Touch Haptic Animation */
+.apple-touch {
+  transition: transform 0.12s var(--apple-spring), opacity 0.12s ease;
+  user-select: none;
+  cursor: pointer;
+}
+
+.apple-touch:active {
+  transform: scale(0.96);
+  opacity: 0.88;
+}
+
+/* Apple Badge */
+.apple-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-primary);
+}
+
+.apple-pill.gold {
+  background: var(--scope-gold-subtle);
+  border-color: rgba(212, 175, 55, 0.4);
+  color: var(--scope-gold-light);
+}
+
+.apple-pill.green {
+  background: rgba(52, 199, 89, 0.15);
+  border-color: rgba(52, 199, 89, 0.35);
+  color: var(--apple-green);
+}
