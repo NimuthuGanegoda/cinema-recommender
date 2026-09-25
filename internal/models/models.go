@@ -49,14 +49,20 @@ type ItemDiscountInfo struct {
 	Requirement     string  `json:"requirement"`
 }
 
-// ConcessionItem represents a food or beverage product with detailed discount breakdowns.
+// ConcessionItem represents a food or beverage product with detailed discount breakdowns and dynamic live pricing.
 type ConcessionItem struct {
 	ID                  string             `json:"id"`
 	CinemaID            string             `json:"cinema_id,omitempty"`
 	Name                string             `json:"name"`
 	Category            ItemCategory       `json:"category"`
 	Size                string             `json:"size,omitempty"`
-	Price               float64            `json:"price_lkr"`
+	BasePrice           float64            `json:"base_price_lkr,omitempty"` // standard baseline menu price
+	Price               float64            `json:"price_lkr"`                // current live dynamic price
+	PriceTrend          string             `json:"price_trend,omitempty"`    // "down", "up", "flash_drop", "stable"
+	PriceChangeLKR      float64            `json:"price_change_lkr,omitempty"`
+	FlashDealText       string             `json:"flash_deal_text,omitempty"`
+	LastPriceUpdate     string             `json:"last_price_update,omitempty"`
+	LiveTickID          int64              `json:"live_tick_id,omitempty"`
 	InStock             bool               `json:"in_stock"`
 	Tags                []string           `json:"tags,omitempty"`
 	Description         string             `json:"description,omitempty"`

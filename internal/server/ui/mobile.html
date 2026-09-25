@@ -726,6 +726,64 @@
       background: var(--scope-gold);
       color: #07070a;
     }
+
+    /* Mobile Live Pricing Bar & Glow */
+    .m-live-pricing-bar {
+      background: linear-gradient(135deg, rgba(22, 22, 30, 0.95) 0%, rgba(10, 10, 15, 0.98) 100%);
+      border: 1px solid var(--border-gold);
+      border-radius: 10px;
+      padding: 0.6rem 0.8rem;
+      margin-bottom: 0.8rem;
+    }
+    .m-pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 8px #22c55e;
+      display: inline-block;
+      animation: mPulse 1.8s infinite;
+    }
+    @keyframes mPulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+      70% { transform: scale(1.15); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
+    .m-btn-sync {
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid var(--border-gold);
+      color: var(--scope-gold-light);
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .m-btn-sync:active {
+      background: var(--scope-gold);
+      color: #07070a;
+    }
+    .m-flash-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      color: var(--scope-gold-light);
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      margin-bottom: 0.25rem;
+    }
+    .m-price-glow {
+      animation: mPriceFlash 1.6s ease-out;
+    }
+    @keyframes mPriceFlash {
+      0% { border-color: #22c55e !important; box-shadow: 0 0 15px rgba(34, 197, 94, 0.5) !important; }
+      50% { border-color: #d4af37 !important; box-shadow: 0 0 12px rgba(212, 175, 55, 0.4) !important; }
+      100% { border-color: var(--border-gold); }
+    }
   </style>
 </head>
 <body>
@@ -788,6 +846,23 @@
 
     <!-- Cinema Food & Refreshment Location Guide -->
     <div class="m-food-info-card" id="m-food-info-card" style="display:none;"></div>
+
+    <!-- Mobile Live Dynamic Pricing Bar -->
+    <div class="m-live-pricing-bar" id="m-live-pricing-bar">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.3rem;">
+        <div style="display:flex; align-items:center; gap:0.4rem;">
+          <span class="m-pulse-dot"></span>
+          <span style="font-weight:800; font-size:0.78rem; color:#fff; font-family:'Cinzel', serif;">LIVE CANDY BAR FEED</span>
+        </div>
+        <button type="button" class="m-btn-sync" onclick="mForceLiveSync()">
+          <span>🔄 Sync</span>
+        </button>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:0.68rem; color:var(--text-muted);">
+        <span id="m-live-updated-time">Updated: Just now</span>
+        <span>Auto-sync in <strong id="m-live-countdown" style="color:var(--scope-gold);">10</strong>s</span>
+      </div>
+    </div>
 
     <!-- Category Chips -->
     <div class="chips-bar">
@@ -1135,6 +1210,7 @@
       renderMobileActiveSpotlight(currentCinema);
       mRenderFoodGuide(currentCinema);
       loadMenu(currentCinema.id);
+      mStartLivePricingTicker(currentCinema.id);
     }
 
     function mRenderFoodGuide(cinema) {
@@ -1262,10 +1338,92 @@
       }
     }
 
-    async function loadMenu(cinemaId) {
+    // ==========================================================================
+    // MOBILE REAL-TIME CONSTANT CONCESSION PRICING ENGINE
+    // ==========================================================================
+    let mLivePricingInterval = null;
+    let mLiveCountdownSeconds = 10;
+    const mPreviousPricesMap = new Map();
+    const mChangedItemIds = new Set();
+
+    function mStartLivePricingTicker(cinemaId) {
+      if (mLivePricingInterval) clearInterval(mLivePricingInterval);
+      mLiveCountdownSeconds = 10;
+
+      const countdownEl = document.getElementById('m-live-countdown');
+      if (countdownEl) countdownEl.innerText = mLiveCountdownSeconds;
+
+      mLivePricingInterval = setInterval(async () => {
+        mLiveCountdownSeconds--;
+        const cEl = document.getElementById('m-live-countdown');
+        if (cEl) cEl.innerText = mLiveCountdownSeconds;
+
+        if (mLiveCountdownSeconds <= 0) {
+          mLiveCountdownSeconds = 10;
+          if (cEl) cEl.innerText = mLiveCountdownSeconds;
+          if (currentCinema) {
+            await loadMenu(currentCinema.id, true);
+          }
+        }
+      }, 1000);
+    }
+
+    async function mForceLiveSync() {
+      mLiveCountdownSeconds = 10;
+      const cEl = document.getElementById('m-live-countdown');
+      if (cEl) cEl.innerText = mLiveCountdownSeconds;
+
+      if (currentCinema) {
+        await loadMenu(currentCinema.id, true);
+      }
+    }
+
+    async function loadMenu(cinemaId, isAutoSync = false) {
       try {
-        const res = await fetch(`/api/v1/cinemas/${cinemaId}/concessions`);
-        menuItems = await res.json();
+        const res = await fetch(`/api/v1/cinemas/${cinemaId}/concessions/live`);
+        let data;
+        if (res.ok) {
+          data = await res.json();
+        } else {
+          const fallbackRes = await fetch(`/api/v1/cinemas/${cinemaId}/concessions`);
+          const items = await fallbackRes.json();
+          data = { items: items, updated_at: new Date().toLocaleTimeString() };
+        }
+
+        const items = data.items || data;
+        const updatedAt = data.updated_at || new Date().toLocaleTimeString();
+
+        mChangedItemIds.clear();
+        if (Array.isArray(items)) {
+          items.forEach(it => {
+            const oldPrice = mPreviousPricesMap.get(it.id);
+            if (oldPrice !== undefined && oldPrice !== it.price_lkr) {
+              mChangedItemIds.add(it.id);
+            }
+            mPreviousPricesMap.set(it.id, it.price_lkr);
+          });
+        }
+
+        menuItems = items;
+
+        // If cart has items and live prices shifted, update cart in real-time
+        if (mChangedItemIds.size > 0 && cart.length > 0) {
+          let cartChanged = false;
+          cart.forEach(entry => {
+            const fresh = menuItems.find(m => m.id === entry.item.id);
+            if (fresh && fresh.price_lkr !== entry.item.price_lkr) {
+              entry.item = fresh;
+              cartChanged = true;
+            }
+          });
+          if (cartChanged) {
+            renderCartScreen();
+          }
+        }
+
+        const timeEl = document.getElementById('m-live-updated-time');
+        if (timeEl) timeEl.innerText = `Updated: ${updatedAt}`;
+
         renderMenu();
       } catch (err) {
         console.error('Failed to load menu', err);
@@ -1281,11 +1439,18 @@
         : menuItems.filter(i => i.category === activeCategory);
 
       filtered.forEach(item => {
+        const isChanged = mChangedItemIds.has(item.id);
         const card = document.createElement('div');
-        card.className = 'm-item-card';
+        card.className = 'm-item-card' + (isChanged ? ' m-price-glow' : '');
 
         const maxPct = item.max_discount_pct ? Math.round(item.max_discount_pct * 100) : 35;
         const discountedPrice = item.best_discounted_price_lkr || (item.price_lkr * 0.65);
+        const basePrice = item.base_price_lkr || item.price_lkr;
+        const hasBaseDiff = basePrice > item.price_lkr;
+
+        const flashBadgeHtml = item.flash_deal_text && item.flash_deal_text !== 'Standard Counter Rate' && item.flash_deal_text !== 'Active Concession Rate'
+          ? `<div class="m-flash-pill">${item.flash_deal_text}</div>`
+          : '';
 
         const discountsList = (item.applicable_discounts || []).map(d => `
           <div class="m-disc-row">
@@ -1296,20 +1461,25 @@
 
         card.innerHTML = `
           <div style="width:100%;">
+            ${flashBadgeHtml}
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
               <div class="m-item-info">
                 <div class="m-item-title">${item.name}</div>
                 <div class="m-item-sub">${item.description || item.category} ${item.size ? '&bull; ' + item.size : ''}</div>
               </div>
               <div style="text-align:right;">
-                <div style="text-decoration:line-through; font-size:0.75rem; color:#94a3b8;">LKR ${item.price_lkr.toFixed(0)}</div>
-                <div style="color:var(--accent-green); font-weight:800; font-size:1.05rem;">LKR ${discountedPrice.toFixed(0)}</div>
+                ${hasBaseDiff ? `<div style="text-decoration:line-through; font-size:0.72rem; color:#94a3b8;">Base: LKR ${basePrice.toFixed(0)}</div>` : ''}
+                <div style="color:var(--scope-gold-light); font-weight:800; font-size:1.05rem;">Live: LKR ${item.price_lkr.toFixed(0)}</div>
+                <div style="color:var(--accent-green); font-weight:700; font-size:0.8rem;">Pass: LKR ${discountedPrice.toFixed(0)}</div>
                 <span class="m-save-tag">SAVE ${maxPct}%</span>
               </div>
             </div>
 
-            <div style="font-size:0.7rem; color:#a5b4fc; margin-top:0.3rem;">
-              📍 Served at: <strong style="color:#e0e7ff;">${item.food_location || (currentCinema ? currentCinema.food_place_name : 'In-Theater Candy Bar')}</strong>
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.68rem; color:var(--text-muted); margin-top:0.25rem;">
+              <span>📍 ${item.food_location || (currentCinema ? currentCinema.food_place_name : 'Candy Bar')}</span>
+              <span style="color:${item.price_trend === 'down' || item.price_trend === 'flash_drop' ? '#4ade80' : '#94a3b8'}; font-weight:700;">
+                ${item.price_trend === 'flash_drop' || item.price_trend === 'down' ? '▼ FLASH RATE' : '● LIVE'}
+              </span>
             </div>
 
             <div class="m-discounts-panel">
@@ -1317,7 +1487,7 @@
               ${discountsList}
             </div>
 
-            <button class="m-btn-add-food" onclick="addToCart('${item.id}')">+ Add with Best Discounts</button>
+            <button class="m-btn-add-food" onclick="addToCart('${item.id}')">+ Add with Live Dynamic Discounts</button>
           </div>
         `;
         container.appendChild(card);

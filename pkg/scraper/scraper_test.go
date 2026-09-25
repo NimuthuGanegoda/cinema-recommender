@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 	"testing"
+	"time"
 
 	"cinema-recommender/internal/models"
 )
@@ -156,5 +157,61 @@ func TestEveryFoodHasDiscounts(t *testing.T) {
 		if it.FoodLocation == "" {
 			t.Errorf("expected food item %s to have a food location specified", it.Name)
 		}
+	}
+}
+
+func TestLivePriceUpdatesConstantly(t *testing.T) {
+	s := NewRegionalScraper()
+
+	cinema, err := s.GetCinemaByID("KND-KCC")
+	if err != nil {
+		t.Fatalf("failed to retrieve cinema: %v", err)
+	}
+
+	ticker := s.GetLiveConcessionTicker(cinema)
+	if ticker["live_pricing_active"] != true {
+		t.Fatalf("expected live_pricing_active to be true")
+	}
+
+	// Verify price calculation at two different time points (tick 0 vs tick 1)
+	rawItems, err := s.scrapeByCity("Kandy", cinema.ID)
+	if err != nil {
+		t.Fatalf("failed to scrape raw items: %v", err)
+	}
+
+	t1 := time.Unix(1700000000, 0)
+	t2 := time.Unix(1700000015, 0) // 15 seconds later (next dynamic pricing tick)
+
+	itemsT1 := ApplyLiveDynamicPricing(rawItems, cinema.FoodPlaceName, t1)
+	itemsT2 := ApplyLiveDynamicPricing(rawItems, cinema.FoodPlaceName, t2)
+
+	if len(itemsT1) != len(itemsT2) {
+		t.Fatalf("expected item counts to match across ticks")
+	}
+
+	// Verify dynamic pricing fields are populated
+	for _, it := range itemsT1 {
+		if it.BasePrice <= 0 || it.Price <= 0 {
+			t.Errorf("expected positive base and dynamic prices for %s", it.Name)
+		}
+		if it.LastPriceUpdate == "" {
+			t.Errorf("expected LastPriceUpdate timestamp for %s", it.Name)
+		}
+		if it.PriceTrend == "" {
+			t.Errorf("expected PriceTrend for %s", it.Name)
+		}
+	}
+
+	// Verify that at least some item's price or tick state changes between tick 1 and tick 2
+	var hasDifferentState bool
+	for i := range itemsT1 {
+		if itemsT1[i].LiveTickID != itemsT2[i].LiveTickID || itemsT1[i].Price != itemsT2[i].Price {
+			hasDifferentState = true
+			break
+		}
+	}
+
+	if !hasDifferentState {
+		t.Fatalf("expected dynamic pricing engine to advance live tick and update prices")
 	}
 }

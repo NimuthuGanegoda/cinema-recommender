@@ -101,6 +101,7 @@ func (s *Server) registerRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/v1/cinemas", s.handleListCinemas)
 	mux.HandleFunc("GET /api/v1/cinemas/{id}", s.handleGetCinema)
 	mux.HandleFunc("GET /api/v1/cinemas/{id}/concessions", s.handleGetConcessions)
+	mux.HandleFunc("GET /api/v1/cinemas/{id}/concessions/live", s.handleGetLiveConcessions)
 
 	// Redopay Promotions & Sri Lankan Payment Gateways
 	mux.HandleFunc("GET /api/v1/promotions/redopay", s.handleListPromotions)
@@ -245,7 +246,7 @@ func (s *Server) handleGetCinema(w http.ResponseWriter, r *http.Request) {
 	s.writeJSON(w, http.StatusOK, cinema)
 }
 
-// Handler: Get Concessions for a Cinema
+// Handler: Get Concessions for a Cinema (with constantly updating live pricing)
 func (s *Server) handleGetConcessions(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	if id == "" {
@@ -265,7 +266,38 @@ func (s *Server) handleGetConcessions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+	w.Header().Set("X-Live-Price-Feed", "active")
+	w.Header().Set("X-Prices-Updated-At", time.Now().Format("15:04:05"))
 	s.writeJSON(w, http.StatusOK, items)
+}
+
+// Handler: Get Live Concessions with Ticker Status & Countdown
+func (s *Server) handleGetLiveConcessions(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	if id == "" {
+		s.writeJSON(w, http.StatusBadRequest, map[string]string{"error": "cinema id is required"})
+		return
+	}
+
+	cinema, err := s.scraper.GetCinemaByID(id)
+	if err != nil {
+		s.handleError(w, err)
+		return
+	}
+
+	items, err := s.scraper.ScrapeCinemaConcessions(cinema)
+	if err != nil {
+		s.handleError(w, err)
+		return
+	}
+
+	ticker := s.scraper.GetLiveConcessionTicker(cinema)
+	ticker["items"] = items
+
+	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+	w.Header().Set("X-Live-Price-Feed", "active")
+	s.writeJSON(w, http.StatusOK, ticker)
 }
 
 // Handler: List Available Redopay Promotions

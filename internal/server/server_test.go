@@ -277,8 +277,9 @@ func TestCartEvaluateEndpoint(t *testing.T) {
 	if res.AppliedPromo != "REDOPAY-CINEMA25" {
 		t.Fatalf("expected REDOPAY-CINEMA25, got %s", res.AppliedPromo)
 	}
-	if res.DiscountAmount != 600.00 {
-		t.Fatalf("expected discount LKR 600.00, got LKR %.2f", res.DiscountAmount)
+	expectedDiscount := res.OriginalTotal * 0.25
+	if res.DiscountAmount != expectedDiscount {
+		t.Fatalf("expected discount 25%% of %.2f (LKR %.2f), got LKR %.2f", res.OriginalTotal, expectedDiscount, res.DiscountAmount)
 	}
 }
 
@@ -350,5 +351,40 @@ func TestCheckoutEndpoint(t *testing.T) {
 	}
 	if res.LankaQREMV == "" {
 		t.Fatal("expected LankaQR EMV payload to be populated")
+	}
+}
+
+func TestLiveConcessionsEndpoint(t *testing.T) {
+	srv := setupTestServer()
+
+	// 1. Check standard concessions headers for live updates
+	reqStd := httptest.NewRequest(http.MethodGet, "/api/v1/cinemas/KND-KCC/concessions", nil)
+	wStd := httptest.NewRecorder()
+	srv.GetHandler().ServeHTTP(wStd, reqStd)
+	if wStd.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d", wStd.Code)
+	}
+	if wStd.Header().Get("X-Live-Price-Feed") != "active" {
+		t.Fatalf("expected X-Live-Price-Feed: active header")
+	}
+
+	// 2. Check /live endpoint
+	reqLive := httptest.NewRequest(http.MethodGet, "/api/v1/cinemas/KND-KCC/concessions/live", nil)
+	wLive := httptest.NewRecorder()
+	srv.GetHandler().ServeHTTP(wLive, reqLive)
+	if wLive.Code != http.StatusOK {
+		t.Fatalf("expected status 200 on /live, got %d", wLive.Code)
+	}
+
+	var liveData map[string]interface{}
+	if err := json.Unmarshal(wLive.Body.Bytes(), &liveData); err != nil {
+		t.Fatalf("failed to decode /live response: %v", err)
+	}
+
+	if liveData["live_pricing_active"] != true {
+		t.Fatalf("expected live_pricing_active=true")
+	}
+	if liveData["items"] == nil {
+		t.Fatalf("expected items array in live response")
 	}
 }

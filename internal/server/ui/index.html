@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scope Cinemas &bull; Concession Recommender & Candy Bar Pass</title>
+  <title>Scope Cinemas &bull; CinemaSnack Concession Recommender & Candy Bar Pass</title>
+  <meta name="application-name" content="CinemaSnack">
   <link rel="icon" type="image/jpeg" href="/ui/app-icon.jpg">
   <link rel="manifest" href="/manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1340,6 +1341,220 @@
       border: none;
       background: var(--bg-dark);
     }
+
+    /* ==========================================================================
+       LIVE DYNAMIC PRICING FEED & TICKER (SCOPE CINEMAS STYLING)
+       ========================================================================== */
+    .live-pricing-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(20, 20, 28, 0.95) 0%, rgba(10, 10, 15, 0.98) 100%);
+      border: 1px solid var(--border-gold);
+      border-radius: 12px;
+      padding: 0.85rem 1.2rem;
+      margin-bottom: 0.8rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(212, 175, 55, 0.2);
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .lpb-left {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .lpb-pulse-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 12px #22c55e;
+      display: inline-block;
+      animation: livePulse 1.8s infinite;
+    }
+
+    @keyframes livePulse {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+      }
+      70% {
+        transform: scale(1.15);
+        box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+      }
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+      }
+    }
+
+    .lpb-title {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 0.05em;
+      font-family: 'Cinzel', serif;
+    }
+
+    .lpb-chip {
+      font-size: 0.68rem;
+      font-weight: 700;
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid var(--border-gold);
+      color: var(--scope-gold-light);
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .lpb-right {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .lpb-updated-text {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+
+    .lpb-countdown-pill {
+      font-size: 0.76rem;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 0.25rem 0.6rem;
+      color: #cbd5e1;
+    }
+
+    .lpb-countdown-pill strong {
+      color: var(--scope-gold);
+    }
+
+    .btn-live-sync {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(184, 134, 11, 0.3));
+      border: 1px solid var(--border-gold);
+      color: var(--scope-gold-light);
+      font-size: 0.76rem;
+      font-weight: 700;
+      border-radius: 6px;
+      padding: 0.35rem 0.75rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-live-sync:hover {
+      background: var(--scope-gold);
+      color: #07070a;
+      box-shadow: 0 0 12px var(--scope-gold-glow);
+    }
+
+    .lpb-ticker-notice {
+      background: rgba(0, 0, 0, 0.35);
+      border-left: 3px solid var(--scope-gold);
+      border-radius: 0 6px 6px 0;
+      padding: 0.45rem 0.8rem;
+      font-size: 0.76rem;
+      color: #e2e8f0;
+      margin-bottom: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* Price card dynamic badges & flash animations */
+    .flash-deal-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(212, 175, 55, 0.2));
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      color: var(--scope-gold-light);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      margin-bottom: 0.35rem;
+      animation: flashBorder 2.5s infinite;
+    }
+
+    @keyframes flashBorder {
+      0%, 100% { border-color: rgba(212, 175, 55, 0.3); }
+      50% { border-color: rgba(239, 68, 68, 0.8); box-shadow: 0 0 8px rgba(239, 68, 68, 0.3); }
+    }
+
+    .price-trend-tag {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      display: inline-block;
+      margin-top: 0.15rem;
+    }
+
+    .price-trend-tag.down, .price-trend-tag.flash_drop {
+      background: rgba(34, 197, 94, 0.18);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.4);
+    }
+
+    .price-trend-tag.stable {
+      background: rgba(148, 163, 184, 0.1);
+      color: #94a3b8;
+    }
+
+    .price-pulse-highlight {
+      animation: priceGlow 1.6s ease-out;
+    }
+
+    @keyframes priceGlow {
+      0% {
+        border-color: #22c55e !important;
+        box-shadow: 0 0 25px rgba(34, 197, 94, 0.6) !important;
+        transform: translateY(-2px);
+      }
+      50% {
+        border-color: #d4af37 !important;
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.4) !important;
+      }
+      100% {
+        transform: translateY(0);
+      }
+    }
+
+    /* Live Update Toast Notification */
+    .live-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0f0f18;
+      border: 1.5px solid var(--border-gold);
+      border-radius: 12px;
+      padding: 0.85rem 1.2rem;
+      color: #fff;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(212, 175, 55, 0.25);
+      z-index: 9999;
+      transform: translateY(120%);
+      opacity: 0;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .live-toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
@@ -1529,6 +1744,25 @@
         <!-- View 2: Full Concession Menu Browser -->
         <div id="view-menu" style="display:none;">
           <div class="menu-card">
+            <!-- Real-time Dynamic Pricing Status Bar -->
+            <div class="live-pricing-bar" id="live-pricing-bar">
+              <div class="lpb-left">
+                <span class="lpb-pulse-dot"></span>
+                <span class="lpb-title">LIVE CANDY BAR PRICING FEED</span>
+                <span class="lpb-chip">Real-time Rates</span>
+              </div>
+              <div class="lpb-right">
+                <span class="lpb-updated-text" id="live-pricing-time">Updated: Just now</span>
+                <span class="lpb-countdown-pill">Next sync in <strong id="live-countdown-num">10</strong>s</span>
+                <button type="button" class="btn-live-sync" id="btn-force-sync" onclick="forceLivePriceSync()">
+                  <span id="sync-icon">🔄</span> Sync Live Prices
+                </button>
+              </div>
+            </div>
+            <div class="lpb-ticker-notice">
+              <span>⚡ <strong>Dynamic Pricing Active:</strong> Prices update constantly based on theater counter demand, happy hour matinee deals, and flash concession specials.</span>
+            </div>
+
             <div class="section-header">
               <h3 class="section-title">🍿 Live Regional Concessions Menu</h3>
               <span id="menu-cinema-badge" style="font-size:0.85rem; color:var(--accent-gold);"></span>
@@ -1848,7 +2082,6 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
       `;
     }
 
-    function autoDetectLocation() {
     function renderActiveCinemaSpotlight(cinema) {
       const container = document.getElementById("active-cinema-spotlight");
       if (!cinema) {
@@ -2017,6 +2250,7 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
       renderActiveCinemaSpotlight(currentCinema);
       renderFoodGuide(currentCinema);
       loadCinemaMenu(currentCinema.id);
+      startLivePricingTicker(currentCinema.id);
       calculateRecommendation();
     }
 
@@ -2113,18 +2347,141 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
       }
     }
 
-    async function loadCinemaMenu(cinemaId) {
+    // ==========================================================================
+    // REAL-TIME CONSTANTLY UPDATING CONCESSION PRICING ENGINE
+    // ==========================================================================
+    let livePricingInterval = null;
+    let liveCountdownSeconds = 10;
+    const previousPricesMap = new Map();
+
+    function showLiveToast(msg) {
+      let toast = document.getElementById("live-price-toast");
+      if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "live-price-toast";
+        toast.className = "live-toast";
+        toast.innerHTML = `
+          <span style="font-size:1.3rem;">⚡</span>
+          <div>
+            <div style="font-weight:800; color:var(--scope-gold-light); font-size:0.8rem; text-transform:uppercase; letter-spacing:0.04em;">Live Concession Feed</div>
+            <div id="live-toast-message" style="font-size:0.75rem; color:#cbd5e1;"></div>
+          </div>
+        `;
+        document.body.appendChild(toast);
+      }
+      const msgEl = document.getElementById("live-toast-message");
+      if (msgEl) msgEl.innerText = msg;
+      toast.classList.add("show");
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 4000);
+    }
+
+    function startLivePricingTicker(cinemaId) {
+      if (livePricingInterval) clearInterval(livePricingInterval);
+      liveCountdownSeconds = 10;
+
+      const countdownEl = document.getElementById("live-countdown-num");
+      if (countdownEl) countdownEl.innerText = liveCountdownSeconds;
+
+      livePricingInterval = setInterval(async () => {
+        liveCountdownSeconds--;
+        const cEl = document.getElementById("live-countdown-num");
+        if (cEl) cEl.innerText = liveCountdownSeconds;
+
+        if (liveCountdownSeconds <= 0) {
+          liveCountdownSeconds = 10;
+          if (cEl) cEl.innerText = liveCountdownSeconds;
+          if (currentCinema) {
+            await loadCinemaMenu(currentCinema.id, true);
+          }
+        }
+      }, 1000);
+    }
+
+    async function forceLivePriceSync() {
+      const syncIcon = document.getElementById("sync-icon");
+      const btn = document.getElementById("btn-force-sync");
+      if (syncIcon) syncIcon.style.display = "inline-block";
+      if (btn) btn.disabled = true;
+
+      liveCountdownSeconds = 10;
+      const cEl = document.getElementById("live-countdown-num");
+      if (cEl) cEl.innerText = liveCountdownSeconds;
+
       try {
-        const res = await fetch(`/api/v1/cinemas/${cinemaId}/concessions`);
-        currentMenu = await res.json();
-        document.getElementById("menu-cinema-badge").innerText = currentCinema ? `${currentCinema.name} &bull; ${currentCinema.city}` : "";
+        if (currentCinema) {
+          await loadCinemaMenu(currentCinema.id, true);
+          showLiveToast("⚡ Concession prices updated from live counter feed.");
+        }
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    async function loadCinemaMenu(cinemaId, isAutoSync = false) {
+      try {
+        const res = await fetch(`/api/v1/cinemas/${cinemaId}/concessions/live`);
+        let data;
+        if (res.ok) {
+          data = await res.json();
+        } else {
+          const fallbackRes = await fetch(`/api/v1/cinemas/${cinemaId}/concessions`);
+          const items = await fallbackRes.json();
+          data = { items: items, updated_at: new Date().toLocaleTimeString() };
+        }
+
+        const items = data.items || data;
+        const updatedAt = data.updated_at || new Date().toLocaleTimeString();
+
+        // Detect price changes against previous tick
+        const changedItemIds = new Set();
+        if (Array.isArray(items)) {
+          items.forEach(it => {
+            const oldPrice = previousPricesMap.get(it.id);
+            if (oldPrice !== undefined && oldPrice !== it.price_lkr) {
+              changedItemIds.add(it.id);
+            }
+            previousPricesMap.set(it.id, it.price_lkr);
+          });
+        }
+
+        currentMenu = items;
+
+        // If prices changed dynamically and user has items in cart, update cart prices in real time!
+        if (changedItemIds.size > 0 && customCart.length > 0) {
+          let cartPriceShifted = false;
+          customCart.forEach(cartEntry => {
+            const fresh = currentMenu.find(m => m.id === cartEntry.item.id);
+            if (fresh && fresh.price_lkr !== cartEntry.item.price_lkr) {
+              cartEntry.item = fresh;
+              cartPriceShifted = true;
+            }
+          });
+
+          if (cartPriceShifted) {
+            renderCart();
+            showLiveToast(`⚡ Live Price Alert: Concession rates updated! Cart automatically adjusted.`);
+          }
+        } else if (isAutoSync && changedItemIds.size > 0) {
+          showLiveToast(`⚡ Live Price Update: ${changedItemIds.size} concession item(s) updated.`);
+        }
+
+        // Update Header status
+        const timeEl = document.getElementById("live-pricing-time");
+        if (timeEl) timeEl.innerText = `Updated: ${updatedAt}`;
+
+        const badgeEl = document.getElementById("menu-cinema-badge");
+        if (badgeEl) badgeEl.innerText = currentCinema ? `${currentCinema.name} &bull; ${currentCinema.city}` : "";
 
         const grid = document.getElementById("menu-items-grid");
+        if (!grid) return;
         grid.innerHTML = "";
 
         currentMenu.forEach(item => {
           const card = document.createElement("div");
-          card.className = "menu-item-card";
+          const isChanged = changedItemIds.has(item.id);
+          card.className = "menu-item-card" + (isChanged ? " price-pulse-highlight" : "");
           const tags = (item.tags || []).map(t => `<span class="tag-badge">${t}</span>`).join("");
 
           // Every food discount pill list
@@ -2137,20 +2494,37 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
 
           const maxPct = item.max_discount_pct ? Math.round(item.max_discount_pct * 100) : 35;
           const discountedPrice = item.best_discounted_price_lkr || (item.price_lkr * 0.65);
+          const basePrice = item.base_price_lkr || item.price_lkr;
+          const hasBaseDiff = basePrice > item.price_lkr;
+
+          const flashBadgeHtml = item.flash_deal_text && item.flash_deal_text !== "Standard Counter Rate" && item.flash_deal_text !== "Active Concession Rate"
+            ? `<div class="flash-deal-badge">${item.flash_deal_text}</div>`
+            : "";
+
+          const trendClass = item.price_trend === "down" || item.price_trend === "flash_drop" ? "down" : "stable";
+          const trendLabel = item.price_trend === "flash_drop" ? "⚡ FLASH DROP" : item.price_trend === "down" ? "▼ LIVE SAVING" : "● LIVE RATE";
 
           card.innerHTML = `
             <div>
+              ${flashBadgeHtml}
               <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.3rem;">
                 <div>
                   <strong style="font-size:1.02rem; color:#f8fafc;">${item.name}</strong>
                   <div style="font-size:0.75rem; color:var(--text-muted);">${item.category} ${item.size ? '&bull; ' + item.size : ''}</div>
                 </div>
                 <div style="text-align:right;">
-                  <div style="text-decoration:line-through; font-size:0.8rem; color:#94a3b8;">LKR ${item.price_lkr.toFixed(0)}</div>
-                  <div style="color:var(--accent-green); font-weight:800; font-size:1.15rem;">LKR ${discountedPrice.toFixed(0)}</div>
+                  ${hasBaseDiff ? `<div style="text-decoration:line-through; font-size:0.78rem; color:#94a3b8;">Base: LKR ${basePrice.toFixed(0)}</div>` : ''}
+                  <div style="color:var(--scope-gold-light); font-weight:800; font-size:1.15rem;">Live: LKR ${item.price_lkr.toFixed(0)}</div>
+                  <div style="color:var(--accent-green); font-weight:700; font-size:0.85rem;">Pass: LKR ${discountedPrice.toFixed(0)}</div>
                   <span class="save-tag">SAVE ${maxPct}%</span>
                 </div>
               </div>
+
+              <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; color:var(--text-muted); margin-bottom:0.4rem;">
+                <span>🕒 Live Rate: ${item.last_price_update || updatedAt}</span>
+                <span class="price-trend-tag ${trendClass}">${trendLabel}</span>
+              </div>
+
               <p style="font-size:0.78rem; color:#cbd5e1; margin-bottom:0.5rem; line-height:1.35;">${item.description || item.category}</p>
               
               <div style="font-size:0.72rem; color:#a5b4fc; margin-bottom:0.4rem; display:flex; align-items:center; gap:0.3rem;">
@@ -2170,7 +2544,7 @@ curl -X POST http://localhost:8080/api/v1/cart/evaluate \
 
               <div class="item-tags" style="margin-top:0.4rem;">${tags}</div>
             </div>
-            <button class="btn-add-cart" onclick="addToCart('${item.id}')" style="margin-top:0.6rem;">+ Add to Cart & Apply Deals</button>
+            <button class="btn-add-cart" onclick="addToCart('${item.id}')" style="margin-top:0.6rem;">+ Add with Live Dynamic Discounts</button>
           `;
           grid.appendChild(card);
         });
