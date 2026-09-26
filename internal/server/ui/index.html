@@ -96,12 +96,12 @@
       padding: 1.75rem 1.5rem 4rem;
     }
 
-    /* Hero Section */
+    /* Hero Section with Dracula Purple Ambient Glow */
     .hero-banner {
       margin-bottom: 2rem;
       text-align: center;
       padding: 2.2rem 1.5rem 1.8rem;
-      background: radial-gradient(circle at 50% 0%, rgba(10, 132, 255, 0.08) 0%, transparent 70%);
+      background: radial-gradient(circle at 50% 0%, rgba(189, 147, 249, 0.16) 0%, transparent 70%);
     }
 
     .hero-badge {
@@ -470,9 +470,65 @@
     }
 
     .filter-btn.active {
-      background: var(--apple-blue);
-      border-color: var(--apple-blue);
+      background: var(--dracula-purple-gradient, linear-gradient(135deg, #bd93f9 0%, #7c52d4 100%));
+      border-color: var(--dracula-purple, #bd93f9);
+      color: #100e17;
+      font-weight: 700;
+      box-shadow: 0 0 14px var(--dracula-purple-glow, rgba(189, 147, 249, 0.45));
+    }
+
+    .filter-count {
+      font-size: 0.74rem;
+      opacity: 0.85;
+      margin-left: 0.25rem;
+    }
+
+    /* Quick Cinema Chips Horizontal Scroller */
+    .quick-cinema-chips {
+      display: flex;
+      gap: 0.6rem;
+      overflow-x: auto;
+      padding-bottom: 0.4rem;
+      scrollbar-width: thin;
+    }
+
+    .quick-cinema-chips::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    .quick-cinema-chips::-webkit-scrollbar-thumb {
+      background: rgba(189, 147, 249, 0.25);
+      border-radius: 4px;
+    }
+
+    .cinema-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--apple-text-secondary);
+      padding: 0.42rem 0.95rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.8rem;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.16s var(--apple-spring);
+    }
+
+    .cinema-chip:hover {
+      background: rgba(189, 147, 249, 0.12);
       color: #fff;
+      border-color: rgba(189, 147, 249, 0.35);
+    }
+
+    .cinema-chip.active {
+      background: var(--dracula-purple-gradient, linear-gradient(135deg, #bd93f9 0%, #7c52d4 100%));
+      border-color: var(--dracula-purple, #bd93f9);
+      color: #100e17;
+      font-weight: 700;
+      box-shadow: 0 0 14px var(--dracula-purple-glow, rgba(189, 147, 249, 0.45));
     }
 
     .concession-grid {
@@ -554,9 +610,9 @@
     }
 
     .add-btn {
-      background: rgba(10, 132, 255, 0.16);
-      border: 1px solid rgba(10, 132, 255, 0.35);
-      color: #5ac8fa;
+      background: rgba(189, 147, 249, 0.16);
+      border: 1px solid rgba(189, 147, 249, 0.38);
+      color: var(--dracula-purple, #bd93f9);
       padding: 0.45rem 0.95rem;
       border-radius: var(--radius-pill);
       font-size: 0.82rem;
@@ -569,8 +625,9 @@
     }
 
     .add-btn:hover {
-      background: var(--apple-blue);
-      color: #fff;
+      background: var(--dracula-purple, #bd93f9);
+      color: #100e17;
+      box-shadow: 0 0 12px var(--dracula-purple-glow, rgba(189, 147, 249, 0.45));
     }
 
     /* Result Box / Digital Concession Pass Card */
@@ -694,9 +751,24 @@
         <div class="cinema-dropdown" id="cinema-dropdown" style="display:none;"></div>
       </div>
 
-      <button class="apple-btn-secondary" onclick="openCinemaModal()" style="white-space:nowrap;">
-        🏛️ Browse All Cinemas
+      <button class="apple-btn-secondary" onclick="openAllCinemasModal()" style="white-space:nowrap;" id="btn-browse-cinemas">
+        🏛️ View All Cinemas (<span id="available-cinemas-count">10</span> Verified)
       </button>
+    </section>
+
+    <!-- Quick Cinema Switcher Chips Bar (Food Courts in Front Only) -->
+    <section class="quick-cinema-section" id="quick-cinema-section" style="margin-bottom: 1.25rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem;">
+        <span style="font-size:0.8rem; font-weight:700; color:var(--apple-text-secondary); display:flex; align-items:center; gap:0.4rem;">
+          <span>📍</span> Available Theaters (Verified In-Front Food Courts):
+        </span>
+        <button onclick="openAllCinemasModal()" style="font-size:0.75rem; color:var(--apple-blue-ios); background:none; border:none; cursor:pointer; font-weight:600;">
+          All Cinemas Directory ↗
+        </button>
+      </div>
+      <div class="quick-cinema-chips" id="quick-cinema-chips">
+        <!-- Dynamically rendered cinema chips -->
+      </div>
     </section>
 
     <!-- Currently Selected Cinema Card -->
@@ -704,22 +776,32 @@
       <div class="cinema-meta-left">
         <div class="cinema-title-row">
           <span style="font-size:1.6rem;" id="cinema-chain-icon">🏛️</span>
-          <h3 class="cinema-name" id="display-cinema-name">Regal Cinema Kandy</h3>
-          <span class="apple-badge blue" id="display-cinema-chain">Ceylon Theatres</span>
-          <span class="apple-badge green" id="display-screens-badge">2 Screens</span>
+          <h3 class="cinema-name" id="display-cinema-name">Scope Partner Multiplex - KCC Kandy</h3>
+          <span class="apple-badge blue" id="display-cinema-chain">Scope Cinemas Partner Circuit</span>
+          <span class="apple-badge green" id="display-screens-badge">4 Screens</span>
         </div>
         <div class="cinema-details-row">
-          <span id="display-cinema-city">📍 Katugastota Road, Kandy (Central Province)</span>
+          <span id="display-cinema-city">📍 Level 3, Kandy City Centre, Dalada Veediya, Kandy</span>
           <span style="color:var(--apple-text-tertiary);">•</span>
           <a href="#" target="_blank" id="display-maps-link" style="color:var(--apple-blue-ios); text-decoration:none; font-weight:600;">🗺️ View Map</a>
           <span style="color:var(--apple-text-tertiary);">•</span>
-          <span id="display-food-hours">🕒 10:15 AM - 10:30 PM</span>
+          <span id="display-food-hours">🕒 10:00 AM - 10:45 PM</span>
+        </div>
+
+        <!-- Verified In-Front Food Court Badge -->
+        <div class="food-court-banner" style="margin-top:0.75rem; display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
+          <span class="food-court-tag" style="background:rgba(48,209,88,0.14); border:1px solid rgba(48,209,88,0.4); color:var(--apple-green); font-size:0.76rem; font-weight:700; padding:0.25rem 0.65rem; border-radius:var(--radius-pill); display:inline-flex; align-items:center; gap:0.35rem;">
+            🍔 Food Court In Front
+          </span>
+          <span style="font-size:0.86rem; color:#ffffff; font-weight:700;" id="display-foodcourt-name">KCC World Food Court & Scope Candy Bar</span>
+          <span style="font-size:0.78rem; color:var(--apple-text-secondary);" id="display-foodcourt-loc">(Level 3 Lobby directly in front of cinema entrance)</span>
+          <span class="apple-badge purple" style="font-size:0.68rem; font-weight:600;">Cinema Food & Drinks Only</span>
         </div>
       </div>
       <div>
-        <div class="food-info-pill" id="display-food-place">
-          🍿 In-Theater Concession Stand (Regal Foyer Concession Counter)
-        </div>
+        <button class="apple-btn-secondary" onclick="openAllCinemasModal()" style="font-size:0.82rem; white-space:nowrap; padding:0.5rem 1rem;">
+          🔄 Switch Cinema
+        </button>
       </div>
     </section>
 
@@ -818,13 +900,13 @@
           </div>
         </div>
 
-        <!-- Category Filters -->
-        <div class="menu-filter-bar">
-          <button class="filter-btn active" onclick="filterCategory('ALL')">All Concessions</button>
-          <button class="filter-btn" onclick="filterCategory('Popcorn')">🍿 Popcorn</button>
-          <button class="filter-btn" onclick="filterCategory('Beverage')">🥤 Chilled Drinks</button>
-          <button class="filter-btn" onclick="filterCategory('Snack')">🌭 Warm Snacks</button>
-          <button class="filter-btn" onclick="filterCategory('Combo')">🎬 Super Combos</button>
+        <!-- Category Filters with Live Dynamic Item Counts -->
+        <div class="menu-filter-bar" id="category-filter-bar">
+          <button class="filter-btn active" data-category="ALL" onclick="filterCategory('ALL', this)">All Snacks <span class="filter-count" id="count-ALL">(0)</span></button>
+          <button class="filter-btn" data-category="Popcorn" onclick="filterCategory('Popcorn', this)">🍿 Popcorn <span class="filter-count" id="count-Popcorn">(0)</span></button>
+          <button class="filter-btn" data-category="Beverage" onclick="filterCategory('Beverage', this)">🥤 Chilled Drinks <span class="filter-count" id="count-Beverage">(0)</span></button>
+          <button class="filter-btn" data-category="Snack" onclick="filterCategory('Snack', this)">🌭 Warm Snacks <span class="filter-count" id="count-Snack">(0)</span></button>
+          <button class="filter-btn" data-category="Combo" onclick="filterCategory('Combo', this)">🎬 Super Combos <span class="filter-count" id="count-Combo">(0)</span></button>
         </div>
 
         <!-- Concession Item Cards Grid -->
@@ -960,6 +1042,49 @@
     </div>
   </div>
 
+  <!-- All Available Cinemas Directory Modal -->
+  <div class="modal-backdrop" id="all-cinemas-modal" onclick="closeAllCinemasModalOnBackdrop(event)">
+    <div class="modal-content" style="max-width:820px;">
+      <div class="apple-card" style="padding:1.85rem; background:var(--apple-surface); border:var(--apple-border-specular); border-radius:var(--radius-xl); box-shadow:var(--apple-shadow-lg);">
+        <!-- Modal Header -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.25rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:1rem;">
+          <div>
+            <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.35rem;">
+              <span style="font-size:1.5rem;">🏛️</span>
+              <h3 style="font-size:1.35rem; font-weight:800; letter-spacing:-0.02em;">All Available Cinemas in Sri Lanka</h3>
+            </div>
+            <p style="font-size:0.84rem; color:var(--apple-text-secondary); line-height:1.4;">
+              Strictly listing cinemas with a verified food court located directly in front of the theater for cinema food and drinks only.
+            </p>
+          </div>
+          <button onclick="closeAllCinemasModal()" style="background:rgba(255,255,255,0.08); border:none; color:#fff; width:34px; height:34px; border-radius:50%; font-size:1.15rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s ease;">
+            ✕
+          </button>
+        </div>
+
+        <!-- In-Modal Quick Filter Input -->
+        <div class="search-input-wrap" style="margin-bottom:1.25rem;">
+          <span style="color:var(--apple-text-tertiary);">🔍</span>
+          <input type="text" id="modal-cinema-search" placeholder="Search available cinemas, city, or food court (e.g. KCC Kandy, Galle, Negombo, Jaffna...)" oninput="filterModalCinemas(this.value)">
+        </div>
+
+        <!-- Cinema Cards Grid -->
+        <div id="modal-cinemas-list" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(340px, 1fr)); gap:1rem; max-height:480px; overflow-y:auto; padding-right:0.35rem;">
+          <!-- Dynamically populated from registeredCinemas -->
+        </div>
+
+        <div style="margin-top:1.4rem; display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.08); padding-top:1rem;">
+          <span style="font-size:0.78rem; color:var(--apple-text-secondary);" id="modal-verified-stat">
+            10 Cinemas Verified with In-Front Food Courts
+          </span>
+          <button class="apple-btn-secondary" onclick="closeAllCinemasModal()">
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     // Global Application State
     const client = new CinemaClient();
@@ -986,6 +1111,9 @@
       try {
         const cinemas = await client.getCinemas();
         registeredCinemas = cinemas;
+        const countEl = document.getElementById('available-cinemas-count');
+        if (countEl) countEl.textContent = cinemas.length;
+        renderQuickCinemaChips();
         if (cinemas.length > 0) {
           selectCinema(cinemas[0]);
         }
@@ -1002,9 +1130,18 @@
       document.getElementById('display-cinema-city').textContent = `📍 ${cinema.address || cinema.city} (${cinema.province || 'Regional'})`;
       document.getElementById('display-screens-badge').textContent = `${cinema.screens} Screen${cinema.screens > 1 ? 's' : ''}`;
       document.getElementById('display-food-hours').textContent = `🕒 ${cinema.food_hours || '10:00 AM - 10:30 PM'}`;
-      document.getElementById('display-food-place').textContent = `🍿 ${cinema.food_place_name || 'Theater Concession Counter'}`;
+      
+      const fcName = cinema.food_court_name || cinema.food_place_name || 'Theater Concession Counter';
+      const fcLoc = cinema.food_court_location || 'Directly in front of cinema entrance';
+      const fcNameEl = document.getElementById('display-foodcourt-name');
+      if (fcNameEl) fcNameEl.textContent = fcName;
+      const fcLocEl = document.getElementById('display-foodcourt-loc');
+      if (fcLocEl) fcLocEl.textContent = `(${fcLoc})`;
+
       document.getElementById('display-maps-link').href = cinema.map_url || `https://maps.google.com/?q=${cinema.latitude},${cinema.longitude}`;
       document.getElementById('island-cinema-text').textContent = cinema.name;
+
+      renderQuickCinemaChips();
 
       // Load live menu & in-theater ads
       await Promise.all([
@@ -1018,6 +1155,7 @@
       try {
         const data = await client.getLiveConcessions(cinemaId);
         currentMenu = data.items || [];
+        updateCategoryCounts();
         renderConcessionGrid();
       } catch (err) {
         console.error('Failed to load live concessions:', err);
@@ -1130,10 +1268,29 @@
       }).join('');
     }
 
-    function filterCategory(cat) {
+    function updateCategoryCounts() {
+      const counts = {
+        ALL: currentMenu.length,
+        Popcorn: currentMenu.filter(i => i.category && i.category.toLowerCase() === 'popcorn').length,
+        Beverage: currentMenu.filter(i => i.category && i.category.toLowerCase() === 'beverage').length,
+        Snack: currentMenu.filter(i => i.category && i.category.toLowerCase() === 'snack').length,
+        Combo: currentMenu.filter(i => i.category && i.category.toLowerCase() === 'combo').length,
+      };
+      for (const [cat, cnt] of Object.entries(counts)) {
+        const el = document.getElementById(`count-${cat}`);
+        if (el) el.textContent = `(${cnt})`;
+      }
+    }
+
+    function filterCategory(cat, element) {
       currentCategory = cat;
-      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-category') === cat || btn === element) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
       renderConcessionGrid();
     }
 
@@ -1385,12 +1542,124 @@
       }
     }
 
-    function openCinemaModal() {
-      const query = prompt('Enter city or cinema name:', 'Kandy');
-      if (query) {
-        document.getElementById('cinema-search-input').value = query;
-        document.getElementById('cinema-search-input').dispatchEvent(new Event('input'));
+    function renderQuickCinemaChips() {
+      const container = document.getElementById('quick-cinema-chips');
+      if (!container) return;
+      container.innerHTML = registeredCinemas.map(c => {
+        const isSelected = currentCinema && currentCinema.id === c.id;
+        return `
+          <button class="cinema-chip ${isSelected ? 'active' : ''}" onclick="selectCinemaById('${c.id}')" title="${c.name} - ${c.food_court_name}">
+            <span>🏛️</span>
+            <span>${c.name}</span>
+            <span style="font-size:0.72rem; opacity:0.8;">(${c.city})</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function renderAllCinemasModal(cinemasToRender = registeredCinemas) {
+      const container = document.getElementById('modal-cinemas-list');
+      if (!container) return;
+      if (cinemasToRender.length === 0) {
+        container.innerHTML = '<div style="color:var(--apple-text-tertiary); grid-column:1/-1; padding:2rem; text-align:center;">No matching cinemas with in-front food courts found.</div>';
+        return;
       }
+      container.innerHTML = cinemasToRender.map(c => {
+        const isSelected = currentCinema && currentCinema.id === c.id;
+        return `
+          <div style="background:var(--apple-surface-elevated); border:1px solid ${isSelected ? 'var(--apple-blue-ios)' : 'rgba(255,255,255,0.08)'}; border-radius:var(--radius-lg); padding:1.15rem; display:flex; flex-direction:column; justify-content:space-between; gap:0.8rem; box-shadow:${isSelected ? '0 0 16px var(--apple-blue-glow)' : 'none'};">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:0.5rem; margin-bottom:0.35rem;">
+                <h4 style="font-size:1.02rem; font-weight:700; color:#fff;">${c.name}</h4>
+                <span class="apple-badge blue" style="font-size:0.68rem; white-space:nowrap;">${c.chain || 'Independent'}</span>
+              </div>
+              <div style="font-size:0.78rem; color:var(--apple-text-secondary); margin-bottom:0.6rem;">
+                📍 ${c.address || c.city} • <span style="color:var(--apple-green); font-weight:600;">${c.screens} Screen${c.screens > 1 ? 's' : ''}</span>
+              </div>
+
+              <!-- In-Front Food Court Box -->
+              <div style="background:rgba(0,0,0,0.38); border:1px solid rgba(48,209,88,0.28); border-radius:var(--radius-sm); padding:0.65rem 0.8rem; margin-bottom:0.5rem;">
+                <div style="font-size:0.72rem; color:var(--apple-green); font-weight:700; margin-bottom:0.2rem; display:flex; align-items:center; gap:0.3rem;">
+                  🍔 Food Court Directly In Front
+                </div>
+                <div style="font-size:0.82rem; font-weight:700; color:#ffffff;">
+                  ${c.food_court_name || c.food_place_name}
+                </div>
+                <div style="font-size:0.72rem; color:var(--apple-text-secondary); margin-top:0.2rem;">
+                  📍 ${c.food_court_location || 'Lobby entrance directly facing auditorium'}
+                </div>
+                <div style="font-size:0.68rem; color:var(--apple-purple); font-weight:600; margin-top:0.25rem;">
+                  🍿 Cinema food and drinks only
+                </div>
+              </div>
+
+              <div style="font-size:0.74rem; color:var(--apple-text-tertiary);">
+                🕒 ${c.food_hours || '10:00 AM - 10:30 PM'}
+              </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.06); padding-top:0.65rem; margin-top:0.2rem;">
+              ${isSelected ? `
+                <span class="apple-badge green" style="font-size:0.72rem; font-weight:700;">✓ Currently Active</span>
+              ` : `
+                <span style="font-size:0.74rem; color:var(--apple-text-tertiary);">Live Menu & Flash Deals</span>
+              `}
+              <button class="${isSelected ? 'apple-btn-secondary' : 'apple-btn-primary'}" style="font-size:0.78rem; padding:0.4rem 0.85rem;" onclick="selectCinemaFromModal('${c.id}')">
+                ${isSelected ? 'Selected' : 'Select Cinema'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterModalCinemas(query) {
+      const q = query.toLowerCase().trim();
+      if (!q) {
+        renderAllCinemasModal(registeredCinemas);
+        return;
+      }
+      const filtered = registeredCinemas.filter(c => 
+        c.name.toLowerCase().includes(q) || 
+        c.city.toLowerCase().includes(q) || 
+        (c.chain && c.chain.toLowerCase().includes(q)) ||
+        (c.food_court_name && c.food_court_name.toLowerCase().includes(q))
+      );
+      renderAllCinemasModal(filtered);
+    }
+
+    function openAllCinemasModal() {
+      renderAllCinemasModal();
+      const stat = document.getElementById('modal-verified-stat');
+      if (stat) stat.textContent = `${registeredCinemas.length} Cinemas Verified with In-Front Food Courts`;
+      document.getElementById('all-cinemas-modal').classList.add('open');
+    }
+
+    function closeAllCinemasModal() {
+      document.getElementById('all-cinemas-modal').classList.remove('open');
+    }
+
+    function closeAllCinemasModalOnBackdrop(e) {
+      if (e.target.id === 'all-cinemas-modal') {
+        closeAllCinemasModal();
+      }
+    }
+
+    function selectCinemaFromModal(cinemaId) {
+      const c = registeredCinemas.find(x => x.id === cinemaId);
+      if (c) {
+        selectCinema(c);
+        closeAllCinemasModal();
+      }
+    }
+
+    function selectCinemaById(cinemaId) {
+      const c = registeredCinemas.find(x => x.id === cinemaId);
+      if (c) selectCinema(c);
+    }
+
+    function openCinemaModal() {
+      openAllCinemasModal();
     }
 
     // Live refresh ticker

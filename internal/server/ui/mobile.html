@@ -209,9 +209,11 @@
     }
 
     .cat-pill.active {
-      background: var(--apple-blue);
-      border-color: var(--apple-blue);
-      color: #fff;
+      background: var(--dracula-purple-gradient, linear-gradient(135deg, #bd93f9 0%, #7c52d4 100%));
+      border-color: var(--dracula-purple, #bd93f9);
+      color: #100e17;
+      font-weight: 700;
+      box-shadow: 0 0 10px var(--dracula-purple-glow, rgba(189, 147, 249, 0.45));
     }
 
     /* Concession List Items (iOS Grouped Style) */
@@ -235,6 +237,24 @@
 
     .concession-item-row:active {
       transform: scale(0.98);
+    }
+
+    .add-btn {
+      background: rgba(189, 147, 249, 0.16);
+      border: 1px solid rgba(189, 147, 249, 0.38);
+      color: var(--dracula-purple, #bd93f9);
+      padding: 0.28rem 0.75rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .add-btn:active {
+      background: var(--dracula-purple, #bd93f9);
+      color: #100e17;
+      transform: scale(0.95);
     }
 
     /* Bottom iOS Tab Bar */
@@ -332,17 +352,42 @@
        Screen 1: Explore (Live Concessions & Deals)
        ========================================================================= -->
   <div class="screen-view active" id="screen-explore">
+    <!-- View All Cinemas Button -->
+    <button class="apple-btn-secondary" onclick="openMobileCinemaDirectory()" style="width:100%; margin-bottom:1rem; display:flex; align-items:center; justify-content:space-between; font-size:0.82rem; padding:0.65rem 0.95rem;">
+      <div style="display:flex; align-items:center; gap:0.5rem;">
+        <span style="font-size:1.1rem;">🏛️</span>
+        <span style="font-weight:700;">View All Available Cinemas</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:0.4rem;">
+        <span class="apple-badge green" style="font-size:0.65rem;"><span id="m-cinemas-count">10</span> Food Courts in Front</span>
+        <span style="color:var(--apple-text-tertiary); font-size:0.85rem;">›</span>
+      </div>
+    </button>
+
     <!-- Cinema Details Card -->
     <div class="cinema-info-card">
       <div class="cinema-chain-row">
-        <span style="font-size:0.95rem; font-weight:700;" id="m-display-name">Regal Cinema Kandy</span>
-        <span class="apple-badge blue" id="m-display-chain" style="font-size:0.68rem;">Ceylon Theatres</span>
+        <span style="font-size:0.95rem; font-weight:700;" id="m-display-name">Scope Partner Multiplex - KCC Kandy</span>
+        <span class="apple-badge blue" id="m-display-chain" style="font-size:0.68rem;">Scope Cinemas Partner</span>
       </div>
       <div style="font-size:0.78rem; color:var(--apple-text-secondary);" id="m-display-location">
-        Katugastota Road, Kandy • 2 Screens
+        Level 3, Kandy City Centre • 4 Screens
       </div>
-      <div style="font-size:0.75rem; color:var(--apple-green); font-weight:600;" id="m-display-foodplace">
-        🍿 Regal Foyer Concession Counter
+
+      <!-- In-Front Food Court Badge -->
+      <div style="background:rgba(48,209,88,0.12); border:1px solid rgba(48,209,88,0.32); border-radius:var(--radius-sm); padding:0.55rem 0.75rem; margin-top:0.35rem;">
+        <div style="font-size:0.72rem; color:var(--apple-green); font-weight:700; display:flex; align-items:center; gap:0.35rem;">
+          🍔 Verified Food Court Directly in Front
+        </div>
+        <div style="font-size:0.82rem; font-weight:700; color:#fff; margin-top:0.15rem;" id="m-display-foodcourt-name">
+          KCC World Food Court & Scope Candy Bar
+        </div>
+        <div style="font-size:0.7rem; color:var(--apple-text-secondary); margin-top:0.1rem;" id="m-display-foodcourt-loc">
+          (Level 3 Lobby directly in front of cinema entrance)
+        </div>
+        <div style="font-size:0.66rem; color:var(--apple-purple); font-weight:600; margin-top:0.2rem;">
+          🍿 Cinema food and drinks only
+        </div>
       </div>
     </div>
 
@@ -355,13 +400,13 @@
       <!-- Ads loaded here -->
     </div>
 
-    <!-- Category Filter Bar -->
-    <div class="category-scroller">
-      <button class="cat-pill active" onclick="mobileFilterCat('ALL')">All Snacks</button>
-      <button class="cat-pill" onclick="mobileFilterCat('Popcorn')">🍿 Popcorn</button>
-      <button class="cat-pill" onclick="mobileFilterCat('Beverage')">🥤 Drinks</button>
-      <button class="cat-pill" onclick="mobileFilterCat('Snack')">🌭 Warm Food</button>
-      <button class="cat-pill" onclick="mobileFilterCat('Combo')">🎬 Combos</button>
+    <!-- Category Filter Bar with Dynamic Counts -->
+    <div class="category-scroller" id="m-category-bar">
+      <button class="cat-pill active" data-category="ALL" onclick="mobileFilterCat('ALL', this)">All Snacks <span id="m-count-ALL">(0)</span></button>
+      <button class="cat-pill" data-category="Popcorn" onclick="mobileFilterCat('Popcorn', this)">🍿 Popcorn <span id="m-count-Popcorn">(0)</span></button>
+      <button class="cat-pill" data-category="Beverage" onclick="mobileFilterCat('Beverage', this)">🥤 Drinks <span id="m-count-Beverage">(0)</span></button>
+      <button class="cat-pill" data-category="Snack" onclick="mobileFilterCat('Snack', this)">🌭 Warm Food <span id="m-count-Snack">(0)</span></button>
+      <button class="cat-pill" data-category="Combo" onclick="mobileFilterCat('Combo', this)">🎬 Combos <span id="m-count-Combo">(0)</span></button>
     </div>
 
     <!-- Concession Items List -->
@@ -591,6 +636,30 @@
     </button>
   </nav>
 
+  <!-- Mobile Available Cinemas Directory Bottom Sheet -->
+  <div class="modal-backdrop" id="m-cinemas-sheet" onclick="closeMobileCinemaDirectoryOnBackdrop(event)">
+    <div class="modal-content" style="max-height:85vh; border-radius:var(--radius-xl) var(--radius-xl) 0 0; align-self:flex-end; width:100%; max-width:480px; margin:0 auto;">
+      <div style="background:var(--apple-surface); border:var(--apple-border-specular); border-radius:var(--radius-xl) var(--radius-xl) 0 0; padding:1.25rem 1.1rem; box-shadow:var(--apple-shadow-lg);">
+        <!-- Grabber indicator -->
+        <div style="width:36px; height:5px; background:rgba(255,255,255,0.25); border-radius:3px; margin:0 auto 0.85rem;"></div>
+        
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.75rem;">
+          <div>
+            <div style="font-size:1.15rem; font-weight:800; letter-spacing:-0.02em;">All Available Cinemas</div>
+            <div style="font-size:0.72rem; color:var(--apple-green); font-weight:700; margin-top:2px;">
+              ✓ In-Front Food Court Only (Cinema Snacks & Drinks)
+            </div>
+          </div>
+          <button onclick="closeMobileCinemaDirectory()" style="background:rgba(255,255,255,0.1); border:none; color:#fff; width:30px; height:30px; border-radius:50%; font-size:1rem; cursor:pointer;">✕</button>
+        </div>
+
+        <div id="m-cinemas-directory-list" style="display:flex; flex-direction:column; gap:0.75rem; max-height:60vh; overflow-y:auto; padding-bottom:0.5rem;">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const client = new CinemaClient();
     let mCinemas = [];
@@ -611,10 +680,15 @@
       try {
         const cinemas = await client.getCinemas();
         mCinemas = cinemas;
+        const countEl = document.getElementById('m-cinemas-count');
+        if (countEl) countEl.textContent = cinemas.length;
+
         const dropdown = document.getElementById('m-cinema-dropdown');
         dropdown.innerHTML = cinemas.map(c => `
-          <option value="${c.id}">${c.name}</option>
+          <option value="${c.id}">${c.name} (${c.city})</option>
         `).join('');
+
+        renderMobileCinemaDirectory();
 
         if (cinemas.length > 0) {
           selectMobileCinema(cinemas[0]);
@@ -634,9 +708,20 @@
       document.getElementById('m-display-name').textContent = cinema.name;
       document.getElementById('m-display-chain').textContent = cinema.chain || 'Independent Circuit';
       document.getElementById('m-display-location').textContent = `${cinema.address || cinema.city} • ${cinema.screens} Screens`;
-      document.getElementById('m-display-foodplace').textContent = `🍿 ${cinema.food_place_name || 'Concession Counter'}`;
+      
+      const fcName = cinema.food_court_name || cinema.food_place_name || 'Theater Concession Counter';
+      const fcLoc = cinema.food_court_location || 'Directly in front of cinema entrance';
+      const fcNameEl = document.getElementById('m-display-foodcourt-name');
+      if (fcNameEl) fcNameEl.textContent = fcName;
+      const fcLocEl = document.getElementById('m-display-foodcourt-loc');
+      if (fcLocEl) fcLocEl.textContent = `(${fcLoc})`;
+
       document.getElementById('m-island-cinema-text').textContent = cinema.name;
       document.getElementById('pass-view-cinema').textContent = cinema.name;
+      const dropdown = document.getElementById('m-cinema-dropdown');
+      if (dropdown) dropdown.value = cinema.id;
+
+      renderMobileCinemaDirectory();
 
       await Promise.all([
         loadMobileConcessions(cinema.id),
@@ -648,6 +733,7 @@
       try {
         const data = await client.getLiveConcessions(cinemaId);
         mMenu = data.items || [];
+        updateMobileCatCounts();
         renderMobileConcessions();
       } catch (err) {
         console.error(err);
@@ -730,11 +816,86 @@
       }).join('');
     }
 
-    function mobileFilterCat(cat) {
+    function updateMobileCatCounts() {
+      const counts = {
+        ALL: mMenu.length,
+        Popcorn: mMenu.filter(i => i.category && i.category.toLowerCase() === 'popcorn').length,
+        Beverage: mMenu.filter(i => i.category && i.category.toLowerCase() === 'beverage').length,
+        Snack: mMenu.filter(i => i.category && i.category.toLowerCase() === 'snack').length,
+        Combo: mMenu.filter(i => i.category && i.category.toLowerCase() === 'combo').length,
+      };
+      for (const [cat, cnt] of Object.entries(counts)) {
+        const el = document.getElementById(`m-count-${cat}`);
+        if (el) el.textContent = `(${cnt})`;
+      }
+    }
+
+    function mobileFilterCat(cat, element) {
       mCategory = cat;
-      document.querySelectorAll('.cat-pill').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+      document.querySelectorAll('.cat-pill').forEach(btn => {
+        if (btn.getAttribute('data-category') === cat || btn === element) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
       renderMobileConcessions();
+    }
+
+    function renderMobileCinemaDirectory() {
+      const container = document.getElementById('m-cinemas-directory-list');
+      if (!container) return;
+      container.innerHTML = mCinemas.map(c => {
+        const isSelected = mCurrentCinema && mCurrentCinema.id === c.id;
+        return `
+          <div style="background:var(--apple-surface-elevated); border:1px solid ${isSelected ? 'var(--apple-blue-ios)' : 'rgba(255,255,255,0.08)'}; border-radius:var(--radius-md); padding:0.95rem; display:flex; flex-direction:column; gap:0.6rem;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <div>
+                <div style="font-size:0.95rem; font-weight:700; color:#fff;">${c.name}</div>
+                <div style="font-size:0.75rem; color:var(--apple-text-secondary);">${c.city} • ${c.screens} Screens</div>
+              </div>
+              <span class="apple-badge blue" style="font-size:0.65rem;">${c.chain || 'Circuit'}</span>
+            </div>
+
+            <div style="background:rgba(0,0,0,0.4); border:1px solid rgba(48,209,88,0.25); border-radius:var(--radius-xs); padding:0.5rem 0.65rem;">
+              <div style="font-size:0.7rem; color:var(--apple-green); font-weight:700;">🍔 Food Court in Front:</div>
+              <div style="font-size:0.78rem; font-weight:600; color:#fff;">${c.food_court_name || c.food_place_name}</div>
+              <div style="font-size:0.68rem; color:var(--apple-text-tertiary);">${c.food_court_location || 'Directly facing cinema entrance'}</div>
+              <div style="font-size:0.65rem; color:var(--apple-purple); font-weight:600; margin-top:0.15rem;">🍿 Cinema food and drinks only</div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:0.7rem; color:var(--apple-text-secondary);">🕒 ${c.food_hours || '10 AM - 10:30 PM'}</span>
+              <button class="${isSelected ? 'apple-btn-secondary' : 'apple-btn-primary'}" style="font-size:0.75rem; padding:0.35rem 0.8rem;" onclick="selectMobileCinemaFromDirectory('${c.id}')">
+                ${isSelected ? '✓ Active' : 'Select'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openMobileCinemaDirectory() {
+      renderMobileCinemaDirectory();
+      document.getElementById('m-cinemas-sheet').classList.add('open');
+    }
+
+    function closeMobileCinemaDirectory() {
+      document.getElementById('m-cinemas-sheet').classList.remove('open');
+    }
+
+    function closeMobileCinemaDirectoryOnBackdrop(e) {
+      if (e.target.id === 'm-cinemas-sheet') {
+        closeMobileCinemaDirectory();
+      }
+    }
+
+    function selectMobileCinemaFromDirectory(cinemaId) {
+      const c = mCinemas.find(x => x.id === cinemaId);
+      if (c) {
+        selectMobileCinema(c);
+        closeMobileCinemaDirectory();
+      }
     }
 
     function addMobileCartById(itemId) {

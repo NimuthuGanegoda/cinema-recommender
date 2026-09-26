@@ -22,41 +22,53 @@
   --apple-glass-blur: blur(25px) saturate(190%);
   --apple-glass-blur-heavy: blur(35px) saturate(200%);
 
-  /* Apple System Accent Colors (HIG Dark Palette) */
-  --apple-blue: #0071e3;            /* Apple Primary Interactive Blue */
-  --apple-blue-ios: #0a84ff;        /* iOS Dynamic Blue */
-  --apple-blue-glow: rgba(10, 132, 255, 0.35);
-  --apple-blue-subtle: rgba(10, 132, 255, 0.12);
+  /* 🧛 Dracula Signature & Apple Fusion Accent Colors */
+  --dracula-purple: #bd93f9;              /* Canonical Dracula Purple */
+  --dracula-purple-light: #d6bbfb;        /* Soft Hover Dracula Purple */
+  --dracula-purple-deep: #7c52d4;         /* Rich Royal Dracula Violet */
+  --dracula-purple-glow: rgba(189, 147, 249, 0.45);
+  --dracula-purple-subtle: rgba(189, 147, 249, 0.16);
+  --dracula-purple-gradient: linear-gradient(135deg, #bd93f9 0%, #7c52d4 100%);
+  --dracula-purple-gradient-hover: linear-gradient(135deg, #caa7fa 0%, #8c5fe6 100%);
 
-  --apple-green: #30d158;           /* Apple Mint Green (Discounts / Live / Savings) */
-  --apple-green-glow: rgba(48, 209, 88, 0.35);
-  --apple-green-subtle: rgba(48, 209, 88, 0.12);
+  /* Primary Interactive Colors (Driven by Dracula Purple) */
+  --apple-blue: #bd93f9;                  /* Dracula Purple Primary Accent */
+  --apple-blue-ios: #bd93f9;              /* Dynamic Dracula Purple */
+  --apple-blue-glow: rgba(189, 147, 249, 0.45);
+  --apple-blue-subtle: rgba(189, 147, 249, 0.16);
 
-  --apple-orange: #ff9f0a;          /* Apple Amber / Flash Deals */
-  --apple-orange-glow: rgba(255, 159, 10, 0.35);
-  --apple-orange-subtle: rgba(255, 159, 10, 0.12);
+  --apple-green: #50fa7b;                 /* Dracula Mint Green (Discounts / Live / Savings) */
+  --apple-green-glow: rgba(80, 250, 123, 0.38);
+  --apple-green-subtle: rgba(80, 250, 123, 0.14);
 
-  --apple-red: #ff453a;             /* Apple System Red */
-  --apple-red-glow: rgba(255, 69, 58, 0.35);
+  --apple-orange: #ffb86c;                /* Dracula Amber / Flash Deals */
+  --apple-orange-glow: rgba(255, 184, 108, 0.35);
+  --apple-orange-subtle: rgba(255, 184, 108, 0.12);
 
-  --apple-purple: #bf5af2;          /* Apple System Purple (VIP / CinePass) */
-  --apple-purple-glow: rgba(191, 90, 242, 0.35);
-  --apple-purple-subtle: rgba(191, 90, 242, 0.12);
+  --apple-red: #ff5555;                   /* Dracula System Red */
+  --apple-red-glow: rgba(255, 85, 85, 0.35);
 
-  --apple-yellow: #ffd60a;          /* Apple System Yellow */
+  --apple-purple: #bd93f9;                /* Dracula Purple (VIP / CinePass) */
+  --apple-purple-glow: rgba(189, 147, 249, 0.45);
+  --apple-purple-subtle: rgba(189, 147, 249, 0.16);
+
+  --apple-pink: #ff79c6;                  /* Dracula Pink */
+  --apple-cyan: #8be9fd;                  /* Dracula Cyan */
+  --apple-yellow: #f1fa8c;                /* Dracula Yellow */
 
   /* Apple System Grays & Text Tokens */
-  --apple-text-primary: #ffffff;
-  --apple-text-secondary: rgba(235, 235, 245, 0.64);
-  --apple-text-tertiary: rgba(235, 235, 245, 0.38);
-  --apple-text-quaternary: rgba(235, 235, 245, 0.18);
+  --apple-text-primary: #f8f8f2;          /* Dracula Foreground */
+  --apple-text-secondary: rgba(248, 248, 242, 0.68);
+  --apple-text-tertiary: rgba(248, 248, 242, 0.42);
+  --apple-text-quaternary: rgba(248, 248, 242, 0.20);
 
   /* Apple System Borders & Separators */
   --apple-border: 1px solid rgba(255, 255, 255, 0.10);
   --apple-border-subtle: 1px solid rgba(255, 255, 255, 0.06);
-  --apple-border-specular: 1px solid rgba(255, 255, 255, 0.14);
-  --apple-border-blue: 1px solid rgba(10, 132, 255, 0.45);
-  --apple-border-green: 1px solid rgba(48, 209, 88, 0.4);
+  --apple-border-specular: 1px solid rgba(189, 147, 249, 0.25);
+  --apple-border-blue: 1px solid rgba(189, 147, 249, 0.48);
+  --apple-border-purple: 1px solid rgba(189, 147, 249, 0.48);
+  --apple-border-green: 1px solid rgba(80, 250, 123, 0.4);
 
   /* Shadows & Depth */
   --apple-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.45);
@@ -290,25 +302,26 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: var(--apple-blue);
-  color: #ffffff;
+  background: var(--dracula-purple-gradient);
+  color: #100e17;
   font-family: var(--apple-font-system);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.92rem;
   padding: 0.68rem 1.4rem;
   border-radius: var(--radius-pill);
   border: none;
   cursor: pointer;
   transition: all 0.18s var(--apple-spring);
-  box-shadow: var(--apple-shadow-sm);
+  box-shadow: 0 4px 16px rgba(189, 147, 249, 0.32);
   user-select: none;
   text-decoration: none;
 }
 
 .apple-btn-primary:hover {
-  background: #0077ed;
-  box-shadow: var(--apple-shadow-md), var(--apple-blue-glow);
-  transform: scale(1.02);
+  background: var(--dracula-purple-gradient-hover);
+  box-shadow: 0 6px 24px rgba(189, 147, 249, 0.52);
+  transform: translateY(-1px) scale(1.02);
+  color: #0d0e14;
 }
 
 .apple-btn-primary:active {
@@ -336,8 +349,8 @@ body {
 }
 
 .apple-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.14);
-  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(189, 147, 249, 0.14);
+  border-color: rgba(189, 147, 249, 0.45);
   transform: scale(1.02);
 }
 
@@ -353,7 +366,7 @@ body {
 }
 
 .apple-btn-green:hover {
-  background: #34e062;
+  background: #69ff94;
   box-shadow: var(--apple-shadow-md), var(--apple-green-glow);
 }
 
@@ -376,26 +389,26 @@ body {
 
 .apple-badge.blue {
   background: var(--apple-blue-subtle);
-  border-color: rgba(10, 132, 255, 0.35);
-  color: #5ac8fa;
+  border-color: rgba(189, 147, 249, 0.4);
+  color: var(--dracula-purple);
 }
 
 .apple-badge.green {
   background: var(--apple-green-subtle);
-  border-color: rgba(48, 209, 88, 0.35);
+  border-color: rgba(80, 250, 123, 0.38);
   color: var(--apple-green);
 }
 
 .apple-badge.orange {
   background: var(--apple-orange-subtle);
-  border-color: rgba(255, 159, 10, 0.35);
+  border-color: rgba(255, 184, 108, 0.38);
   color: var(--apple-orange);
 }
 
 .apple-badge.purple {
   background: var(--apple-purple-subtle);
-  border-color: rgba(191, 90, 242, 0.35);
-  color: var(--apple-purple);
+  border-color: rgba(189, 147, 249, 0.45);
+  color: var(--dracula-purple);
 }
 
 /* ==========================================================================

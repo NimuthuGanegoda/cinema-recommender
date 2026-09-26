@@ -215,3 +215,35 @@ func TestLivePriceUpdatesConstantly(t *testing.T) {
 		t.Fatalf("expected dynamic pricing engine to advance live tick and update prices")
 	}
 }
+
+func TestAllCinemasHaveFoodCourtInFrontForCinemaFoodAndDrinksOnly(t *testing.T) {
+	s := NewRegionalScraper()
+
+	cinemas := s.GetRegisteredCinemas()
+	if len(cinemas) == 0 {
+		t.Fatalf("expected registered cinemas list to be non-empty")
+	}
+
+	for _, c := range cinemas {
+		if !c.HasFoodCourtInFront {
+			t.Errorf("cinema %s (%s) must have HasFoodCourtInFront=true", c.Name, c.ID)
+		}
+		if !c.HasInHouseFood {
+			t.Errorf("cinema %s (%s) must have HasInHouseFood=true", c.Name, c.ID)
+		}
+		if c.FoodCourtName == "" {
+			t.Errorf("cinema %s (%s) must have FoodCourtName specified", c.Name, c.ID)
+		}
+		if c.FoodCourtLocation == "" {
+			t.Errorf("cinema %s (%s) must have FoodCourtLocation specified", c.Name, c.ID)
+		}
+	}
+
+	// Also verify location sorted query preserves strict in-front food court rule
+	sortedCinemas := s.GetCinemasWithLocationSort(7.2936, 80.6385, "")
+	for _, c := range sortedCinemas {
+		if !c.HasFoodCourtInFront || !c.HasInHouseFood {
+			t.Errorf("sorted cinema %s must have HasFoodCourtInFront && HasInHouseFood", c.ID)
+		}
+	}
+}

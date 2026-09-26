@@ -33,6 +33,10 @@ func (s *RegionalScraper) GetCinemasWithLocationSort(userLat, userLng float64, c
 	var base []models.Cinema
 	cleanCity := strings.ToLower(strings.TrimSpace(cityFilter))
 	for _, c := range s.cinemaRegistry {
+		// Strict filter: cinema must have an in-front food court for cinema food and drinks only
+		if !c.HasFoodCourtInFront || !c.HasInHouseFood {
+			continue
+		}
 		if cleanCity == "" || strings.ToLower(c.City) == cleanCity {
 			base = append(base, c)
 		}
