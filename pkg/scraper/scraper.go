@@ -37,6 +37,7 @@ type cachedMenu struct {
 func NewRegionalScraper() *RegionalScraper {
 	sc := &RegionalScraper{
 		allowedCities: map[string]bool{
+			"colombo":      true,
 			"kandy":        true,
 			"gampaha":      true,
 			"galle":        true,
@@ -55,23 +56,20 @@ func NewRegionalScraper() *RegionalScraper {
 	return sc
 }
 
-// ValidateLocation verifies that the target city is strictly outside Colombo.
+// ValidateLocation verifies that the target city is recognized and supported.
 func (s *RegionalScraper) ValidateLocation(city string) error {
 	cityClean := strings.ToLower(strings.TrimSpace(city))
 	if cityClean == "" {
 		return fmt.Errorf("%w: city name cannot be empty", ErrInvalidInput)
 	}
 
-	// Strictly exclude Colombo metropolitan limits
-	colomboPrefixes := []string{"colombo", "colombo-", "dehiwala", "mount lavinia", "kollupitiya", "bambalapitiya", "rajagiriya"}
-	for _, p := range colomboPrefixes {
-		if cityClean == p || strings.HasPrefix(cityClean, p) {
-			return fmt.Errorf("%w: %q is within the Colombo metropolitan exclusion zone", ErrColomboExcluded, city)
-		}
+	// Colombo and registered cinema hubs are supported
+	if cityClean == "colombo" || strings.HasPrefix(cityClean, "colombo-") {
+		return nil
 	}
 
 	if !s.allowedCities[cityClean] {
-		return fmt.Errorf("%w: no scraper pipeline registered for regional city %q", ErrCinemaNotFound, city)
+		return fmt.Errorf("%w: no scraper pipeline registered for city %q", ErrCinemaNotFound, city)
 	}
 
 	return nil

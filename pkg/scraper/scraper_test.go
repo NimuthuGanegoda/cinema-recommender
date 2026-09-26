@@ -9,28 +9,28 @@ import (
 	"cinema-recommender/internal/models"
 )
 
-func TestValidateLocationRejectsColomboAndAcceptsRegionalCities(t *testing.T) {
+func TestValidateLocationSupportsColomboAndRegionalCities(t *testing.T) {
 	s := NewRegionalScraper()
 
-	colomboAreas := []string{"Colombo", "colombo-03", "Dehiwala", "Mount Lavinia", "Bambalapitiya", "Rajagiriya"}
-	for _, loc := range colomboAreas {
-		if err := s.ValidateLocation(loc); err == nil {
-			t.Fatalf("expected %s to be rejected under Colombo exclusion policy", loc)
+	acceptedCities := []string{"Colombo", "colombo-03", "Kandy", "Gampaha", "Galle", "Kurunegala", "Negombo", "Jaffna", "Matara", "Anuradhapura", "Ratnapura"}
+	for _, city := range acceptedCities {
+		if err := s.ValidateLocation(city); err != nil {
+			t.Fatalf("expected city %s to be accepted, got: %v", city, err)
 		}
 	}
 
-	regionalCities := []string{"Kandy", "Gampaha", "Galle", "Kurunegala", "Negombo", "Jaffna", "Matara", "Anuradhapura", "Ratnapura"}
-	for _, city := range regionalCities {
-		if err := s.ValidateLocation(city); err != nil {
-			t.Fatalf("expected regional city %s to be accepted, got: %v", city, err)
+	invalidCities := []string{"", "Paris", "Sydney", "New York", "Tokyo"}
+	for _, city := range invalidCities {
+		if err := s.ValidateLocation(city); err == nil {
+			t.Fatalf("expected invalid city %q to be rejected", city)
 		}
 	}
 }
 
-func TestScrapeCinemaConcessionsSupportsRegionalCities(t *testing.T) {
+func TestScrapeCinemaConcessionsSupportsAllCities(t *testing.T) {
 	s := NewRegionalScraper()
 
-	for _, city := range []string{"Kandy", "Gampaha", "Galle", "Kurunegala", "Negombo", "Jaffna", "Matara", "Anuradhapura", "Ratnapura"} {
+	for _, city := range []string{"Colombo", "Kandy", "Gampaha", "Galle", "Kurunegala", "Negombo", "Jaffna", "Matara", "Anuradhapura", "Ratnapura"} {
 		items, err := s.ScrapeCinemaConcessions(models.Cinema{ID: city + "-TEST", Name: "Cinema " + city, City: city})
 		if err != nil {
 			t.Fatalf("expected %s to be supported, got %v", city, err)
@@ -41,12 +41,48 @@ func TestScrapeCinemaConcessionsSupportsRegionalCities(t *testing.T) {
 	}
 }
 
+func TestColomboScopeCinemasRegistry(t *testing.T) {
+	s := NewRegionalScraper()
+
+	colomboCinemas, err := s.GetCinemasByCity("Colombo")
+	if err != nil {
+		t.Fatalf("expected to find Colombo cinemas, got: %v", err)
+	}
+	if len(colomboCinemas) != 3 {
+		t.Fatalf("expected 3 Colombo Scope Cinemas, got %d", len(colomboCinemas))
+	}
+
+	expectedIDs := map[string]bool{"CMB-CCC": true, "CMB-HCM": true, "CMB-LBT": true}
+	for _, c := range colomboCinemas {
+		if !expectedIDs[c.ID] {
+			t.Errorf("unexpected cinema ID: %s", c.ID)
+		}
+		if !c.HasFoodCourtInFront {
+			t.Errorf("cinema %s expected to have food court in front", c.ID)
+		}
+		if !c.HasInHouseFood {
+			t.Errorf("cinema %s expected to have in-house food", c.ID)
+		}
+		if c.Chain != "Scope Cinemas" {
+			t.Errorf("expected chain Scope Cinemas, got %s", c.Chain)
+		}
+	}
+
+	ccc, err := s.GetCinemaByID("CMB-CCC")
+	if err != nil {
+		t.Fatalf("failed to get CMB-CCC: %v", err)
+	}
+	if ccc.Name != "Scope Cinemas Multiplex - Colombo City Centre" {
+		t.Fatalf("expected Scope CCC name, got %s", ccc.Name)
+	}
+}
+
 func TestCinemaRegistryQueries(t *testing.T) {
 	s := NewRegionalScraper()
 
 	cinemas := s.GetRegisteredCinemas()
-	if len(cinemas) < 5 {
-		t.Fatalf("expected at least 5 registered cinemas, got %d", len(cinemas))
+	if len(cinemas) < 8 {
+		t.Fatalf("expected at least 8 registered cinemas, got %d", len(cinemas))
 	}
 
 	cinema, err := s.GetCinemaByID("KND-KCC")

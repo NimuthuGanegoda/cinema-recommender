@@ -14,6 +14,27 @@ func (s *RegionalScraper) scrapeByCity(city string, cinemaID string) ([]models.C
 	cityLower := strings.ToLower(strings.TrimSpace(city))
 
 	switch cityLower {
+	case "colombo":
+		prefix := "CMB"
+		if strings.HasPrefix(cinemaID, "CMB-CCC") {
+			prefix = "CCC"
+		} else if strings.HasPrefix(cinemaID, "CMB-HCM") {
+			prefix = "HCM"
+		} else if strings.HasPrefix(cinemaID, "CMB-LBT") {
+			prefix = "LBT"
+		}
+		return []models.ConcessionItem{
+			{ID: prefix + "-01", CinemaID: cinemaID, Name: "Scope Signature Warm Caramel Popcorn Tub", Category: models.CategoryPopcorn, Size: "Jumbo", Price: 1350.00, InStock: true, Tags: []string{"sweet", "popular", "scope-signature"}, Description: "Scope signature crunchy caramelized warm corn in souvenir tub"},
+			{ID: prefix + "-02", CinemaID: cinemaID, Name: "Scope Real Butter Sea Salt Popcorn", Category: models.CategoryPopcorn, Size: "Large", Price: 1100.00, InStock: true, Tags: []string{"savory", "classic"}, Description: "Freshly popped butterfly corn drenched in melted clarified butter"},
+			{ID: prefix + "-03", CinemaID: cinemaID, Name: "Scope Double Cheddar Cheese Popcorn", Category: models.CategoryPopcorn, Size: "Large", Price: 1250.00, InStock: true, Tags: []string{"savory", "cheesy"}, Description: "Hot popped corn tossed in Wisconsin white and yellow cheddar dust"},
+			{ID: prefix + "-04", CinemaID: cinemaID, Name: "Scope Large Fountain Coca-Cola", Category: models.CategoryBeverage, Size: "Large", Price: 650.00, InStock: true, Tags: []string{"beverage", "chilled"}, Description: "Ice-cold fountain Coca-Cola with fresh carbonation"},
+			{ID: prefix + "-05", CinemaID: cinemaID, Name: "Scope Fresh Passion Fruit Mint Sparkler", Category: models.CategoryBeverage, Size: "Medium", Price: 750.00, InStock: true, Tags: []string{"beverage", "signature", "refreshing"}, Description: "Real island passion fruit pulp with crushed mint and sparkling soda"},
+			{ID: prefix + "-06", CinemaID: cinemaID, Name: "Scope IMAX Loaded Chicken Nachos", Category: models.CategorySnack, Size: "Single", Price: 1450.00, InStock: true, Tags: []string{"savory", "spicy", "popular"}, Description: "Stone-ground corn chips with hot queso, jalapeños, salsa, and seasoned chicken"},
+			{ID: prefix + "-07", CinemaID: cinemaID, Name: "Scope Gourmet Brioche Chicken Hotdog", Category: models.CategorySnack, Size: "Single", Price: 1150.00, InStock: true, Tags: []string{"savory", "halal", "vip"}, Description: "Artisan grilled chicken sausage in buttered brioche bun with sweet pickle relish"},
+			{ID: prefix + "-08", CinemaID: cinemaID, Name: "Scope Director's Deluxe Couple Combo", Category: models.CategoryCombo, Size: "Duo", Price: 2950.00, InStock: true, Tags: []string{"combo", "best-value", "vip"}, Description: "1 Jumbo Caramel Popcorn + 2 Large Fountain Drinks + 1 Loaded Nachos"},
+			{ID: prefix + "-09", CinemaID: cinemaID, Name: "Scope VIP Platinum Movie Feast", Category: models.CategoryCombo, Size: "Family", Price: 4200.00, InStock: true, Tags: []string{"combo", "family", "platinum"}, Description: "2 Jumbo Popcorns (Caramel + Cheese) + 3 Drinks + 1 Brioche Hotdog + 1 Nachos"},
+		}, nil
+
 	case "kandy":
 		return []models.ConcessionItem{
 			{ID: "KND-01", CinemaID: cinemaID, Name: "Scope Jumbo Warm Caramel Popcorn", Category: models.CategoryPopcorn, Size: "Jumbo", Price: 1200.00, InStock: true, Tags: []string{"sweet", "popular", "scope-exclusive"}, Description: "Scope signature crunchy caramelized warm corn"},

@@ -171,13 +171,28 @@ func TestListCinemas(t *testing.T) {
 		t.Fatalf("expected status 200 for Gampaha, got %d", wCity.Code)
 	}
 
-	// 3. Filter by Colombo -> MUST REJECT
+	// 3. Filter by Colombo -> Returns 3 Colombo Scope Cinemas (CCC, HCM, LBT)
 	reqCol := httptest.NewRequest(http.MethodGet, "/api/v1/cinemas?city=Colombo", nil)
 	wCol := httptest.NewRecorder()
 	srv.GetHandler().ServeHTTP(wCol, reqCol)
 
-	if wCol.Code != http.StatusBadRequest {
-		t.Fatalf("expected status 400 for Colombo filter, got %d", wCol.Code)
+	if wCol.Code != http.StatusOK {
+		t.Fatalf("expected status 200 for Colombo filter, got %d", wCol.Code)
+	}
+	var colCinemas []models.Cinema
+	if err := json.Unmarshal(wCol.Body.Bytes(), &colCinemas); err != nil {
+		t.Fatalf("failed to decode colombo cinemas: %v", err)
+	}
+	if len(colCinemas) != 3 {
+		t.Fatalf("expected 3 Colombo Scope Cinemas, got %d", len(colCinemas))
+	}
+
+	// Rejection for unknown / unlisted city -> 404 Not Found
+	reqInv := httptest.NewRequest(http.MethodGet, "/api/v1/cinemas?city=UnknownCity", nil)
+	wInv := httptest.NewRecorder()
+	srv.GetHandler().ServeHTTP(wInv, reqInv)
+	if wInv.Code != http.StatusNotFound {
+		t.Fatalf("expected status 404 for unknown city, got %d", wInv.Code)
 	}
 
 	// 4. Auto-fetch by GPS coordinates (near Kandy: 7.294, 80.639)
@@ -281,7 +296,7 @@ func TestRecommendEndpoint(t *testing.T) {
 		t.Fatal("expected selected items in recommendation")
 	}
 
-	// Rejection for Colombo city
+	// Colombo recommendation is now supported for Scope Cinemas
 	colomboPayload := models.RecommendationRequest{
 		City:      "Colombo",
 		BudgetLKR: 2000,
@@ -292,8 +307,23 @@ func TestRecommendEndpoint(t *testing.T) {
 	wCol := httptest.NewRecorder()
 
 	srv.GetHandler().ServeHTTP(wCol, reqCol)
-	if wCol.Code != http.StatusBadRequest {
-		t.Fatalf("expected status 400 for Colombo recommendation, got %d", wCol.Code)
+	if wCol.Code != http.StatusOK {
+		t.Fatalf("expected status 200 for Colombo recommendation, got %d", wCol.Code)
+	}
+
+	// Rejection for unknown / unlisted city -> 404 Not Found
+	invPayload := models.RecommendationRequest{
+		City:      "UnknownCity",
+		BudgetLKR: 2000,
+		PartySize: 2,
+	}
+	bodyInv, _ := json.Marshal(invPayload)
+	reqInv := httptest.NewRequest(http.MethodPost, "/api/v1/recommend", bytes.NewReader(bodyInv))
+	wInv := httptest.NewRecorder()
+
+	srv.GetHandler().ServeHTTP(wInv, reqInv)
+	if wInv.Code != http.StatusNotFound {
+		t.Fatalf("expected status 404 for invalid city recommendation, got %d", wInv.Code)
 	}
 }
 
