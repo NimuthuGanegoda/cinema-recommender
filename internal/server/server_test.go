@@ -56,6 +56,53 @@ func TestRootEndpointServesUI(t *testing.T) {
 	}
 }
 
+func TestMobileBrowserDetectionAndRedirect(t *testing.T) {
+	srv := setupTestServer()
+
+	// 1. Mobile browser visiting / should redirect (302) to /mobile
+	reqMobile := httptest.NewRequest(http.MethodGet, "/", nil)
+	reqMobile.Header.Set("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1")
+	wMobile := httptest.NewRecorder()
+	srv.GetHandler().ServeHTTP(wMobile, reqMobile)
+
+	if wMobile.Code != http.StatusFound {
+		t.Fatalf("expected mobile user-agent to redirect with status 302, got %d", wMobile.Code)
+	}
+	if loc := wMobile.Header().Get("Location"); loc != "/mobile" {
+		t.Fatalf("expected redirect to /mobile, got %s", loc)
+	}
+
+	// 2. Android mobile browser visiting / should also redirect
+	reqAndroid := httptest.NewRequest(http.MethodGet, "/", nil)
+	reqAndroid.Header.Set("User-Agent", "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36")
+	wAndroid := httptest.NewRecorder()
+	srv.GetHandler().ServeHTTP(wAndroid, reqAndroid)
+
+	if wAndroid.Code != http.StatusFound || wAndroid.Header().Get("Location") != "/mobile" {
+		t.Fatalf("expected Android mobile redirect to /mobile, got status %d, loc: %s", wAndroid.Code, wAndroid.Header().Get("Location"))
+	}
+
+	// 3. Mobile browser with ?view=desktop should NOT redirect, serving desktop index.html (200)
+	reqOverride := httptest.NewRequest(http.MethodGet, "/?view=desktop", nil)
+	reqOverride.Header.Set("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1")
+	wOverride := httptest.NewRecorder()
+	srv.GetHandler().ServeHTTP(wOverride, reqOverride)
+
+	if wOverride.Code != http.StatusOK {
+		t.Fatalf("expected ?view=desktop to serve status 200, got %d", wOverride.Code)
+	}
+
+	// 4. Desktop browser should serve index.html directly (200)
+	reqDesktop := httptest.NewRequest(http.MethodGet, "/", nil)
+	reqDesktop.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15")
+	wDesktop := httptest.NewRecorder()
+	srv.GetHandler().ServeHTTP(wDesktop, reqDesktop)
+
+	if wDesktop.Code != http.StatusOK {
+		t.Fatalf("expected desktop browser to receive status 200, got %d", wDesktop.Code)
+	}
+}
+
 func TestMobileAndPWAEndpoints(t *testing.T) {
 	srv := setupTestServer()
 

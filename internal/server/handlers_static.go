@@ -2,13 +2,42 @@ package server
 
 import (
 	"net/http"
+	"strings"
 	"time"
 )
 
-// Handler: Root serves index.html (Desktop Web UI)
+// isMobileBrowser checks if the incoming request's User-Agent represents a mobile browser.
+func isMobileBrowser(ua string) bool {
+	if ua == "" {
+		return false
+	}
+	lower := strings.ToLower(ua)
+	mobileTokens := []string{
+		"android", "iphone", "ipod", "ipad", "windows phone",
+		"blackberry", "mobile", "opera mini", "iemobile", "webos",
+	}
+	for _, token := range mobileTokens {
+		if strings.Contains(lower, token) {
+			return true
+		}
+	}
+	return false
+}
+
+// Handler: Root serves index.html (Desktop Web UI) or auto-redirects mobile browsers to /mobile
 func (s *Server) handleRoot(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
+		return
+	}
+
+	// Automatic mobile browser detection: redirect to /mobile unless desktop view explicitly requested (?view=desktop)
+	if r.URL.Query().Get("view") != "desktop" && isMobileBrowser(r.UserAgent()) {
+		target := "/mobile"
+		if r.URL.RawQuery != "" {
+			target += "?" + r.URL.RawQuery
+		}
+		http.Redirect(w, r, target, http.StatusFound)
 		return
 	}
 
