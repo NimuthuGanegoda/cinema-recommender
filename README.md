@@ -136,7 +136,7 @@ Quickly query optimal bundles right from your terminal:
 # Calculate deal for a party of 2 in Kandy with LKR 2,500 budget
 ./bin/cinema-recommender.exe -city Kandy -budget 2500 -party 2
 
-# List all registered outstation theaters outside Colombo
+# List all registered theaters
 ./bin/cinema-recommender.exe -list-cinemas
 
 # List all active Scope Privilege promotion campaigns
@@ -242,7 +242,6 @@ go test -v ./...
 ```
 
 All packages (`internal/server`, `pkg/payment`, `pkg/recommender`, `pkg/scraper`) include tests covering:
-- Strict rejection of Colombo metropolitan locations (`ErrColomboExcluded`)
 - Regional cinema registry lookup and concession feed parsing
 - Promotion tier discounts, caps, and combo specials (`SCOPE-COMBO30`, `SCOPE-CINEMA25`)
 - Upsell intelligence and bundle recommendation heuristics
