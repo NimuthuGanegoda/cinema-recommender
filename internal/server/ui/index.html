@@ -1130,14 +1130,33 @@
       try {
         const cinemas = await client.getCinemas();
         registeredCinemas = cinemas;
-        const countEl = document.getElementById('available-cinemas-count');
-        if (countEl) countEl.textContent = cinemas.length;
-        renderQuickCinemaChips();
-        if (cinemas.length > 0) {
-          selectCinema(cinemas[0]);
-        }
       } catch (err) {
-        console.error('Failed to load cinemas:', err);
+        console.error('Failed to load cinemas from API. Falling back to Demo Mode for GitHub Pages:', err);
+          {
+            id: "DEMO-KCC", name: "Scope Partner Multiplex - KCC", chain: "Scope Cinemas", city: "Kandy",
+            province: "Central Province", address: "Level 3, KCC", screens: 4, is_outside_colombo: true,
+            has_food_court_in_front: true, food_court_name: "KCC World Food Court & Candy Bar",
+            food_place_name: "KCC World Food Court"
+          },
+          {
+            id: "DEMO-CCC", name: "Scope Cinemas Multiplex - CCC", chain: "Scope Cinemas", city: "Colombo",
+            province: "Western Province", address: "Colombo City Centre", screens: 6, is_outside_colombo: false,
+            has_food_court_in_front: true, food_court_name: "CCC Candy Bar & Food Court",
+            food_place_name: "CCC Food Court"
+          },
+          {
+            id: "DEMO-HCM", name: "Scope Cinemas Multiplex - HCM", chain: "Scope Cinemas", city: "Colombo",
+            province: "Western Province", address: "Havelock City Mall", screens: 6, is_outside_colombo: false,
+            has_food_court_in_front: true, food_court_name: "HCM Food Lounge & IMAX Candy Bar",
+            food_place_name: "HCM Food Lounge"
+          }
+        ];
+      }
+      const countEl = document.getElementById('available-cinemas-count');
+      if (countEl) countEl.textContent = registeredCinemas.length;
+      renderQuickCinemaChips();
+      if (registeredCinemas.length > 0) {
+        selectCinema(registeredCinemas[0]);
       }
     }
 
@@ -1174,11 +1193,16 @@
       try {
         const data = await client.getLiveConcessions(cinemaId);
         currentMenu = data.items || [];
-        updateCategoryCounts();
-        renderConcessionGrid();
       } catch (err) {
-        console.error('Failed to load live concessions:', err);
+        console.error('Failed to load live concessions, using fallback data:', err);
+        currentMenu = [
+          { id: "POP-01", category: "Popcorn", name: "Large Caramel Popcorn", size: "Large", price: 1200, original_price: 1500 },
+          { id: "BEV-01", category: "Beverages", name: "Coke Large", size: "Large", price: 600, original_price: 800 },
+          { id: "SNC-01", category: "Snacks", name: "Nachos with Cheese", size: "Regular", price: 1100, original_price: 1100 }
+        ];
       }
+      updateCategoryCounts();
+      renderConcessionGrid();
     }
 
     // 4. Load Ads
@@ -1187,7 +1211,10 @@
         const ads = await client.getCinemaAds(cinemaId);
         renderAds(ads);
       } catch (err) {
-        console.error('Failed to load ads:', err);
+        console.error('Failed to load ads, using fallback:', err);
+        renderAds([
+          { promo_code: "DEMO-COMBO", title: "Demo Flash Deal", subtitle: "Save 30% on Large Combos", discount_text: "30% OFF", is_flash_ad: true }
+        ]);
       }
     }
 

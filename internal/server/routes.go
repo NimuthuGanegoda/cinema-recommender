@@ -12,7 +12,7 @@ func (s *Server) registerRoutes(mux *http.ServeMux) {
 	if err == nil {
 		fileServer := http.FileServer(http.FS(uiSub))
 		mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Path == "/" || r.URL.Path == "/index.html" {
+			if r.URL.Path == "/" {
 				s.handleRoot(w, r)
 				return
 			}
@@ -21,6 +21,9 @@ func (s *Server) registerRoutes(mux *http.ServeMux) {
 	}
 	mux.HandleFunc("GET /mobile", s.handleMobile)
 	mux.HandleFunc("GET /mobile.html", s.handleMobile)
+	mux.HandleFunc("GET /manifest.json", s.handleManifest)
+	mux.HandleFunc("GET /sw.js", s.handleServiceWorker)
+	mux.HandleFunc("GET /favicon.ico", s.handleFavicon)
 
 	// Health Check
 	mux.HandleFunc("GET /health", s.handleHealth)

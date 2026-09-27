@@ -344,7 +344,7 @@
     </div>
 
     <div style="display:flex; align-items:center; gap:0.4rem;">
-      <a href="index.html?view=desktop" class="apple-btn-secondary" style="font-size:0.72rem; padding:0.35rem 0.6rem; text-decoration:none;" title="Switch to Desktop Version">
+      <a href="./?view=desktop" class="apple-btn-secondary" style="font-size:0.72rem; padding:0.35rem 0.6rem; text-decoration:none;" title="Switch to Desktop Version">
         🖥️ Desktop
       </a>
       <button class="apple-btn-secondary" onclick="handleMobileDetectGPS()" style="font-size:0.75rem; padding:0.35rem 0.75rem;">
@@ -685,21 +685,41 @@
       try {
         const cinemas = await client.getCinemas();
         mCinemas = cinemas;
-        const countEl = document.getElementById('m-cinemas-count');
-        if (countEl) countEl.textContent = cinemas.length;
-
-        const dropdown = document.getElementById('m-cinema-dropdown');
-        dropdown.innerHTML = cinemas.map(c => `
-          <option value="${c.id}">${c.name} (${c.city})</option>
-        `).join('');
-
-        renderMobileCinemaDirectory();
-
-        if (cinemas.length > 0) {
-          selectMobileCinema(cinemas[0]);
-        }
       } catch (err) {
-        console.error(err);
+        console.error('Failed to load cinemas from API. Falling back to Demo Mode:', err);
+          {
+            id: "DEMO-KCC", name: "Scope Partner Multiplex - KCC", chain: "Scope Cinemas", city: "Kandy",
+            province: "Central Province", address: "Level 3, KCC", screens: 4, is_outside_colombo: true,
+            has_food_court_in_front: true, food_court_name: "KCC World Food Court & Candy Bar",
+            food_place_name: "KCC World Food Court"
+          },
+          {
+            id: "DEMO-CCC", name: "Scope Cinemas Multiplex - CCC", chain: "Scope Cinemas", city: "Colombo",
+            province: "Western Province", address: "Colombo City Centre", screens: 6, is_outside_colombo: false,
+            has_food_court_in_front: true, food_court_name: "CCC Candy Bar & Food Court",
+            food_place_name: "CCC Food Court"
+          },
+          {
+            id: "DEMO-HCM", name: "Scope Cinemas Multiplex - HCM", chain: "Scope Cinemas", city: "Colombo",
+            province: "Western Province", address: "Havelock City Mall", screens: 6, is_outside_colombo: false,
+            has_food_court_in_front: true, food_court_name: "HCM Food Lounge & IMAX Candy Bar",
+            food_place_name: "HCM Food Lounge"
+          }
+        ];
+      }
+      
+      const countEl = document.getElementById('m-cinemas-count');
+      if (countEl) countEl.textContent = mCinemas.length;
+
+      const dropdown = document.getElementById('m-cinema-dropdown');
+      dropdown.innerHTML = mCinemas.map(c => `
+        <option value="${c.id}">${c.name} (${c.city})</option>
+      `).join('');
+
+      renderMobileCinemaDirectory();
+
+      if (mCinemas.length > 0) {
+        selectMobileCinema(mCinemas[0]);
       }
     }
 
@@ -738,37 +758,45 @@
       try {
         const data = await client.getLiveConcessions(cinemaId);
         mMenu = data.items || [];
-        updateMobileCatCounts();
-        renderMobileConcessions();
       } catch (err) {
-        console.error(err);
+        console.error('Failed to load mobile concessions, using fallback:', err);
+        mMenu = [
+          { id: "POP-01", category: "Popcorn", name: "Large Caramel Popcorn", size: "Large", price: 1200, original_price: 1500 },
+          { id: "BEV-01", category: "Beverages", name: "Coke Large", size: "Large", price: 600, original_price: 800 },
+          { id: "SNC-01", category: "Snacks", name: "Nachos with Cheese", size: "Regular", price: 1100, original_price: 1100 }
+        ];
       }
+      updateMobileCatCounts();
+      renderMobileConcessions();
     }
 
     async function loadMobileAds(cinemaId) {
+      const container = document.getElementById('m-ads-scroller');
+      let ads = [];
       try {
-        const ads = await client.getCinemaAds(cinemaId);
-        const container = document.getElementById('m-ads-scroller');
-        if (!ads || ads.length === 0) {
-          container.innerHTML = '<div style="color:var(--apple-text-tertiary); font-size:0.75rem;">No active banners.</div>';
-          return;
-        }
-        container.innerHTML = ads.map(ad => `
-          <div class="mobile-ad-card" onclick="applyAdDealMobile('${ad.promo_code || ''}', '${ad.target_item_id || ''}')">
-            <div>
-              <span class="apple-badge ${ad.is_flash_ad ? 'orange' : 'blue'}" style="font-size:0.65rem; margin-bottom:0.35rem;">
-                ${ad.badge_text || 'PROMO'}
-              </span>
-              <div style="font-size:0.88rem; font-weight:700;">${ad.title}</div>
-            </div>
-            <div style="font-size:0.75rem; color:var(--apple-green); font-weight:700; border-top:1px solid rgba(255,255,255,0.06); padding-top:0.4rem;">
-              ${ad.discount_text}
-            </div>
-          </div>
-        `).join('');
+        ads = await client.getCinemaAds(cinemaId);
       } catch (err) {
-        console.error(err);
+        console.error('Failed to load mobile ads, using fallback:', err);
+        ads = [{ promo_code: "DEMO-COMBO", title: "Demo Flash Deal", discount_text: "30% OFF", is_flash_ad: true }];
       }
+
+      if (!ads || ads.length === 0) {
+        container.innerHTML = '<div style="color:var(--apple-text-tertiary); font-size:0.75rem;">No active banners.</div>';
+        return;
+      }
+      container.innerHTML = ads.map(ad => `
+        <div class="mobile-ad-card" onclick="applyAdDealMobile('${ad.promo_code || ''}', '${ad.target_item_id || ''}')">
+          <div>
+            <span class="apple-badge ${ad.is_flash_ad ? 'orange' : 'blue'}" style="font-size:0.65rem; margin-bottom:0.35rem;">
+              ${ad.badge_text || 'PROMO'}
+            </span>
+            <div style="font-size:0.88rem; font-weight:700;">${ad.title}</div>
+          </div>
+          <div style="font-size:0.75rem; color:var(--apple-green); font-weight:700; border-top:1px solid rgba(255,255,255,0.06); padding-top:0.4rem;">
+            ${ad.discount_text}
+          </div>
+        </div>
+      `).join('');
     }
 
     function applyAdDealMobile(promoCode, targetItemId) {
