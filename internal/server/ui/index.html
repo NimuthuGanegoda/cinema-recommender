@@ -6,10 +6,10 @@
   <title>CineBite • Universal Sri Lanka Cinema Concession & Snack Recommender</title>
   <meta name="description" content="Discover live concession menus, instant candy bar discounts, and optimized snack combos across all Sri Lankan cinemas. Save on in-person cinema snacks with CinePass VIP.">
   <meta name="application-name" content="CineBite">
-  <link rel="icon" type="image/jpeg" href="/ui/app-icon.jpg">
-  <link rel="apple-touch-icon" href="/ui/app-icon.jpg">
-  <link rel="manifest" href="/manifest.json">
-  <link rel="stylesheet" href="/ui/apple-design-system.css">
+  <link rel="icon" type="image/jpeg" href="app-icon.jpg">
+  <link rel="apple-touch-icon" href="app-icon.jpg">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="apple-design-system.css">
   
   <script>
     // 📱 Automatic Mobile Browser & Screen Detection
@@ -20,7 +20,7 @@
         var isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent);
         var isMobileScreen = window.innerWidth <= 768 || (window.matchMedia && window.matchMedia("(max-width: 768px)").matches);
         if (isMobileUA || isMobileScreen) {
-          var target = '/mobile' + (window.location.search ? window.location.search : '');
+          var target = 'mobile.html' + (window.location.search ? window.location.search : '');
           window.location.replace(target);
         }
       } catch (e) {
@@ -29,7 +29,7 @@
     })();
   </script>
   
-  <script src="/ui/cinema-client.js"></script>
+  <script src="cinema-client.js"></script>
   <style>
     /* Page specific overrides adhering strictly to Apple HIG */
     * {
@@ -739,7 +739,7 @@
 
     <!-- Right Header Actions -->
     <div class="nav-actions">
-      <a href="/mobile" class="apple-btn-secondary" style="font-size:0.8rem; padding:0.45rem 0.95rem;">
+      <a href="mobile.html" class="apple-btn-secondary" style="font-size:0.8rem; padding:0.45rem 0.95rem;">
         📱 Mobile Pass
       </a>
       <span class="apple-badge purple" id="user-tier-badge">🎟️ CinePass VIP</span>

@@ -10,13 +10,17 @@ func (s *Server) registerRoutes(mux *http.ServeMux) {
 	// Web UI & Mobile App
 	uiSub, err := fs.Sub(uiAssets, "ui")
 	if err == nil {
-		mux.Handle("GET /ui/", http.StripPrefix("/ui/", http.FileServer(http.FS(uiSub))))
+		fileServer := http.FileServer(http.FS(uiSub))
+		mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path == "/" || r.URL.Path == "/index.html" {
+				s.handleRoot(w, r)
+				return
+			}
+			fileServer.ServeHTTP(w, r)
+		})
 	}
-	mux.HandleFunc("GET /", s.handleRoot)
 	mux.HandleFunc("GET /mobile", s.handleMobile)
-	mux.HandleFunc("GET /manifest.json", s.handleManifest)
-	mux.HandleFunc("GET /sw.js", s.handleServiceWorker)
-	mux.HandleFunc("GET /favicon.ico", s.handleFavicon)
+	mux.HandleFunc("GET /mobile.html", s.handleMobile)
 
 	// Health Check
 	mux.HandleFunc("GET /health", s.handleHealth)

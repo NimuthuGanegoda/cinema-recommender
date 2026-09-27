@@ -1,9 +1,9 @@
 const CACHE_NAME = 'cinemasnack-v2';
 const STATIC_ASSETS = [
-  '/',
-  '/mobile',
-  '/ui/app-icon.jpg',
-  '/manifest.json'
+  './',
+  './mobile.html',
+  './app-icon.jpg',
+  './manifest.json'
 ];
 
 self.addEventListener('install', (event) => {
