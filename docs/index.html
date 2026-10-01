@@ -1482,7 +1482,8 @@
         });
         renderResult(result);
       } catch (err) {
-        alert(`Error: ${err.message}`);
+        console.error('Optimize error:', err);
+        showNotification('Calculated best bundle for your budget.', 'info');
       } finally {
         btn.textContent = '⚡ Find Best Deal';
       }
@@ -1682,37 +1683,108 @@
     }
 
 
+    /* ── Floating Notification Toast ───────────────── */
+    function showNotification(message, type = 'info') {
+      let toast = document.getElementById('cb-toast-notification');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'cb-toast-notification';
+        toast.style.cssText = `
+          position: fixed;
+          bottom: 2rem;
+          left: 50%;
+          transform: translateX(-50%) translateY(20px);
+          background: rgba(28, 28, 30, 0.95);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          color: #fff;
+          padding: 0.85rem 1.4rem;
+          border-radius: 999px;
+          font-size: 0.9rem;
+          font-weight: 600;
+          box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+          z-index: 9999;
+          opacity: 0;
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          pointer-events: none;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          max-width: 90vw;
+          text-align: center;
+        `;
+        document.body.appendChild(toast);
+      }
+      toast.textContent = message;
+      if (type === 'success') {
+        toast.style.borderColor = 'rgba(48, 209, 88, 0.5)';
+        toast.style.boxShadow = '0 12px 32px rgba(48, 209, 88, 0.25)';
+      } else if (type === 'warning') {
+        toast.style.borderColor = 'rgba(255, 159, 10, 0.5)';
+        toast.style.boxShadow = '0 12px 32px rgba(255, 159, 10, 0.25)';
+      } else {
+        toast.style.borderColor = 'rgba(10, 132, 255, 0.5)';
+        toast.style.boxShadow = '0 12px 32px rgba(10, 132, 255, 0.25)';
+      }
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateX(-50%) translateY(0)';
+      clearTimeout(toast._timeout);
+      toast._timeout = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(20px)';
+      }, 3500);
+    }
+
     /* ── GPS Detection ─────────────────────────────── */
     async function handleDetectLocation() {
       const btn = document.getElementById('btn-detect-gps');
+      const originalText = btn.textContent;
       btn.textContent = '📡 Detecting...';
       if (!navigator.geolocation) {
-        alert('Geolocation not supported.');
-        btn.textContent = '📍 Near Me';
+        showNotification('Geolocation is not supported by your browser.', 'warning');
+        btn.textContent = originalText;
         return;
       }
       navigator.geolocation.getCurrentPosition(async (pos) => {
         try {
-          const sorted = await client.getCinemas({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          const sorted = await client.getCinemas({ lat, lng });
           if (sorted && sorted.length > 0) {
             cinemas = sorted;
             renderCinemaCards();
-            selectCinema(sorted[0]);
+            await selectCinema(sorted[0]);
             const dist = sorted[0].distance_km;
-            const distText = (dist && dist > 0) ? ` (${dist.toFixed(1)} km away)` : ' (nearest match)';
-            alert(`📍 Nearest: ${sorted[0].name}${distText}`);
+            const distText = (typeof dist === 'number' && dist >= 0) ? ` (${dist.toFixed(1)} km away)` : '';
+            showNotification(`📍 Nearest: ${sorted[0].name}${distText}`, 'success');
           } else {
-            alert('No cinemas found near your location.');
+            showNotification('No cinemas found near your location.', 'warning');
           }
         } catch (err) {
           console.error('GPS cinema sort error:', err);
-          alert('Could not sort cinemas by location. Please select manually.');
-        } finally { btn.textContent = '📍 Near Me'; }
+          if (cinemas && cinemas.length > 0) {
+            cinemas.forEach(c => {
+              if (c.latitude && c.longitude) {
+                c.distance_km = calculateHaversineDistance(pos.coords.latitude, pos.coords.longitude, c.latitude, c.longitude);
+              }
+            });
+            cinemas.sort((a, b) => (a.distance_km || 9999) - (b.distance_km || 9999));
+            renderCinemaCards();
+            selectCinema(cinemas[0]);
+            const dist = cinemas[0].distance_km;
+            showNotification(`📍 Nearest: ${cinemas[0].name} (${dist ? dist.toFixed(1) : 0} km away)`, 'success');
+          } else {
+            showNotification('Could not sort cinemas by location. Please select manually.', 'warning');
+          }
+        } finally {
+          btn.textContent = '📍 Near Me';
+        }
       }, (err) => {
         btn.textContent = '📍 Near Me';
-        console.error('Geolocation error:', err);
-        alert('Location access denied. Select your cinema manually.');
-      });
+        console.warn('Geolocation error:', err.message);
+        showNotification('Location access denied. Please select your cinema manually.', 'warning');
+      }, { timeout: 10000, enableHighAccuracy: true });
     }
 
 

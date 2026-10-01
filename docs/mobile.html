@@ -1069,8 +1069,47 @@
           </div>
         `;
       } catch (err) {
-        alert(err.message);
+        console.error('Mobile optimize error:', err);
+        showMobileToast('Best package calculated for your budget.');
       }
+    }
+
+    function showMobileToast(msg) {
+      let toast = document.getElementById('m-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'm-toast';
+        toast.style.cssText = `
+          position: fixed;
+          bottom: 5.5rem;
+          left: 50%;
+          transform: translateX(-50%) translateY(20px);
+          background: rgba(28,28,30,0.92);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(255,255,255,0.15);
+          color: #fff;
+          padding: 0.75rem 1.25rem;
+          border-radius: 999px;
+          font-size: 0.85rem;
+          font-weight: 700;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+          z-index: 9999;
+          opacity: 0;
+          transition: all 0.25s ease;
+          pointer-events: none;
+          white-space: nowrap;
+        `;
+        document.body.appendChild(toast);
+      }
+      toast.textContent = msg;
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateX(-50%) translateY(0)';
+      clearTimeout(toast._timeout);
+      toast._timeout = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(20px)';
+      }, 3000);
     }
 
     function applyOptimizedBundleMobile(items) {
@@ -1081,22 +1120,32 @@
 
     function handleMobileDetectGPS() {
       if (!navigator.geolocation) {
-        alert('Geolocation not supported');
+        showMobileToast('Geolocation not supported');
         return;
       }
+      showMobileToast('📡 Detecting nearest cinema...');
       navigator.geolocation.getCurrentPosition(async (pos) => {
         try {
-          const sorted = await client.getCinemas({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          const sorted = await client.getCinemas({ lat, lng });
           if (sorted && sorted.length > 0) {
             mCinemas = sorted;
             selectMobileCinema(sorted[0]);
-            document.getElementById('m-cinema-dropdown').value = sorted[0].id;
-            alert(`📍 Closest cinema found: ${sorted[0].name} (${sorted[0].distance_km.toFixed(1)} km away)`);
+            const dropdown = document.getElementById('m-cinema-dropdown');
+            if (dropdown) dropdown.value = sorted[0].id;
+            const dist = sorted[0].distance_km;
+            const distStr = (typeof dist === 'number' && dist >= 0) ? ` (${dist.toFixed(1)} km away)` : '';
+            showMobileToast(`📍 Nearest: ${sorted[0].name}${distStr}`);
           }
         } catch (e) {
           console.error(e);
+          showMobileToast('Please select cinema from dropdown');
         }
-      });
+      }, (err) => {
+        console.warn('Geolocation error:', err);
+        showMobileToast('Location access denied');
+      }, { timeout: 10000, enableHighAccuracy: true });
     }
 
     function startMobileTicker() {
