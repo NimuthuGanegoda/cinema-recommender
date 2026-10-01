@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>CineBite • Universal Mobile Cinema Concession Pass</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/jpeg" href="app-icon.jpg">
+  <link rel="apple-touch-icon" href="app-icon.jpg">
+  <link rel="stylesheet" href="apple-design-system.css">
+  <script src="cinema-client.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      background-color: #000000;
+      color: #ffffff;
+      font-family: var(--apple-font-system);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      padding-bottom: calc(72px + env(safe-area-inset-bottom, 16px));
+    }
+
+    /* iOS Dynamic Island Capsule */
+    .ios-island-wrapper {
+      display: flex;
+      justify-content: center;
+      padding: 0.5rem 1rem 0.65rem;
+      background: #000000;
+      position: sticky;
+      top: 0;
+      z-index: 55;
+    }
+
+    .island-capsule {
+      background: #000000;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: var(--radius-pill);
+      padding: 0.42rem 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.95);
+      width: 100%;
+      max-width: 360px;
+      justify-content: space-between;
+    }
+
+    .island-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--apple-green);
+      box-shadow: 0 0 8px var(--apple-green-glow);
+      animation: applePulse 2s infinite ease-in-out;
+    }
+
+    /* App Header / Location Switcher */
+    .mobile-nav-bar {
+      padding: 0.6rem 1.1rem 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: var(--apple-glass-blur);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      position: sticky;
+      top: 50px;
+      z-index: 50;
+    }
+
+    .brand-title-group {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .brand-icon-mobile {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #1c1c1e, #2c2c2e);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+    }
+
+    .cinema-select-dropdown {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 0.92rem;
+      font-weight: 700;
+      font-family: inherit;
+      outline: none;
+      max-width: 190px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+    }
+
+    .cinema-select-dropdown option {
+      background: #1c1c1e;
+      color: #fff;
+    }
+
+    /* Screen Views */
+    .screen-view {
+      display: none;
+      padding: 1.1rem;
+      flex: 1;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .screen-view.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Cinema Meta Card */
+    .cinema-info-card {
+      background: var(--apple-surface);
+      border: var(--apple-border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.15rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .cinema-chain-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Live Ads Carousel in Mobile */
+    .mobile-ads-scroller {
+      display: flex;
+      gap: 0.85rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.35rem;
+      scrollbar-width: none;
+    }
+
+    .mobile-ads-scroller::-webkit-scrollbar {
+      display: none;
+    }
+
+    .mobile-ad-card {
+      min-width: 250px;
+      max-width: 250px;
+      background: var(--apple-surface);
+      border: var(--apple-border);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.6rem;
+      cursor: pointer;
+    }
+
+    /* Category Pill Scroller */
+    .category-scroller {
+      display: flex;
+      gap: 0.45rem;
+      overflow-x: auto;
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.1rem;
+      scrollbar-width: none;
+    }
+
+    .category-scroller::-webkit-scrollbar {
+      display: none;
+    }
+
+    .cat-pill {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--apple-text-secondary);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.38rem 0.85rem;
+      border-radius: var(--radius-pill);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .cat-pill.active {
+      background: var(--dracula-purple-gradient, linear-gradient(135deg, #bd93f9 0%, #7c52d4 100%));
+      border-color: var(--dracula-purple, #bd93f9);
+      color: #100e17;
+      font-weight: 700;
+      box-shadow: 0 0 10px var(--dracula-purple-glow, rgba(189, 147, 249, 0.45));
+    }
+
+    /* Concession List Items (iOS Grouped Style) */
+    .concession-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .concession-item-row {
+      background: var(--apple-surface);
+      border: var(--apple-border);
+      border-radius: var(--radius-md);
+      padding: 0.95rem 1.1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.8rem;
+      transition: transform 0.16s ease;
+    }
+
+    .concession-item-row:active {
+      transform: scale(0.98);
+    }
+
+    .add-btn {
+      background: rgba(189, 147, 249, 0.16);
+      border: 1px solid rgba(189, 147, 249, 0.38);
+      color: var(--dracula-purple, #bd93f9);
+      padding: 0.28rem 0.75rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .add-btn:active {
+      background: var(--dracula-purple, #bd93f9);
+      color: #100e17;
+      transform: scale(0.95);
+    }
+
+    /* Bottom iOS Tab Bar */
+    .ios-tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: calc(56px + env(safe-area-inset-bottom, 16px));
+      background: rgba(18, 18, 20, 0.92);
+      backdrop-filter: var(--apple-glass-blur);
+      -webkit-backdrop-filter: var(--apple-glass-blur);
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-start;
+      padding-top: 6px;
+      z-index: 100;
+    }
+
+    .tab-button {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      background: none;
+      border: none;
+      color: var(--apple-text-tertiary);
+      font-size: 0.65rem;
+      font-weight: 600;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .tab-button.active {
+      color: var(--apple-blue-ios);
+    }
+
+    .tab-icon {
+      font-size: 1.3rem;
+      line-height: 1;
+    }
+
+    .tab-badge {
+      position: absolute;
+      top: -2px;
+      right: calc(50% - 16px);
+      background: var(--apple-red);
+      color: #fff;
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: var(--radius-pill);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- iOS Dynamic Island Capsule -->
+  <div class="ios-island-wrapper">
+    <div class="island-capsule" id="m-dynamic-island">
+      <div style="display:flex; align-items:center; gap:0.5rem;">
+        <div class="island-dot"></div>
+        <span style="font-size:0.75rem; font-weight:700; color:#fff;" id="m-island-cinema-text">Regal Cinema Kandy</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:0.35rem;">
+        <span style="font-size:0.7rem; color:var(--apple-green); font-weight:600;" id="m-island-sync">Sync in 8s</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile App Navigation Header -->
+  <div class="mobile-nav-bar">
+    <div class="brand-title-group">
+      <div class="brand-icon-mobile">🍿</div>
+      <div>
+        <div style="font-size:0.95rem; font-weight:800; letter-spacing:-0.02em;">CineBite</div>
+        <div style="display:flex; align-items:center; gap:0.25rem;">
+          <select id="m-cinema-dropdown" class="cinema-select-dropdown" onchange="onMobileCinemaChanged(this.value)">
+            <!-- Cinema options loaded here -->
+          </select>
+          <span style="color:var(--apple-text-tertiary); font-size:0.75rem;">▼</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:0.4rem;">
+      <a href="./?view=desktop" class="apple-btn-secondary" style="font-size:0.72rem; padding:0.35rem 0.6rem; text-decoration:none;" title="Switch to Desktop Version">
+        🖥️ Desktop
+      </a>
+      <button class="apple-btn-secondary" onclick="handleMobileDetectGPS()" style="font-size:0.75rem; padding:0.35rem 0.75rem;">
+        📍 Near Me
+      </button>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Screen 1: Explore (Live Concessions & Deals)
+       ========================================================================= -->
+  <div class="screen-view active" id="screen-explore">
+    <!-- View All Cinemas Button -->
+    <button class="apple-btn-secondary" onclick="openMobileCinemaDirectory()" style="width:100%; margin-bottom:1rem; display:flex; align-items:center; justify-content:space-between; font-size:0.82rem; padding:0.65rem 0.95rem;">
+      <div style="display:flex; align-items:center; gap:0.5rem;">
+        <span style="font-size:1.1rem;">🏛️</span>
+        <span style="font-weight:700;">View All Available Cinemas</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:0.4rem;">
+        <span class="apple-badge green" style="font-size:0.65rem;"><span id="m-cinemas-count">10</span> Food Courts in Front</span>
+        <span style="color:var(--apple-text-tertiary); font-size:0.85rem;">›</span>
+      </div>
+    </button>
+
+    <!-- Cinema Details Card -->
+    <div class="cinema-info-card">
+      <div class="cinema-chain-row">
+        <span style="font-size:0.95rem; font-weight:700;" id="m-display-name">Scope Partner Multiplex - KCC Kandy</span>
+        <span class="apple-badge blue" id="m-display-chain" style="font-size:0.68rem;">Scope Cinemas Partner</span>
+      </div>
+      <div style="font-size:0.78rem; color:var(--apple-text-secondary);" id="m-display-location">
+        Level 3, Kandy City Centre • 4 Screens
+      </div>
+
+      <!-- In-Front Food Court Badge -->
+      <div style="background:rgba(48,209,88,0.12); border:1px solid rgba(48,209,88,0.32); border-radius:var(--radius-sm); padding:0.55rem 0.75rem; margin-top:0.35rem;">
+        <div style="font-size:0.72rem; color:var(--apple-green); font-weight:700; display:flex; align-items:center; gap:0.35rem;">
+          🍔 Verified Food Court Directly in Front
+        </div>
+        <div style="font-size:0.82rem; font-weight:700; color:#fff; margin-top:0.15rem;" id="m-display-foodcourt-name">
+          KCC World Food Court & Scope Candy Bar
+        </div>
+        <div style="font-size:0.7rem; color:var(--apple-text-secondary); margin-top:0.1rem;" id="m-display-foodcourt-loc">
+          (Level 3 Lobby directly in front of cinema entrance)
+        </div>
+        <div style="font-size:0.66rem; color:var(--apple-purple); font-weight:600; margin-top:0.2rem;">
+          🍿 Cinema food and drinks only
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Deals Scroller -->
+    <div style="font-size:0.85rem; font-weight:700; margin-bottom:0.6rem; display:flex; justify-content:space-between; align-items:center;">
+      <span>🎬 In-Theater Concession Ads</span>
+      <span class="apple-badge green" style="font-size:0.65rem;">Updated Live</span>
+    </div>
+    <div class="mobile-ads-scroller" id="m-ads-scroller">
+      <!-- Ads loaded here -->
+    </div>
+
+    <!-- Category Filter Bar with Dynamic Counts -->
+    <div class="category-scroller" id="m-category-bar">
+      <button class="cat-pill active" data-category="ALL" onclick="mobileFilterCat('ALL', this)">All Snacks <span id="m-count-ALL">(0)</span></button>
+      <button class="cat-pill" data-category="Popcorn" onclick="mobileFilterCat('Popcorn', this)">🍿 Popcorn <span id="m-count-Popcorn">(0)</span></button>
+      <button class="cat-pill" data-category="Beverage" onclick="mobileFilterCat('Beverage', this)">🥤 Drinks <span id="m-count-Beverage">(0)</span></button>
+      <button class="cat-pill" data-category="Snack" onclick="mobileFilterCat('Snack', this)">🌭 Warm Food <span id="m-count-Snack">(0)</span></button>
+      <button class="cat-pill" data-category="Combo" onclick="mobileFilterCat('Combo', this)">🎬 Combos <span id="m-count-Combo">(0)</span></button>
+    </div>
+
+    <!-- Concession Items List -->
+    <div class="concession-list" id="m-concession-list">
+      <!-- Items loaded here -->
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Screen 2: Smart Bundle Optimizer
+       ========================================================================= -->
+  <div class="screen-view" id="screen-optimizer">
+    <h3 style="font-size:1.3rem; font-weight:800; margin-bottom:0.4rem; letter-spacing:-0.02em;">
+      ⚡ Smart Bundle Optimizer
+    </h3>
+    <p style="font-size:0.82rem; color:var(--apple-text-secondary); margin-bottom:1.4rem;">
+      Maximize food & beverage value within your cinema budget.
+    </p>
+
+    <!-- Budget Setting -->
+    <div style="margin-bottom:1.25rem;">
+      <label style="font-size:0.8rem; font-weight:600; color:var(--apple-text-secondary); display:block; margin-bottom:0.4rem;">
+        Concession Budget (LKR)
+      </label>
+      <div class="budget-input-wrap">
+        <span class="budget-prefix">LKR</span>
+        <input type="number" id="m-opt-budget" class="budget-input" value="2500" min="500" max="20000" step="100">
+      </div>
+      <div style="display:flex; gap:0.4rem; margin-top:0.5rem; flex-wrap:wrap;">
+        <button class="quick-pill" onclick="setMobileBudget(1500)">1,500</button>
+        <button class="quick-pill" onclick="setMobileBudget(2500)">2,500</button>
+        <button class="quick-pill" onclick="setMobileBudget(3500)">3,500</button>
+        <button class="quick-pill" onclick="setMobileBudget(5000)">5,000</button>
+      </div>
+    </div>
+
+    <!-- Party Size Segmented Control -->
+    <div style="margin-bottom:1.25rem;">
+      <label style="font-size:0.8rem; font-weight:600; color:var(--apple-text-secondary); display:block; margin-bottom:0.4rem;">
+        Moviegoers
+      </label>
+      <div class="apple-segmented-control" style="width:100%;">
+        <button class="apple-segment-item" style="flex:1;" onclick="setMobileParty(1)">1 Solo</button>
+        <button class="apple-segment-item active" style="flex:1;" onclick="setMobileParty(2)">2 Duo</button>
+        <button class="apple-segment-item" style="flex:1;" onclick="setMobileParty(3)">3 Trio</button>
+        <button class="apple-segment-item" style="flex:1;" onclick="setMobileParty(4)">4+ Group</button>
+      </div>
+    </div>
+
+    <!-- Membership Tier Segmented Control -->
+    <div style="margin-bottom:1.25rem;">
+      <label style="font-size:0.8rem; font-weight:600; color:var(--apple-text-secondary); display:block; margin-bottom:0.4rem;">
+        CinePass VIP Tier
+      </label>
+      <div class="apple-segmented-control" style="width:100%;">
+        <button class="apple-segment-item active" style="flex:1;" onclick="setMobileTier('Standard')">Standard</button>
+        <button class="apple-segment-item" style="flex:1;" onclick="setMobileTier('Student')">Student</button>
+        <button class="apple-segment-item" style="flex:1;" onclick="setMobileTier('Platinum')">Platinum</button>
+      </div>
+    </div>
+
+    <!-- Promo Code -->
+    <div style="margin-bottom:1.4rem;">
+      <label style="font-size:0.8rem; font-weight:600; color:var(--apple-text-secondary); display:block; margin-bottom:0.4rem;">
+        Promo Code (Optional)
+      </label>
+      <div class="search-input-wrap">
+        <input type="text" id="m-opt-promo" placeholder="CINE-COMBO30, CINE-PLATINUM" style="text-transform:uppercase;">
+      </div>
+    </div>
+
+    <button class="apple-btn-primary" style="width:100%; padding:0.85rem;" onclick="handleMobileOptimize()">
+      ⚡ Calculate Best Bundle
+    </button>
+
+    <!-- Optimization Result Card -->
+    <div id="m-opt-result" style="display:none; margin-top:1.4rem;">
+      <!-- Populated dynamically -->
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Screen 3: Apple Wallet CinePass
+       ========================================================================= -->
+  <div class="screen-view" id="screen-pass">
+    <div class="apple-wallet-pass">
+      <!-- Pass Header -->
+      <div class="apple-wallet-header">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+          <span style="font-size:1.4rem;">🎟️</span>
+          <div>
+            <div style="font-weight:700; font-size:0.95rem;">CineBite Pass</div>
+            <div style="font-size:0.72rem; color:var(--apple-text-secondary);" id="pass-view-cinema">Regal Cinema Kandy</div>
+          </div>
+        </div>
+        <span class="apple-badge purple" id="pass-view-tier">Platinum VIP</span>
+      </div>
+
+      <!-- Items Section -->
+      <div style="padding:1.25rem;">
+        <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--apple-text-tertiary); margin-bottom:0.6rem;">
+          Concession Order
+        </div>
+        <div id="pass-view-items" style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem;">
+          <!-- Item rows -->
+        </div>
+
+        <div style="background:rgba(255,255,255,0.04); border-radius:var(--radius-sm); padding:0.85rem; display:flex; flex-direction:column; gap:0.35rem; font-size:0.82rem;">
+          <div style="display:flex; justify-content:space-between; color:var(--apple-text-secondary);">
+            <span>Subtotal:</span>
+            <span id="pass-view-subtotal">LKR 0</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; color:var(--apple-green); font-weight:600;">
+            <span>CinePass Savings:</span>
+            <span id="pass-view-savings">-LKR 0</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:1.15rem; font-weight:800; border-top:1px solid rgba(255,255,255,0.1); padding-top:0.5rem; margin-top:0.2rem;">
+            <span>Pay at Counter:</span>
+            <span style="color:#fff;" id="pass-view-final">LKR 0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Perforation -->
+      <div class="apple-wallet-perforation">
+        <div class="apple-wallet-dashline"></div>
+      </div>
+
+      <!-- Barcode / Instructions -->
+      <div style="padding:1.25rem; text-align:center;">
+        <div class="apple-wallet-barcode-container">
+          <svg width="240" height="50" viewBox="0 0 240 50">
+            <rect x="5" y="5" width="3" height="40" fill="#000" />
+            <rect x="11" y="5" width="2" height="40" fill="#000" />
+            <rect x="16" y="5" width="5" height="40" fill="#000" />
+            <rect x="24" y="5" width="2" height="40" fill="#000" />
+            <rect x="30" y="5" width="4" height="40" fill="#000" />
+            <rect x="38" y="5" width="6" height="40" fill="#000" />
+            <rect x="48" y="5" width="3" height="40" fill="#000" />
+            <rect x="54" y="5" width="4" height="40" fill="#000" />
+            <rect x="62" y="5" width="2" height="40" fill="#000" />
+            <rect x="68" y="5" width="5" height="40" fill="#000" />
+            <rect x="76" y="5" width="3" height="40" fill="#000" />
+            <rect x="83" y="5" width="6" height="40" fill="#000" />
+            <rect x="94" y="5" width="2" height="40" fill="#000" />
+            <rect x="100" y="5" width="4" height="40" fill="#000" />
+            <rect x="108" y="5" width="3" height="40" fill="#000" />
+            <rect x="115" y="5" width="6" height="40" fill="#000" />
+            <rect x="126" y="5" width="2" height="40" fill="#000" />
+            <rect x="132" y="5" width="5" height="40" fill="#000" />
+            <rect x="141" y="5" width="3" height="40" fill="#000" />
+            <rect x="148" y="5" width="4" height="40" fill="#000" />
+            <rect x="156" y="5" width="2" height="40" fill="#000" />
+            <rect x="162" y="5" width="6" height="40" fill="#000" />
+            <rect x="172" y="5" width="3" height="40" fill="#000" />
+            <rect x="179" y="5" width="4" height="40" fill="#000" />
+            <rect x="187" y="5" width="3" height="40" fill="#000" />
+            <rect x="194" y="5" width="5" height="40" fill="#000" />
+            <rect x="203" y="5" width="2" height="40" fill="#000" />
+            <rect x="209" y="5" width="4" height="40" fill="#000" />
+            <rect x="217" y="5" width="6" height="40" fill="#000" />
+          </svg>
+          <div style="font-family:var(--apple-font-mono); font-size:0.75rem; font-weight:700; color:#000; margin-top:0.3rem;" id="pass-view-serial">
+            CB-PASS-98421
+          </div>
+        </div>
+        <p style="font-size:0.75rem; color:var(--apple-text-secondary); margin-top:0.85rem; line-height:1.4;">
+          Show this barcode at the candy bar counter before order punching.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Screen 4: Concession Tray (Cart)
+       ========================================================================= -->
+  <div class="screen-view" id="screen-tray">
+    <h3 style="font-size:1.3rem; font-weight:800; margin-bottom:0.4rem; letter-spacing:-0.02em;">
+      🛍️ Concession Tray
+    </h3>
+    <p style="font-size:0.82rem; color:var(--apple-text-secondary); margin-bottom:1.25rem;">
+      Your selected snacks ready for in-person counter redemption.
+    </p>
+
+    <div id="m-tray-items-list" style="display:flex; flex-direction:column; gap:0.75rem; margin-bottom:1.5rem;">
+      <!-- Populated dynamically -->
+    </div>
+
+    <div style="background:var(--apple-surface); border:var(--apple-border); border-radius:var(--radius-lg); padding:1.15rem; margin-bottom:1.5rem;">
+      <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--apple-text-secondary); margin-bottom:0.35rem;">
+        <span>Tray Total:</span>
+        <span id="m-tray-subtotal">LKR 0</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--apple-green); font-weight:600; margin-bottom:0.5rem;">
+        <span>Estimated CinePass Savings:</span>
+        <span id="m-tray-savings">-LKR 0</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:800; border-top:1px solid rgba(255,255,255,0.1); padding-top:0.6rem;">
+        <span>Pay at Counter:</span>
+        <span id="m-tray-final" style="color:#fff;">LKR 0</span>
+      </div>
+    </div>
+
+    <button class="apple-btn-green apple-btn-primary" style="width:100%; padding:0.85rem;" onclick="switchToTab('pass')">
+      🎟️ View Apple Wallet Pass
+    </button>
+  </div>
+
+  <!-- iOS Tab Bar -->
+  <nav class="ios-tab-bar">
+    <button class="tab-button active" onclick="switchToTab('explore')">
+      <span class="tab-icon">🍿</span>
+      <span>Explore</span>
+    </button>
+    <button class="tab-button" onclick="switchToTab('optimizer')">
+      <span class="tab-icon">⚡</span>
+      <span>Optimizer</span>
+    </button>
+    <button class="tab-button" onclick="switchToTab('pass')">
+      <span class="tab-icon">🎟️</span>
+      <span>CinePass</span>
+    </button>
+    <button class="tab-button" onclick="switchToTab('tray')">
+      <span class="tab-icon">🛍️</span>
+      <span>Tray</span>
+      <span class="tab-badge" id="tab-tray-count" style="display:none;">0</span>
+    </button>
+  </nav>
+
+  <!-- Mobile Available Cinemas Directory Bottom Sheet -->
+  <div class="modal-backdrop" id="m-cinemas-sheet" onclick="closeMobileCinemaDirectoryOnBackdrop(event)">
+    <div class="modal-content" style="max-height:85vh; border-radius:var(--radius-xl) var(--radius-xl) 0 0; align-self:flex-end; width:100%; max-width:480px; margin:0 auto;">
+      <div style="background:var(--apple-surface); border:var(--apple-border-specular); border-radius:var(--radius-xl) var(--radius-xl) 0 0; padding:1.25rem 1.1rem; box-shadow:var(--apple-shadow-lg);">
+        <!-- Grabber indicator -->
+        <div style="width:36px; height:5px; background:rgba(255,255,255,0.25); border-radius:3px; margin:0 auto 0.85rem;"></div>
+        
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.75rem;">
+          <div>
+            <div style="font-size:1.15rem; font-weight:800; letter-spacing:-0.02em;">All Available Cinemas</div>
+            <div style="font-size:0.72rem; color:var(--apple-green); font-weight:700; margin-top:2px;">
+              ✓ In-Front Food Court Only (Cinema Snacks & Drinks)
+            </div>
+          </div>
+          <button onclick="closeMobileCinemaDirectory()" style="background:rgba(255,255,255,0.1); border:none; color:#fff; width:30px; height:30px; border-radius:50%; font-size:1rem; cursor:pointer;">✕</button>
+        </div>
+
+        <div id="m-cinemas-directory-list" style="display:flex; flex-direction:column; gap:0.75rem; max-height:60vh; overflow-y:auto; padding-bottom:0.5rem;">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const client = new CinemaClient();
+    let mCinemas = [];
+    let mCurrentCinema = null;
+    let mMenu = [];
+    let mCategory = 'ALL';
+    let mCart = [];
+    let mParty = 2;
+    let mTier = 'Standard';
+    let mSeconds = 8;
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      await loadMobileCinemas();
+      startMobileTicker();
+    });
+
+    async function loadMobileCinemas() {
+      try {
+        const cinemas = await client.getCinemas();
+        mCinemas = cinemas;
+      } catch (err) {
+        console.error('Failed to load cinemas from API. Falling back to Demo Mode:', err);
+        mCinemas = [
+          {
+            id: "DEMO-KCC", name: "Scope Partner Multiplex - KCC", chain: "Scope Cinemas", city: "Kandy",
+            province: "Central Province", address: "Level 3, KCC", screens: 4, is_outside_colombo: true,
+            has_food_court_in_front: true, food_court_name: "KCC World Food Court & Candy Bar",
+            food_place_name: "KCC World Food Court"
+          },
+          {
+            id: "DEMO-CCC", name: "Scope Cinemas Multiplex - CCC", chain: "Scope Cinemas", city: "Colombo",
+            province: "Western Province", address: "Colombo City Centre", screens: 6, is_outside_colombo: false,
+            has_food_court_in_front: true, food_court_name: "CCC Candy Bar & Food Court",
+            food_place_name: "CCC Food Court"
+          },
+          {
+            id: "DEMO-HCM", name: "Scope Cinemas Multiplex - HCM", chain: "Scope Cinemas", city: "Colombo",
+            province: "Western Province", address: "Havelock City Mall", screens: 6, is_outside_colombo: false,
+            has_food_court_in_front: true, food_court_name: "HCM Food Lounge & IMAX Candy Bar",
+            food_place_name: "HCM Food Lounge"
+          }
+        ];
+      }
+      
+      const countEl = document.getElementById('m-cinemas-count');
+      if (countEl) countEl.textContent = mCinemas.length;
+
+      const dropdown = document.getElementById('m-cinema-dropdown');
+      dropdown.innerHTML = mCinemas.map(c => `
+        <option value="${c.id}">${c.name} (${c.city})</option>
+      `).join('');
+
+      renderMobileCinemaDirectory();
+
+      if (mCinemas.length > 0) {
+        selectMobileCinema(mCinemas[0]);
+      }
+    }
+
+    function onMobileCinemaChanged(cinemaId) {
+      const c = mCinemas.find(x => x.id === cinemaId);
+      if (c) selectMobileCinema(c);
+    }
+
+    async function selectMobileCinema(cinema) {
+      mCurrentCinema = cinema;
+      document.getElementById('m-display-name').textContent = cinema.name;
+      document.getElementById('m-display-chain').textContent = cinema.chain || 'Independent Circuit';
+      document.getElementById('m-display-location').textContent = `${cinema.address || cinema.city} • ${cinema.screens} Screens`;
+      
+      const fcName = cinema.food_court_name || cinema.food_place_name || 'Theater Concession Counter';
+      const fcLoc = cinema.food_court_location || 'Directly in front of cinema entrance';
+      const fcNameEl = document.getElementById('m-display-foodcourt-name');
+      if (fcNameEl) fcNameEl.textContent = fcName;
+      const fcLocEl = document.getElementById('m-display-foodcourt-loc');
+      if (fcLocEl) fcLocEl.textContent = `(${fcLoc})`;
+
+      document.getElementById('m-island-cinema-text').textContent = cinema.name;
+      document.getElementById('pass-view-cinema').textContent = cinema.name;
+      const dropdown = document.getElementById('m-cinema-dropdown');
+      if (dropdown) dropdown.value = cinema.id;
+
+      renderMobileCinemaDirectory();
+
+      await Promise.all([
+        loadMobileConcessions(cinema.id),
+        loadMobileAds(cinema.id)
+      ]);
+    }
+
+    async function loadMobileConcessions(cinemaId) {
+      try {
+        const data = await client.getLiveConcessions(cinemaId);
+        mMenu = data.items || [];
+      } catch (err) {
+        console.error('Failed to load mobile concessions, using fallback:', err);
+        mMenu = [
+          { id: "POP-01", category: "Popcorn", name: "Large Caramel Popcorn", size: "Large", price: 1200, original_price: 1500 },
+          { id: "BEV-01", category: "Beverages", name: "Coke Large", size: "Large", price: 600, original_price: 800 },
+          { id: "SNC-01", category: "Snacks", name: "Nachos with Cheese", size: "Regular", price: 1100, original_price: 1100 }
+        ];
+      }
+      updateMobileCatCounts();
+      renderMobileConcessions();
+    }
+
+    async function loadMobileAds(cinemaId) {
+      const container = document.getElementById('m-ads-scroller');
+      let ads = [];
+      try {
+        ads = await client.getCinemaAds(cinemaId);
+      } catch (err) {
+        console.error('Failed to load mobile ads, using fallback:', err);
+        ads = [{ promo_code: "DEMO-COMBO", title: "Demo Flash Deal", discount_text: "30% OFF", is_flash_ad: true }];
+      }
+
+      if (!ads || ads.length === 0) {
+        container.innerHTML = '<div style="color:var(--apple-text-tertiary); font-size:0.75rem;">No active banners.</div>';
+        return;
+      }
+      container.innerHTML = ads.map(ad => `
+        <div class="mobile-ad-card" onclick="applyAdDealMobile('${ad.promo_code || ''}', '${ad.target_item_id || ''}')">
+          <div>
+            <span class="apple-badge ${ad.is_flash_ad ? 'orange' : 'blue'}" style="font-size:0.65rem; margin-bottom:0.35rem;">
+              ${ad.badge_text || 'PROMO'}
+            </span>
+            <div style="font-size:0.88rem; font-weight:700;">${ad.title}</div>
+          </div>
+          <div style="font-size:0.75rem; color:var(--apple-green); font-weight:700; border-top:1px solid rgba(255,255,255,0.06); padding-top:0.4rem;">
+            ${ad.discount_text}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function applyAdDealMobile(promoCode, targetItemId) {
+      if (promoCode) {
+        document.getElementById('m-opt-promo').value = promoCode;
+      }
+      if (targetItemId) {
+        const item = mMenu.find(i => i.id === targetItemId);
+        if (item) addMobileCart(item);
+      }
+      switchToTab('optimizer');
+      handleMobileOptimize();
+    }
+
+    function renderMobileConcessions() {
+      const container = document.getElementById('m-concession-list');
+      const filtered = mCategory === 'ALL' ? mMenu : mMenu.filter(i => i.category.toLowerCase() === mCategory.toLowerCase());
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div style="color:var(--apple-text-tertiary); font-size:0.8rem; text-align:center; padding:1.5rem;">No items found.</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => {
+        const emoji = item.category === 'Popcorn' ? '🍿' : item.category === 'Beverage' ? '🥤' : item.category === 'Combo' ? '🎬' : '🌭';
+        const bestDiscount = (item.discounts && item.discounts.length > 0) ? item.discounts[0] : null;
+        const discountPrice = bestDiscount ? bestDiscount.discounted_price : item.price;
+        const savings = item.price - discountPrice;
+
+        return `
+          <div class="concession-item-row">
+            <div style="display:flex; align-items:center; gap:0.65rem; flex:1;">
+              <span style="font-size:1.6rem;">${emoji}</span>
+              <div>
+                <div style="font-size:0.92rem; font-weight:700;">${item.name}</div>
+                <div style="font-size:0.74rem; color:var(--apple-text-secondary);">${item.category} • ${item.size || 'Standard'}</div>
+                ${savings > 0 ? `
+                  <div style="font-size:0.68rem; color:var(--apple-green); font-weight:600;">Save LKR ${savings.toFixed(0)}</div>
+                ` : ''}
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.35rem;">
+              <div style="font-size:0.95rem; font-weight:800;">LKR ${item.price.toFixed(0)}</div>
+              <button class="add-btn" style="padding:0.25rem 0.65rem; font-size:0.75rem;" onclick="addMobileCartById('${item.id}')">
+                + Add
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateMobileCatCounts() {
+      const counts = {
+        ALL: mMenu.length,
+        Popcorn: mMenu.filter(i => i.category && i.category.toLowerCase() === 'popcorn').length,
+        Beverage: mMenu.filter(i => i.category && i.category.toLowerCase() === 'beverage').length,
+        Snack: mMenu.filter(i => i.category && i.category.toLowerCase() === 'snack').length,
+        Combo: mMenu.filter(i => i.category && i.category.toLowerCase() === 'combo').length,
+      };
+      for (const [cat, cnt] of Object.entries(counts)) {
+        const el = document.getElementById(`m-count-${cat}`);
+        if (el) el.textContent = `(${cnt})`;
+      }
+    }
+
+    function mobileFilterCat(cat, element) {
+      mCategory = cat;
+      document.querySelectorAll('.cat-pill').forEach(btn => {
+        if (btn.getAttribute('data-category') === cat || btn === element) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+      renderMobileConcessions();
+    }
+
+    function renderMobileCinemaDirectory() {
+      const container = document.getElementById('m-cinemas-directory-list');
+      if (!container) return;
+      container.innerHTML = mCinemas.map(c => {
+        const isSelected = mCurrentCinema && mCurrentCinema.id === c.id;
+        return `
+          <div style="background:var(--apple-surface-elevated); border:1px solid ${isSelected ? 'var(--apple-blue-ios)' : 'rgba(255,255,255,0.08)'}; border-radius:var(--radius-md); padding:0.95rem; display:flex; flex-direction:column; gap:0.6rem;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <div>
+                <div style="font-size:0.95rem; font-weight:700; color:#fff;">${c.name}</div>
+                <div style="font-size:0.75rem; color:var(--apple-text-secondary);">${c.city} • ${c.screens} Screens</div>
+              </div>
+              <span class="apple-badge blue" style="font-size:0.65rem;">${c.chain || 'Circuit'}</span>
+            </div>
+
+            <div style="background:rgba(0,0,0,0.4); border:1px solid rgba(48,209,88,0.25); border-radius:var(--radius-xs); padding:0.5rem 0.65rem;">
+              <div style="font-size:0.7rem; color:var(--apple-green); font-weight:700;">🍔 Food Court in Front:</div>
+              <div style="font-size:0.78rem; font-weight:600; color:#fff;">${c.food_court_name || c.food_place_name}</div>
+              <div style="font-size:0.68rem; color:var(--apple-text-tertiary);">${c.food_court_location || 'Directly facing cinema entrance'}</div>
+              <div style="font-size:0.65rem; color:var(--apple-purple); font-weight:600; margin-top:0.15rem;">🍿 Cinema food and drinks only</div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:0.7rem; color:var(--apple-text-secondary);">🕒 ${c.food_hours || '10 AM - 10:30 PM'}</span>
+              <button class="${isSelected ? 'apple-btn-secondary' : 'apple-btn-primary'}" style="font-size:0.75rem; padding:0.35rem 0.8rem;" onclick="selectMobileCinemaFromDirectory('${c.id}')">
+                ${isSelected ? '✓ Active' : 'Select'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openMobileCinemaDirectory() {
+      renderMobileCinemaDirectory();
+      document.getElementById('m-cinemas-sheet').classList.add('open');
+    }
+
+    function closeMobileCinemaDirectory() {
+      document.getElementById('m-cinemas-sheet').classList.remove('open');
+    }
+
+    function closeMobileCinemaDirectoryOnBackdrop(e) {
+      if (e.target.id === 'm-cinemas-sheet') {
+        closeMobileCinemaDirectory();
+      }
+    }
+
+    function selectMobileCinemaFromDirectory(cinemaId) {
+      const c = mCinemas.find(x => x.id === cinemaId);
+      if (c) {
+        selectMobileCinema(c);
+        closeMobileCinemaDirectory();
+      }
+    }
+
+    function addMobileCartById(itemId) {
+      const item = mMenu.find(i => i.id === itemId);
+      if (item) addMobileCart(item);
+    }
+
+    function addMobileCart(item) {
+      mCart.push(item);
+      updateMobileCartUI();
+    }
+
+    function updateMobileCartUI() {
+      const badge = document.getElementById('tab-tray-count');
+      if (mCart.length > 0) {
+        badge.textContent = mCart.length;
+        badge.style.display = 'block';
+      } else {
+        badge.style.display = 'none';
+      }
+
+      // Update Tray Screen
+      const trayList = document.getElementById('m-tray-items-list');
+      if (mCart.length === 0) {
+        trayList.innerHTML = '<div style="color:var(--apple-text-tertiary); font-size:0.85rem; text-align:center; padding:2rem;">Your concession tray is empty. Add snacks from the Explore tab!</div>';
+      } else {
+        trayList.innerHTML = mCart.map((item, idx) => `
+          <div style="background:var(--apple-surface); border:var(--apple-border); border-radius:var(--radius-sm); padding:0.8rem 1rem; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-weight:700; font-size:0.9rem;">${item.name}</div>
+              <div style="font-size:0.72rem; color:var(--apple-text-secondary);">${item.category}</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.6rem;">
+              <span style="font-weight:800; font-size:0.92rem;">LKR ${item.price.toFixed(0)}</span>
+              <button onclick="removeMobileCart(${idx})" style="background:none; border:none; color:var(--apple-red); cursor:pointer; font-size:1.1rem;">✕</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      const subtotal = mCart.reduce((s, i) => s + i.price, 0);
+      const savings = subtotal > 2000 ? subtotal * 0.25 : subtotal * 0.15;
+      const finalTotal = subtotal - savings;
+
+      document.getElementById('m-tray-subtotal').textContent = `LKR ${subtotal.toFixed(0)}`;
+      document.getElementById('m-tray-savings').textContent = `-LKR ${savings.toFixed(0)}`;
+      document.getElementById('m-tray-final').textContent = `LKR ${finalTotal.toFixed(0)}`;
+
+      // Update Pass Screen
+      document.getElementById('pass-view-items').innerHTML = mCart.map(item => `
+        <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+          <span>• ${item.name}</span>
+          <span style="font-weight:600;">LKR ${item.price.toFixed(0)}</span>
+        </div>
+      `).join('');
+      document.getElementById('pass-view-subtotal').textContent = `LKR ${subtotal.toFixed(0)}`;
+      document.getElementById('pass-view-savings').textContent = `-LKR ${savings.toFixed(0)}`;
+      document.getElementById('pass-view-final').textContent = `LKR ${finalTotal.toFixed(0)}`;
+      document.getElementById('pass-view-serial').textContent = `CB-PASS-${Math.floor(10000 + Math.random() * 90000)}`;
+    }
+
+    function removeMobileCart(idx) {
+      mCart.splice(idx, 1);
+      updateMobileCartUI();
+    }
+
+    function switchToTab(tabName) {
+      document.querySelectorAll('.screen-view').forEach(s => s.classList.remove('active'));
+      document.getElementById(`screen-${tabName}`).classList.add('active');
+
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = Array.from(document.querySelectorAll('.tab-button')).find(b => b.textContent.toLowerCase().includes(tabName));
+      if (activeBtn) activeBtn.classList.add('active');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function setMobileBudget(val) {
+      document.getElementById('m-opt-budget').value = val;
+    }
+
+    function setMobileParty(size) {
+      mParty = size;
+      const btns = event.target.parentElement.querySelectorAll('.apple-segment-item');
+      btns.forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+
+    function setMobileTier(tier) {
+      mTier = tier;
+      document.getElementById('pass-view-tier').textContent = `${tier} VIP`;
+      const btns = event.target.parentElement.querySelectorAll('.apple-segment-item');
+      btns.forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+
+    async function handleMobileOptimize() {
+      if (!mCurrentCinema) return;
+      const budget = parseFloat(document.getElementById('m-opt-budget').value) || 2500;
+      const promo = document.getElementById('m-opt-promo').value.trim();
+
+      try {
+        const result = await client.recommendBundle({
+          cinemaId: mCurrentCinema.id,
+          budget,
+          partySize: mParty,
+          privilegeTier: mTier,
+          promoCode: promo
+        });
+
+        const resBox = document.getElementById('m-opt-result');
+        resBox.style.display = 'block';
+        resBox.innerHTML = `
+          <div class="apple-card" style="padding:1.15rem; border-color:rgba(48,209,88,0.35);">
+            <span class="apple-badge green" style="font-size:0.7rem; margin-bottom:0.4rem;">Optimal Bundle Unlocked</span>
+            <div style="font-size:1.05rem; font-weight:700; margin-bottom:0.6rem;">Applied: ${result.applied_promo}</div>
+            
+            <div style="display:flex; flex-direction:column; gap:0.4rem; margin-bottom:0.85rem;">
+              ${result.items.map(item => `
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; background:rgba(255,255,255,0.04); padding:0.4rem 0.6rem; border-radius:6px;">
+                  <span>${item.name}</span>
+                  <span style="font-weight:700;">LKR ${item.price.toFixed(0)}</span>
+                </div>
+              `).join('')}
+            </div>
+
+            <div style="border-top:1px solid rgba(255,255,255,0.1); padding-top:0.6rem; margin-bottom:0.85rem;">
+              <div style="font-size:1.15rem; font-weight:800; color:var(--apple-green);">
+                LKR ${result.final_total.toFixed(0)} 
+                <span style="font-size:0.75rem;">(Saved LKR ${result.discount_amount.toFixed(0)})</span>
+              </div>
+            </div>
+
+            <button class="apple-btn-green apple-btn-primary" style="width:100%; padding:0.65rem; font-size:0.85rem;" onclick="applyOptimizedBundleMobile(${JSON.stringify(result.items).replace(/"/g, '&quot;')})">
+              🎟️ Use in CinePass
+            </button>
+          </div>
+        `;
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    function applyOptimizedBundleMobile(items) {
+      mCart = items;
+      updateMobileCartUI();
+      switchToTab('pass');
+    }
+
+    function handleMobileDetectGPS() {
+      if (!navigator.geolocation) {
+        alert('Geolocation not supported');
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        try {
+          const sorted = await client.getCinemas({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+          if (sorted && sorted.length > 0) {
+            mCinemas = sorted;
+            selectMobileCinema(sorted[0]);
+            document.getElementById('m-cinema-dropdown').value = sorted[0].id;
+            alert(`📍 Closest cinema found: ${sorted[0].name} (${sorted[0].distance_km.toFixed(1)} km away)`);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      });
+    }
+
+    function startMobileTicker() {
+      setInterval(async () => {
+        mSeconds--;
+        if (mSeconds <= 0) {
+          mSeconds = 8;
+          if (mCurrentCinema) await loadMobileConcessions(mCurrentCinema.id);
+        }
+        document.getElementById('m-island-sync').textContent = `Sync in ${mSeconds}s`;
+      }, 1000);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,614 @@
+/**
+ * CineBite Design System v2.0
+ * Modern Dark Glassmorphism — Netflix / Spotify Inspired
+ * 
+ * Deep black canvas, rich purple & electric blue accents,
+ * frosted glass surfaces, premium micro-animations.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+/* ==========================================================================
+   Design Tokens
+   ========================================================================== */
+:root {
+  /* Canvas & Surfaces */
+  --cb-bg:              #06060b;
+  --cb-bg-subtle:       #0c0c14;
+  --cb-surface:         rgba(255, 255, 255, 0.04);
+  --cb-surface-hover:   rgba(255, 255, 255, 0.07);
+  --cb-surface-elevated: rgba(255, 255, 255, 0.06);
+  --cb-surface-glass:   rgba(12, 12, 20, 0.72);
+  --cb-surface-card:    rgba(16, 16, 26, 0.85);
+
+  /* Glass Effects */
+  --cb-glass-blur:      blur(24px) saturate(180%);
+  --cb-glass-blur-heavy: blur(40px) saturate(200%);
+
+  /* Primary Accent — Rich Purple */
+  --cb-purple:          #a855f7;
+  --cb-purple-deep:     #7c3aed;
+  --cb-purple-light:    #c084fc;
+  --cb-purple-glow:     rgba(168, 85, 247, 0.4);
+  --cb-purple-subtle:   rgba(168, 85, 247, 0.12);
+  --cb-purple-gradient: linear-gradient(135deg, #a855f7, #7c3aed);
+  --cb-purple-gradient-hover: linear-gradient(135deg, #c084fc, #8b5cf6);
+
+  /* Secondary Accent — Electric Blue */
+  --cb-blue:            #3b82f6;
+  --cb-blue-light:      #60a5fa;
+  --cb-blue-glow:       rgba(59, 130, 246, 0.35);
+  --cb-blue-subtle:     rgba(59, 130, 246, 0.12);
+
+  /* Semantic Colors */
+  --cb-green:           #34d399;
+  --cb-green-glow:      rgba(52, 211, 153, 0.35);
+  --cb-green-subtle:    rgba(52, 211, 153, 0.12);
+
+  --cb-amber:           #f59e0b;
+  --cb-amber-glow:      rgba(245, 158, 11, 0.3);
+  --cb-amber-subtle:    rgba(245, 158, 11, 0.1);
+
+  --cb-red:             #ef4444;
+  --cb-red-subtle:      rgba(239, 68, 68, 0.12);
+
+  --cb-pink:            #ec4899;
+  --cb-cyan:            #22d3ee;
+
+  /* Text */
+  --cb-text:            #f1f1f6;
+  --cb-text-secondary:  rgba(241, 241, 246, 0.6);
+  --cb-text-muted:      rgba(241, 241, 246, 0.38);
+  --cb-text-faint:      rgba(241, 241, 246, 0.18);
+
+  /* Borders */
+  --cb-border:          1px solid rgba(255, 255, 255, 0.07);
+  --cb-border-light:    1px solid rgba(255, 255, 255, 0.1);
+  --cb-border-accent:   1px solid rgba(168, 85, 247, 0.25);
+  --cb-border-glow:     1px solid rgba(168, 85, 247, 0.45);
+
+  /* Shadows */
+  --cb-shadow-sm:       0 2px 8px rgba(0, 0, 0, 0.4);
+  --cb-shadow-md:       0 8px 32px rgba(0, 0, 0, 0.5);
+  --cb-shadow-lg:       0 24px 64px -12px rgba(0, 0, 0, 0.7);
+  --cb-shadow-glow-purple: 0 0 30px rgba(168, 85, 247, 0.2);
+  --cb-shadow-glow-blue: 0 0 30px rgba(59, 130, 246, 0.15);
+
+  /* Radii */
+  --r-xs:  6px;
+  --r-sm:  10px;
+  --r-md:  14px;
+  --r-lg:  20px;
+  --r-xl:  28px;
+  --r-2xl: 36px;
+  --r-pill: 9999px;
+
+  /* Typography */
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+
+  /* Motion */
+  --ease-spring: cubic-bezier(0.22, 0.68, 0, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 0.15s;
+  --duration-normal: 0.25s;
+  --duration-slow: 0.4s;
+}
+
+
+/* ==========================================================================
+   Base Reset & Typography
+   ========================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font);
+  background-color: var(--cb-bg);
+  color: var(--cb-text);
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Subtle animated gradient noise on body */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: 
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(168, 85, 247, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+::selection {
+  background: rgba(168, 85, 247, 0.35);
+  color: #fff;
+}
+
+a {
+  color: var(--cb-purple-light);
+  text-decoration: none;
+  transition: color var(--duration-fast) ease;
+}
+
+a:hover {
+  color: var(--cb-purple);
+}
+
+input, button, select, textarea {
+  font-family: inherit;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(168, 85, 247, 0.2);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(168, 85, 247, 0.4);
+}
+
+
+/* ==========================================================================
+   Utility Classes
+   ========================================================================== */
+.text-gradient {
+  background: linear-gradient(135deg, #f1f1f6 40%, rgba(168, 85, 247, 0.8));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-hero {
+  background: linear-gradient(180deg, #ffffff 0%, rgba(241, 241, 246, 0.65) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-purple { color: var(--cb-purple); }
+.text-green  { color: var(--cb-green); }
+.text-amber  { color: var(--cb-amber); }
+.text-muted  { color: var(--cb-text-secondary); }
+
+
+/* ==========================================================================
+   Glass Card
+   ========================================================================== */
+.glass-card {
+  background: var(--cb-surface-card);
+  backdrop-filter: var(--cb-glass-blur);
+  -webkit-backdrop-filter: var(--cb-glass-blur);
+  border: var(--cb-border-light);
+  border-radius: var(--r-lg);
+  transition: 
+    transform var(--duration-normal) var(--ease-spring),
+    border-color var(--duration-normal) ease,
+    box-shadow var(--duration-normal) ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: var(--cb-shadow-md);
+  transform: translateY(-2px);
+}
+
+.glass-card-static {
+  background: var(--cb-surface-card);
+  backdrop-filter: var(--cb-glass-blur);
+  -webkit-backdrop-filter: var(--cb-glass-blur);
+  border: var(--cb-border-light);
+  border-radius: var(--r-lg);
+}
+
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--cb-purple-gradient);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.72rem 1.5rem;
+  border: none;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-spring);
+  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.3);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-primary:hover {
+  background: var(--cb-purple-gradient-hover);
+  box-shadow: 0 6px 28px rgba(168, 85, 247, 0.5);
+  transform: translateY(-1px) scale(1.02);
+}
+
+.btn-primary:active {
+  transform: scale(0.97);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  background: var(--cb-surface);
+  color: var(--cb-text);
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 0.65rem 1.3rem;
+  border: var(--cb-border-light);
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: all var(--duration-fast) ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-secondary:hover {
+  background: var(--cb-surface-hover);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.btn-secondary:active {
+  transform: scale(0.97);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  color: var(--cb-text-secondary);
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.85rem;
+  border: none;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: all var(--duration-fast) ease;
+}
+
+.btn-ghost:hover {
+  color: var(--cb-text);
+  background: var(--cb-surface);
+}
+
+.btn-green {
+  background: var(--cb-green);
+  color: #06060b;
+  font-weight: 700;
+}
+.btn-green:hover {
+  box-shadow: 0 6px 24px var(--cb-green-glow);
+}
+
+
+/* ==========================================================================
+   Badges & Pills
+   ========================================================================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--r-pill);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.badge-default {
+  background: var(--cb-surface);
+  border: var(--cb-border);
+  color: var(--cb-text-secondary);
+}
+
+.badge-purple {
+  background: var(--cb-purple-subtle);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  color: var(--cb-purple-light);
+}
+
+.badge-blue {
+  background: var(--cb-blue-subtle);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: var(--cb-blue-light);
+}
+
+.badge-green {
+  background: var(--cb-green-subtle);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  color: var(--cb-green);
+}
+
+.badge-amber {
+  background: var(--cb-amber-subtle);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: var(--cb-amber);
+}
+
+.badge-live {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: var(--cb-red);
+  animation: livePulse 2s infinite ease-in-out;
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+
+/* ==========================================================================
+   Segmented Control
+   ========================================================================== */
+.segmented-control {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: var(--cb-border);
+  border-radius: var(--r-md);
+  padding: 3px;
+  gap: 2px;
+}
+
+.segment-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.95rem;
+  border-radius: var(--r-sm);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--cb-text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-spring);
+  white-space: nowrap;
+}
+
+.segment-item:hover {
+  color: var(--cb-text);
+}
+
+.segment-item.active {
+  background: var(--cb-purple-gradient);
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(168, 85, 247, 0.25);
+}
+
+
+/* ==========================================================================
+   Input Fields
+   ========================================================================== */
+.input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--r-md);
+  padding: 0.6rem 1rem;
+  transition: all var(--duration-fast) ease;
+}
+
+.input-wrap:focus-within {
+  border-color: var(--cb-purple);
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.15);
+}
+
+.input-wrap input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--cb-text);
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.input-wrap input::placeholder {
+  color: var(--cb-text-muted);
+}
+
+.input-icon {
+  color: var(--cb-text-muted);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+
+/* ==========================================================================
+   Wallet Pass Card
+   ========================================================================== */
+.wallet-pass {
+  background: linear-gradient(180deg, #111118 0%, #0d0d14 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--r-xl);
+  box-shadow: var(--cb-shadow-lg);
+  overflow: hidden;
+  transition: transform var(--duration-normal) var(--ease-spring);
+}
+
+.wallet-pass:hover {
+  transform: translateY(-3px);
+}
+
+.wallet-pass-header {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.wallet-perforation {
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 24px;
+  margin: 0.5rem 0;
+}
+
+.wallet-perforation::before,
+.wallet-perforation::after {
+  content: '';
+  width: 20px;
+  height: 20px;
+  background: var(--cb-bg);
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+}
+
+.wallet-perforation::before { left: -10px; }
+.wallet-perforation::after  { right: -10px; }
+
+.wallet-dashline {
+  flex: 1;
+  border-top: 1.5px dashed rgba(255, 255, 255, 0.12);
+  margin: 0 16px;
+}
+
+.wallet-barcode-wrap {
+  background: #ffffff;
+  padding: 1rem;
+  border-radius: var(--r-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+/* ==========================================================================
+   Modal / Overlay
+   ========================================================================== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal-body {
+  max-width: 560px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalEntry 0.3s var(--ease-spring);
+}
+
+.modal-body-wide {
+  max-width: 900px;
+}
+
+@keyframes modalEntry {
+  from { transform: translateY(24px) scale(0.96); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+
+/* ==========================================================================
+   Floating Action Bar
+   ========================================================================== */
+.floating-bar {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 90;
+  background: var(--cb-surface-glass);
+  backdrop-filter: var(--cb-glass-blur);
+  -webkit-backdrop-filter: var(--cb-glass-blur);
+  border: var(--cb-border-accent);
+  border-radius: var(--r-pill);
+  padding: 0.65rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--cb-shadow-lg), var(--cb-shadow-glow-purple);
+  transition: all var(--duration-normal) var(--ease-spring);
+}
+
+.floating-bar:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--cb-shadow-lg), 0 0 40px rgba(168, 85, 247, 0.3);
+}
+
+
+/* ==========================================================================
+   Animations
+   ========================================================================== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.15); }
+  50%      { box-shadow: 0 0 35px rgba(168, 85, 247, 0.3); }
+}
+
+.animate-fade-in {
+  animation: fadeInUp 0.5s var(--ease-spring) both;
+}
+
+.animate-fade-in-delay-1 { animation-delay: 0.05s; }
+.animate-fade-in-delay-2 { animation-delay: 0.1s; }
+.animate-fade-in-delay-3 { animation-delay: 0.15s; }
+.animate-fade-in-delay-4 { animation-delay: 0.2s; }
+
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+@media (max-width: 768px) {
+  :root {
+    --r-lg: 16px;
+    --r-xl: 22px;
+  }
+}
