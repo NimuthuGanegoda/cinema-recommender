@@ -9,7 +9,7 @@
   <link rel="icon" type="image/jpeg" href="app-icon.jpg">
   <link rel="apple-touch-icon" href="app-icon.jpg">
   <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="apple-design-system.css">
+  <link rel="stylesheet" href="apple-design-system.css?v=2.2">
 
   <script>
     // 📱 Auto-redirect mobile browsers to mobile shell
@@ -26,7 +26,7 @@
     })();
   </script>
 
-  <script src="cinema-client.js"></script>
+  <script src="cinema-client.js?v=2.2"></script>
 
   <style>
     /* ================================================================
@@ -861,6 +861,19 @@
       <div class="search-results-dropdown" id="search-dropdown" style="display:none;"></div>
     </div>
 
+    <!-- Quick City Pills -->
+    <div class="animate-fade-in animate-fade-in-delay-3" id="city-quick-filters" style="display:flex; gap:0.45rem; justify-content:center; flex-wrap:wrap; margin:-0.5rem auto 1.5rem; max-width:760px;">
+      <button class="filter-pill active" onclick="filterByCity('ALL', this)">All Sri Lanka</button>
+      <button class="filter-pill" onclick="filterByCity('Colombo', this)">Colombo</button>
+      <button class="filter-pill" onclick="filterByCity('Kandy', this)">Kandy</button>
+      <button class="filter-pill" onclick="filterByCity('Galle', this)">Galle</button>
+      <button class="filter-pill" onclick="filterByCity('Gampaha', this)">Gampaha</button>
+      <button class="filter-pill" onclick="filterByCity('Negombo', this)">Negombo</button>
+      <button class="filter-pill" onclick="filterByCity('Kurunegala', this)">Kurunegala</button>
+      <button class="filter-pill" onclick="filterByCity('Jaffna', this)">Jaffna</button>
+      <button class="filter-pill" onclick="filterByCity('Matara', this)">Matara</button>
+    </div>
+
     <div class="hero-actions animate-fade-in animate-fade-in-delay-4">
       <button class="btn-primary" onclick="scrollToSection('menu-anchor')">
         🍿 Browse Menu
@@ -1235,21 +1248,31 @@
     });
 
 
+    let allCinemasMaster = [];
+
     /* ── Load Cinemas ──────────────────────────────── */
     async function loadCinemas() {
       try {
         cinemas = await client.getCinemas();
       } catch (err) {
-        console.warn('API unavailable — demo mode:', err);
+        console.warn('API unavailable — fallback to catalog:', err);
+      }
+      if (!cinemas || cinemas.length === 0) {
         cinemas = [
-          { id:"DEMO-KCC", name:"Scope Partner — KCC Kandy", chain:"Scope Cinemas", city:"Kandy", province:"Central", address:"Level 3, KCC, Dalada Veediya", screens:4, has_food_court_in_front:true, food_court_name:"KCC World Food Court & Candy Bar", food_court_location:"Level 3 Lobby", food_hours:"10:00 AM – 10:45 PM", map_url:"https://maps.google.com/?q=7.2936,80.6385", latitude:7.2936, longitude:80.6385 },
-          { id:"DEMO-CCC", name:"Scope Cinemas — CCC Colombo", chain:"Scope Cinemas", city:"Colombo", province:"Western", address:"Colombo City Centre", screens:6, has_food_court_in_front:true, food_court_name:"CCC Candy Bar & Food Court", food_court_location:"Ground Floor Lobby", food_hours:"9:30 AM – 11:00 PM", map_url:"https://maps.google.com/?q=6.9271,79.8612", latitude:6.9271, longitude:79.8612 },
-          { id:"DEMO-HCM", name:"Scope Cinemas — HCM Colombo", chain:"Scope Cinemas", city:"Colombo", province:"Western", address:"Havelock City Mall", screens:6, has_food_court_in_front:true, food_court_name:"HCM Food Lounge & IMAX Candy Bar", food_court_location:"Level 2 Atrium", food_hours:"10:00 AM – 11:00 PM", map_url:"https://maps.google.com/?q=6.8764,79.8693", latitude:6.8764, longitude:79.8693 },
-          { id:"DEMO-QNS", name:"Queens Cinema — Galle", chain:"Independent", city:"Galle", province:"Southern", address:"Church Street, Galle Fort", screens:2, has_food_court_in_front:true, food_court_name:"Queens Candy Bar", food_court_location:"Main Lobby", food_hours:"10:00 AM – 10:00 PM" },
-          { id:"DEMO-REG", name:"Regal Cinema — Kandy", chain:"Regal Cinemas", city:"Kandy", province:"Central", address:"Dalada Veediya, Kandy", screens:3, has_food_court_in_front:true, food_court_name:"Regal Concessions & Snack Bar", food_court_location:"Ground Floor Entrance", food_hours:"9:30 AM – 10:30 PM" },
-          { id:"DEMO-RDO", name:"Rodeo Cinema — Negombo", chain:"Independent", city:"Negombo", province:"Western", address:"Main Street, Negombo", screens:2, has_food_court_in_front:true, food_court_name:"Rodeo Snack Counter", food_court_location:"Lobby", food_hours:"10:00 AM – 10:00 PM" },
+          { id:"CMB-CCC", name:"Scope Cinemas Multiplex - Colombo City Centre", chain:"Scope Cinemas", city:"Colombo", province:"Western", address:"Level 3, Colombo City Centre", screens:6, latitude:6.9175, longitude:79.8550, map_url:"https://maps.google.com/?q=6.9175,79.8550", has_food_court_in_front:true, food_court_name:"The Food Studio @ CCC & Scope Candy Bar", food_court_location:"Level 3 Lobby", food_hours:"10:00 AM – 11:30 PM" },
+          { id:"CMB-HCM", name:"Scope Cinemas Multiplex - Havelock City Mall", chain:"Scope Cinemas", city:"Colombo", province:"Western", address:"Level 4, Havelock City Mall", screens:6, latitude:6.8778, longitude:79.8653, map_url:"https://maps.google.com/?q=6.8778,79.8653", has_food_court_in_front:true, food_court_name:"Havelock Food Lounge & Scope IMAX Candy Bar", food_court_location:"Level 4 Lobby", food_hours:"10:00 AM – 11:30 PM" },
+          { id:"CMB-LBT", name:"Liberty by Scope Cinemas", chain:"Scope Cinemas", city:"Colombo", province:"Western", address:"35 R. A. De Mel Mawatha, Colombo 03", screens:2, latitude:6.9073, longitude:79.8517, map_url:"https://maps.google.com/?q=6.9073,79.8517", has_food_court_in_front:true, food_court_name:"Liberty Foyer Concession Court", food_court_location:"Front Main Entrance", food_hours:"10:00 AM – 10:45 PM" },
+          { id:"KND-KCC", name:"Scope Partner Multiplex - KCC Kandy", chain:"Scope Cinemas Partner", city:"Kandy", province:"Central", address:"Level 3, KCC, Dalada Veediya, Kandy", screens:4, latitude:7.2936, longitude:80.6385, map_url:"https://maps.google.com/?q=7.2936,80.6385", has_food_court_in_front:true, food_court_name:"KCC World Food Court & Scope Candy Bar", food_court_location:"Level 3 Lobby", food_hours:"10:00 AM – 10:45 PM" },
+          { id:"KND-REG", name:"Regal Cinema Kandy", chain:"Ceylon Theatres", city:"Kandy", province:"Central", address:"Katugastota Road, Kandy", screens:2, latitude:7.2985, longitude:80.6335, map_url:"https://maps.google.com/?q=7.2985,80.6335", has_food_court_in_front:true, food_court_name:"Regal Foyer Concession Court", food_court_location:"Front Entrance", food_hours:"10:15 AM – 10:30 PM" },
+          { id:"GMP-REG", name:"Regal Cinema Gampaha", chain:"Ceylon Theatres", city:"Gampaha", province:"Western", address:"Bauddhaloka Mawatha, Gampaha", screens:2, latitude:7.0917, longitude:79.9998, map_url:"https://maps.google.com/?q=7.0917,79.9998", has_food_court_in_front:true, food_court_name:"Regal Front Foyer Food Plaza", food_court_location:"Front Foyer", food_hours:"10:00 AM – 10:30 PM" },
+          { id:"GLE-QNS", name:"Queens Cinema Galle", chain:"Independent", city:"Galle", province:"Southern", address:"Wakwella Road, Galle", screens:2, latitude:6.0535, longitude:80.2210, map_url:"https://maps.google.com/?q=6.0535,80.2210", has_food_court_in_front:true, food_court_name:"Queens Foyer Candy Bar", food_court_location:"Main Lobby", food_hours:"10:00 AM – 10:30 PM" },
+          { id:"NGB-RDO", name:"Rodeo Cinema Negombo", chain:"Western Coast", city:"Negombo", province:"Western", address:"Main Street, Negombo", screens:2, latitude:7.2083, longitude:79.8358, map_url:"https://maps.google.com/?q=7.2083,79.8358", has_food_court_in_front:true, food_court_name:"Rodeo Beach Concession Court", food_court_location:"Front Foyer", food_hours:"10:30 AM – 11:00 PM" },
+          { id:"KRN-MLD", name:"Maldini Cinema Kurunegala", chain:"Maldini", city:"Kurunegala", province:"North Western", address:"Colombo Road, Kurunegala", screens:2, latitude:7.4863, longitude:80.3623, map_url:"https://maps.google.com/?q=7.4863,80.3623", has_food_court_in_front:true, food_court_name:"North Star Concession Lobby", food_court_location:"Lobby Entrance", food_hours:"10:00 AM – 10:00 PM" },
+          { id:"MTR-SKC", name:"SK Cinema Matara", chain:"Southern Screen", city:"Matara", province:"Southern", address:"Anagarika Dharmapala Mw, Matara", screens:2, latitude:5.9485, longitude:80.5488, map_url:"https://maps.google.com/?q=5.9485,80.5488", has_food_court_in_front:true, food_court_name:"SK Concession Court", food_court_location:"Main Lobby", food_hours:"10:30 AM – 10:30 PM" },
+          { id:"JFN-RJA", name:"Rajah Cinema Jaffna", chain:"Northern Network", city:"Jaffna", province:"Northern", address:"Hospital Road, Jaffna", screens:3, latitude:9.6615, longitude:80.0255, map_url:"https://maps.google.com/?q=9.6615,80.0255", has_food_court_in_front:true, food_court_name:"Rajah Snack Point", food_court_location:"Main Entrance", food_hours:"10:00 AM – 10:00 PM" }
         ];
       }
+      allCinemasMaster = [...cinemas];
       document.getElementById('cinemas-count').textContent = cinemas.length;
       renderCinemaCards();
       if (cinemas.length > 0) selectCinema(cinemas[0]);
@@ -1261,6 +1284,9 @@
       const track = document.getElementById('cinema-scroll-track');
       track.innerHTML = cinemas.map((c, i) => {
         const isActive = activeCinema && activeCinema.id === c.id;
+        const distBadge = (typeof c.distance_km === 'number' && c.distance_km < 9000)
+          ? `<span class="badge badge-blue" style="font-size:0.68rem; font-weight:700;">📍 ${c.distance_km.toFixed(1)} km</span>`
+          : '';
         return `
           <div class="cinema-card ${isActive ? 'selected' : ''}" onclick="selectCinemaById('${c.id}')">
             <div class="cinema-card-visual">
@@ -1275,6 +1301,7 @@
               </div>
               <div class="cinema-card-footer">
                 <span class="badge badge-green" style="font-size:0.68rem;">🍔 Food Court</span>
+                ${distBadge}
                 ${isActive ? '<span class="badge badge-purple">Active</span>' : ''}
               </div>
             </div>
@@ -1736,55 +1763,117 @@
       }, 3500);
     }
 
+    /* ── Geolocation & Haversine Distance Engine ───── */
+    function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
+      if (!lat1 || !lon1 || !lat2 || !lon2) return 9999;
+      const R = 6371.0;
+      const dLat = (lat2 - lat1) * (Math.PI / 180.0);
+      const dLon = (lon2 - lon1) * (Math.PI / 180.0);
+      const rLat1 = lat1 * (Math.PI / 180.0);
+      const rLat2 = lat2 * (Math.PI / 180.0);
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(rLat1) * Math.cos(rLat2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return Math.round(R * c * 10) / 10;
+    }
+
+    /* ── Quick City Filter ──────────────────────────── */
+    function filterByCity(cityName, btnEl) {
+      if (btnEl) {
+        document.querySelectorAll('#city-quick-filters .filter-pill').forEach(b => b.classList.remove('active'));
+        btnEl.classList.add('active');
+      }
+      if (!allCinemasMaster || allCinemasMaster.length === 0) {
+        allCinemasMaster = [...cinemas];
+      }
+      if (cityName === 'ALL' || !cityName) {
+        cinemas = [...allCinemasMaster];
+      } else {
+        const query = cityName.toLowerCase();
+        cinemas = allCinemasMaster.filter(c => 
+          (c.city && c.city.toLowerCase().includes(query)) ||
+          (c.name && c.name.toLowerCase().includes(query)) ||
+          (c.province && c.province.toLowerCase().includes(query))
+        );
+      }
+      renderCinemaCards();
+      if (cinemas.length > 0) {
+        selectCinema(cinemas[0]);
+        showNotification(`Filtered to ${cityName} (${cinemas.length} theater${cinemas.length > 1 ? 's' : ''})`, 'info');
+      } else {
+        showNotification(`No theaters in ${cityName}. Showing all theaters.`, 'warning');
+        cinemas = [...allCinemasMaster];
+        renderCinemaCards();
+      }
+    }
+
     /* ── GPS Detection ─────────────────────────────── */
     async function handleDetectLocation() {
       const btn = document.getElementById('btn-detect-gps');
       const originalText = btn.textContent;
       btn.textContent = '📡 Detecting...';
+
       if (!navigator.geolocation) {
-        showNotification('Geolocation is not supported by your browser.', 'warning');
+        showNotification('GPS not available in browser. Select your city below.', 'warning');
         btn.textContent = originalText;
         return;
       }
+
+      showNotification('🛰️ Accessing GPS to locate nearest Sri Lankan theater...', 'info');
+
+      // 8-second safety timeout so button never gets stuck
+      const safetyTimer = setTimeout(() => {
+        if (btn.textContent === '📡 Detecting...') {
+          btn.textContent = originalText;
+          showNotification('GPS response delayed. Pick your city below!', 'warning');
+        }
+      }, 8000);
+
       navigator.geolocation.getCurrentPosition(async (pos) => {
+        clearTimeout(safetyTimer);
         try {
-          const lat = pos.coords.latitude;
-          const lng = pos.coords.longitude;
-          const sorted = await client.getCinemas({ lat, lng });
-          if (sorted && sorted.length > 0) {
-            cinemas = sorted;
-            renderCinemaCards();
-            await selectCinema(sorted[0]);
-            const dist = sorted[0].distance_km;
-            const distText = (typeof dist === 'number' && dist >= 0) ? ` (${dist.toFixed(1)} km away)` : '';
-            showNotification(`📍 Nearest: ${sorted[0].name}${distText}`, 'success');
-          } else {
-            showNotification('No cinemas found near your location.', 'warning');
+          const userLat = pos.coords.latitude;
+          const userLng = pos.coords.longitude;
+
+          // Always ensure cinemas has our full catalog
+          if (!allCinemasMaster || allCinemasMaster.length === 0) {
+            allCinemasMaster = [...cinemas];
+          }
+
+          cinemas = [...allCinemasMaster];
+
+          // Compute distances client-side with 100% reliability
+          cinemas.forEach(c => {
+            if (c.latitude && c.longitude) {
+              c.distance_km = calculateHaversineDistance(userLat, userLng, c.latitude, c.longitude);
+            } else {
+              c.distance_km = 9999;
+            }
+          });
+
+          // Sort ascending by geographical distance
+          cinemas.sort((a, b) => (a.distance_km || 9999) - (b.distance_km || 9999));
+          renderCinemaCards();
+
+          if (cinemas.length > 0) {
+            await selectCinema(cinemas[0]);
+            const nearest = cinemas[0];
+            const dist = nearest.distance_km;
+            const distStr = (typeof dist === 'number' && dist < 9000) ? ` (${dist.toFixed(1)} km away)` : '';
+            showNotification(`📍 Nearest Theater: ${nearest.name}${distStr}`, 'success');
           }
         } catch (err) {
-          console.error('GPS cinema sort error:', err);
-          if (cinemas && cinemas.length > 0) {
-            cinemas.forEach(c => {
-              if (c.latitude && c.longitude) {
-                c.distance_km = calculateHaversineDistance(pos.coords.latitude, pos.coords.longitude, c.latitude, c.longitude);
-              }
-            });
-            cinemas.sort((a, b) => (a.distance_km || 9999) - (b.distance_km || 9999));
-            renderCinemaCards();
-            selectCinema(cinemas[0]);
-            const dist = cinemas[0].distance_km;
-            showNotification(`📍 Nearest: ${cinemas[0].name} (${dist ? dist.toFixed(1) : 0} km away)`, 'success');
-          } else {
-            showNotification('Could not sort cinemas by location. Please select manually.', 'warning');
-          }
+          console.error('GPS calculation error:', err);
+          showNotification('Location detected! Select your cinema.', 'info');
         } finally {
           btn.textContent = '📍 Near Me';
         }
       }, (err) => {
+        clearTimeout(safetyTimer);
         btn.textContent = '📍 Near Me';
-        console.warn('Geolocation error:', err.message);
-        showNotification('Location access denied. Please select your cinema manually.', 'warning');
-      }, { timeout: 10000, enableHighAccuracy: true });
+        console.warn('Geolocation permission or error:', err.code, err.message);
+        showNotification('Location access blocked. Pick your city from the buttons above!', 'warning');
+      }, { timeout: 8000, enableHighAccuracy: true });
     }
 
 
