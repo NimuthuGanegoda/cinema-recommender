@@ -1698,16 +1698,23 @@
             cinemas = sorted;
             renderCinemaCards();
             selectCinema(sorted[0]);
-            alert(`📍 Nearest: ${sorted[0].name} (${sorted[0].distance_km.toFixed(1)} km)`);
+            const dist = sorted[0].distance_km;
+            const distText = (dist && dist > 0) ? ` (${dist.toFixed(1)} km away)` : ' (nearest match)';
+            alert(`📍 Nearest: ${sorted[0].name}${distText}`);
+          } else {
+            alert('No cinemas found near your location.');
           }
         } catch (err) {
-          alert('Could not sort by location.');
+          console.error('GPS cinema sort error:', err);
+          alert('Could not sort cinemas by location. Please select manually.');
         } finally { btn.textContent = '📍 Near Me'; }
-      }, () => {
+      }, (err) => {
         btn.textContent = '📍 Near Me';
+        console.error('Geolocation error:', err);
         alert('Location access denied. Select your cinema manually.');
       });
     }
+
 
 
     /* ── Controls ──────────────────────────────────── */
