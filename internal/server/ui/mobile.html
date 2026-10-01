@@ -687,6 +687,7 @@
         mCinemas = cinemas;
       } catch (err) {
         console.error('Failed to load cinemas from API. Falling back to Demo Mode:', err);
+        mCinemas = [
           {
             id: "DEMO-KCC", name: "Scope Partner Multiplex - KCC", chain: "Scope Cinemas", city: "Kandy",
             province: "Central Province", address: "Level 3, KCC", screens: 4, is_outside_colombo: true,
