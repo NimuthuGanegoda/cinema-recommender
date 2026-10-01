@@ -19,8 +19,7 @@ function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
   return Math.round(R * c * 10) / 10;
 }
 
-// ── 2. Sri Lankan Cinema Registry (Universal Directory) ───────────────────────
-const SRI_LANKAN_CINEMAS = [
+// ── 2. Sri Lankanconst SRI_LANKAN_CINEMAS = [
   {
     id: "CMB-CCC",
     name: "Scope Cinemas Multiplex - Colombo City Centre",
@@ -33,6 +32,8 @@ const SRI_LANKAN_CINEMAS = [
     latitude: 6.9175,
     longitude: 79.8550,
     map_url: "https://maps.google.com/?q=6.9175,79.8550",
+    image: "cinema-multiplex.jpg",
+    technology: "IMAX Laser • Dolby Atmos 7.1",
     has_in_house_food: true,
     has_food_court_in_front: true,
     food_court_name: "The Food Studio @ CCC & Scope Candy Bar",
@@ -55,6 +56,8 @@ const SRI_LANKAN_CINEMAS = [
     latitude: 6.8778,
     longitude: 79.8653,
     map_url: "https://maps.google.com/?q=6.8778,79.8653",
+    image: "cinema-imax.jpg",
+    technology: "Sri Lanka's Largest IMAX • 4K Laser",
     has_in_house_food: true,
     has_food_court_in_front: true,
     food_court_name: "Havelock Food Lounge & Scope IMAX Candy Bar",
@@ -77,6 +80,8 @@ const SRI_LANKAN_CINEMAS = [
     latitude: 6.9073,
     longitude: 79.8517,
     map_url: "https://maps.google.com/?q=6.9073,79.8517",
+    image: "cinema-heritage.jpg",
+    technology: "Scope VIP Gold Class • Dolby 7.1",
     has_in_house_food: true,
     has_food_court_in_front: true,
     food_court_name: "Liberty Foyer Concession Court & Scope Candy Bar",
@@ -99,6 +104,8 @@ const SRI_LANKAN_CINEMAS = [
     latitude: 7.2936,
     longitude: 80.6385,
     map_url: "https://maps.google.com/?q=7.2936,80.6385",
+    image: "cinema-multiplex.jpg",
+    technology: "4K Laser Projection • Dolby Digital",
     has_in_house_food: true,
     has_food_court_in_front: true,
     food_court_name: "KCC World Food Court & Scope Candy Bar",
@@ -121,6 +128,8 @@ const SRI_LANKAN_CINEMAS = [
     latitude: 7.2985,
     longitude: 80.6335,
     map_url: "https://maps.google.com/?q=7.2985,80.6335",
+    image: "cinema-heritage.jpg",
+    technology: "Ceylon Theatres Classic • Dolby Surround",
     has_in_house_food: true,
     has_food_court_in_front: true,
     food_court_name: "Regal Foyer Concession Food Court",
@@ -143,6 +152,8 @@ const SRI_LANKAN_CINEMAS = [
     latitude: 7.0917,
     longitude: 79.9998,
     map_url: "https://maps.google.com/?q=7.0917,79.9998",
+    image: "cinema-heritage.jpg",
+    technology: "Ceylon Theatres • Digital Screen",
     has_in_house_food: true,
     has_food_court_in_front: true,
     food_court_name: "Regal Front Foyer Food Plaza & Snack Court",
@@ -159,12 +170,14 @@ const SRI_LANKAN_CINEMAS = [
     chain: "Independent Heritage Screen",
     city: "Galle",
     province: "Southern Province",
-    address: "Wakwella Road, Galle",
+    address: "Wakwella Road, Galle Fort Promenade",
     screens: 2,
     is_outside_colombo: true,
     latitude: 6.0535,
     longitude: 80.2210,
     map_url: "https://maps.google.com/?q=6.0535,80.2210",
+    image: "cinema-heritage.jpg",
+    technology: "Heritage Galle Screen • Dolby Digital",
     has_in_house_food: true,
     has_food_court_in_front: true,
     food_court_name: "Queens Foyer Candy Bar",
@@ -187,6 +200,8 @@ const SRI_LANKAN_CINEMAS = [
     latitude: 7.2083,
     longitude: 79.8358,
     map_url: "https://maps.google.com/?q=7.2083,79.8358",
+    image: "cinema-multiplex.jpg",
+    technology: "Coastal Multiplex • RealD 3D",
     has_in_house_food: true,
     has_food_court_in_front: true,
     food_court_name: "Rodeo Beach Concession Court & Chill Bar",
@@ -209,6 +224,8 @@ const SRI_LANKAN_CINEMAS = [
     latitude: 7.4863,
     longitude: 80.3623,
     map_url: "https://maps.google.com/?q=7.4863,80.3623",
+    image: "cinema-multiplex.jpg",
+    technology: "North Western Cineplex • Dolby",
     has_in_house_food: true,
     has_food_court_in_front: true,
     food_court_name: "North Star Concession Lobby",
@@ -231,6 +248,8 @@ const SRI_LANKAN_CINEMAS = [
     latitude: 5.9485,
     longitude: 80.5488,
     map_url: "https://maps.google.com/?q=5.9485,80.5488",
+    image: "cinema-heritage.jpg",
+    technology: "Southern Screen • Dolby Surround",
     has_in_house_food: true,
     has_food_court_in_front: true,
     food_court_name: "SK Concession Court & Chill Bar",
@@ -253,6 +272,8 @@ const SRI_LANKAN_CINEMAS = [
     latitude: 9.6615,
     longitude: 80.0255,
     map_url: "https://maps.google.com/?q=9.6615,80.0255",
+    image: "cinema-heritage.jpg",
+    technology: "Northern Star • 4K Digital Cinema",
     has_in_house_food: true,
     has_food_court_in_front: true,
     food_court_name: "Rajah Snack Point",
@@ -268,17 +289,20 @@ const SRI_LANKAN_CINEMAS = [
 // ── 3. Concession Items Catalog by City / Cinema ──────────────────────────────
 const CONCESSION_CATALOG = {
   default: [
-    { id: "P01", category: "Popcorn", name: "Scope Warm Caramel Popcorn Tub", size: "Jumbo", price: 1350, original_price: 1600, in_stock: true, price_trend: "down", description: "Scope signature crunchy caramelized warm corn in souvenir tub" },
-    { id: "P02", category: "Popcorn", name: "Scope Real Butter Sea Salt Popcorn", size: "Large", price: 1100, original_price: 1250, in_stock: true, price_trend: "steady", description: "Freshly popped butterfly corn drenched in clarified butter" },
-    { id: "P03", category: "Popcorn", name: "Scope Cheddar Cheese Popcorn", size: "Large", price: 1250, original_price: 1400, in_stock: true, price_trend: "down", description: "Hot popped corn tossed in Wisconsin white cheddar seasoning" },
-    { id: "B01", category: "Beverage", name: "Scope Large Fountain Coca-Cola", size: "Large", price: 650, original_price: 800, in_stock: true, price_trend: "steady", description: "Ice-cold fountain Coca-Cola with fresh carbonation" },
-    { id: "B02", category: "Beverage", name: "Scope Fresh Passion Fruit Mint Sparkler", size: "Medium", price: 750, original_price: 900, in_stock: true, price_trend: "down", description: "Real island passion fruit pulp with crushed mint and sparkling soda" },
-    { id: "B03", category: "Beverage", name: "Chilled Milo Float", size: "Regular", price: 550, original_price: 650, in_stock: true, price_trend: "steady", description: "Chilled chocolate malt Milo topped with vanilla ice cream" },
-    { id: "S01", category: "Snack", name: "Scope IMAX Loaded Chicken Nachos", size: "Single", price: 1450, original_price: 1650, in_stock: true, price_trend: "steady", description: "Corn tortilla chips with hot queso, jalapeños, and seasoned chicken" },
-    { id: "S02", category: "Snack", name: "Scope Gourmet Brioche Chicken Hotdog", size: "Single", price: 1150, original_price: 1300, in_stock: true, price_trend: "down", description: "Artisan grilled chicken sausage in buttered brioche bun with sweet relish" },
-    { id: "S03", category: "Snack", name: "Crispy Samosa Platter (4 pcs)", size: "Single", price: 750, original_price: 850, in_stock: true, price_trend: "steady", description: "Golden spiced potato pastry triangles with tamarind dip" },
-    { id: "C01", category: "Combo", name: "Scope Director's Deluxe Couple Combo", size: "Duo", price: 2950, original_price: 3600, in_stock: true, price_trend: "down", description: "1 Jumbo Caramel Popcorn + 2 Large Fountain Drinks + 1 Loaded Nachos" },
-    { id: "C02", category: "Combo", name: "Solo Movie Snack Saver", size: "Single", price: 1650, original_price: 2100, in_stock: true, price_trend: "down", description: "1 Large Popcorn + 1 Medium Drink + 1 Hot Dog" }
+    { id: "P01", category: "Popcorn", name: "Scope Warm Caramel Popcorn Tub", size: "Jumbo Souvenir Tub", price: 1350, original_price: 1600, image: "popcorn.jpg", in_stock: true, price_trend: "down", description: "Scope signature crunchy caramelized warm corn in commemorative cinema tub" },
+    { id: "P02", category: "Popcorn", name: "Kochchi & White Cheddar Popcorn", size: "Large Bucket", price: 1250, original_price: 1450, image: "popcorn.jpg", in_stock: true, price_trend: "down", description: "Hot butterfly corn tossed with fiery Sri Lankan green kochchi & cheddar dust" },
+    { id: "P03", category: "Popcorn", name: "Classic Clarified Butter Salted Popcorn", size: "Large Bucket", price: 1100, original_price: 1300, image: "popcorn.jpg", in_stock: true, price_trend: "steady", description: "Freshly popped butterfly corn drenched in golden clarified butter and sea salt" },
+    { id: "B01", category: "Beverage", name: "Chilled Milo Dinosaur Float", size: "Tall Glass", price: 550, original_price: 650, image: "beverage.jpg", in_stock: true, price_trend: "down", description: "Chilled Ceylon chocolate malt Milo topped with vanilla ice cream and heaped cocoa" },
+    { id: "B02", category: "Beverage", name: "Elephant House Ginger Beer (EGB) Float", size: "Regular 450ml", price: 480, original_price: 580, image: "beverage.jpg", in_stock: true, price_trend: "steady", description: "Authentic spicy Ceylon ginger beer with crushed ice and creamy vanilla float" },
+    { id: "B03", category: "Beverage", name: "Scope Fresh Passion Fruit Mint Sparkler", size: "Medium 500ml", price: 750, original_price: 900, image: "beverage.jpg", in_stock: true, price_trend: "down", description: "Real island passion fruit pulp with crushed mint and sparkling soda" },
+    { id: "B04", category: "Beverage", name: "Scope Large Fountain Coca-Cola", size: "Large 650ml", price: 650, original_price: 800, image: "beverage.jpg", in_stock: true, price_trend: "steady", description: "Ice-cold fountain Coca-Cola with fresh carbonation and lemon wedge" },
+    { id: "S01", category: "Snack", name: "IMAX Loaded Chicken Nachos", size: "Sharing Platter", price: 1450, original_price: 1700, image: "nachos.jpg", in_stock: true, price_trend: "down", description: "Stone-ground corn chips with hot queso, jalapeños, salsa, and seasoned chicken" },
+    { id: "S02", category: "Snack", name: "Gourmet Brioche Chicken Hotdog", size: "Single", price: 1150, original_price: 1350, image: "hotdog.jpg", in_stock: true, price_trend: "steady", description: "Artisan grilled chicken sausage in buttered brioche bun with sweet pickle relish" },
+    { id: "S03", category: "Snack", name: "Crispy Ceylon Chicken Rolls (2 pcs)", size: "Hot Snack", price: 820, original_price: 950, image: "rolls.jpg", in_stock: true, price_trend: "down", description: "Crispy golden crumbed Sri Lankan bakery-style chicken rolls with chili dip" },
+    { id: "S04", category: "Snack", name: "Crispy Vegetable Samosa Platter (4 pcs)", size: "Sharing Plate", price: 750, original_price: 900, image: "rolls.jpg", in_stock: true, price_trend: "steady", description: "Golden spiced potato pastry triangles with sweet tamarind dip" },
+    { id: "C01", category: "Combo", name: "Scope Director's Deluxe Couple Combo", size: "Duo Feast", price: 2950, original_price: 3600, image: "combo.jpg", in_stock: true, price_trend: "down", description: "1 Jumbo Caramel Popcorn + 2 Large Fountain Drinks + 1 Loaded Nachos" },
+    { id: "C02", category: "Combo", name: "CinePass VIP Platinum Movie Feast", size: "Family (3-4 Pax)", price: 4200, original_price: 5200, image: "combo.jpg", in_stock: true, price_trend: "down", description: "2 Jumbo Popcorns (Caramel + Kochchi) + 3 Drinks + 1 Brioche Hotdog + 1 Nachos" },
+    { id: "C03", category: "Combo", name: "Solo Movie Snack Saver", size: "Single Pack", price: 1650, original_price: 2100, image: "combo.jpg", in_stock: true, price_trend: "down", description: "1 Large Popcorn + 1 Medium Drink + 2 Ceylon Rolls" }
   ]
 };
 
@@ -327,7 +351,17 @@ class CinemaClient {
       }
       const query = params.toString() ? `?${params.toString()}` : '';
       const data = await this._get(`/api/v1/cinemas${query}`);
-      if (Array.isArray(data) && data.length > 0) return data;
+      if (Array.isArray(data) && data.length > 0) {
+        return data.map(c => {
+          const fallback = SRI_LANKAN_CINEMAS.find(x => x.id === c.id) || {};
+          return {
+            ...fallback,
+            ...c,
+            image: c.image || fallback.image || (c.name.toLowerCase().includes('imax') ? 'cinema-imax.jpg' : (c.screens >= 4 ? 'cinema-multiplex.jpg' : 'cinema-heritage.jpg')),
+            technology: c.technology || fallback.technology || (c.screens >= 4 ? `${c.screens} Screens • Dolby Atmos` : `${c.screens} Screens • Dolby 7.1`)
+          };
+        });
+      }
     } catch (err) {
       // Gracefully fall back to client-side database
     }
@@ -351,7 +385,14 @@ class CinemaClient {
 
   async getCinema(cinemaId) {
     try {
-      return await this._get(`/api/v1/cinemas/${encodeURIComponent(cinemaId)}`);
+      const c = await this._get(`/api/v1/cinemas/${encodeURIComponent(cinemaId)}`);
+      const fallback = SRI_LANKAN_CINEMAS.find(x => x.id === c.id) || {};
+      return {
+        ...fallback,
+        ...c,
+        image: c.image || fallback.image || 'cinema-multiplex.jpg',
+        technology: c.technology || fallback.technology || `${c.screens} Screens • Dolby Atmos`
+      };
     } catch (err) {
       const found = SRI_LANKAN_CINEMAS.find(c => c.id === cinemaId);
       if (found) return found;
@@ -362,7 +403,22 @@ class CinemaClient {
   // 2. Concessions & Live Ticker
   async getLiveConcessions(cinemaId) {
     try {
-      return await this._get(`/api/v1/cinemas/${encodeURIComponent(cinemaId)}/concessions/live`);
+      const res = await this._get(`/api/v1/cinemas/${encodeURIComponent(cinemaId)}/concessions/live`);
+      if (res && res.items) {
+        res.items = res.items.map(item => ({
+          ...item,
+          price: item.price_lkr !== undefined ? item.price_lkr : (item.price || 0),
+          original_price: item.base_price_lkr !== undefined ? item.base_price_lkr : (item.original_price || item.price_lkr || item.price || 0),
+          image: item.image || (
+            item.category === 'Popcorn' ? 'popcorn.jpg' :
+            item.category === 'Beverage' ? 'beverage.jpg' :
+            item.category === 'Combo' ? 'combo.jpg' :
+            (item.name && item.name.toLowerCase().includes('dog') ? 'hotdog.jpg' :
+             item.name && (item.name.toLowerCase().includes('roll') || item.name.toLowerCase().includes('samosa')) ? 'rolls.jpg' : 'nachos.jpg')
+          )
+        }));
+      }
+      return res;
     } catch (err) {
       const cinema = SRI_LANKAN_CINEMAS.find(c => c.id === cinemaId) || SRI_LANKAN_CINEMAS[0];
       return {

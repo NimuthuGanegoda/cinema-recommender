@@ -546,12 +546,40 @@
     }
 
     .menu-item-visual {
-      height: 100px;
+      height: 150px;
+      position: relative;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.8rem;
-      position: relative;
+    }
+
+    .payment-channel-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 0.65rem 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      cursor: pointer;
+      color: #fff;
+      font-family: inherit;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+
+    .payment-channel-pill:hover {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .payment-channel-pill.active {
+      background: rgba(168, 85, 247, 0.18);
+      border-color: var(--cb-purple);
+      box-shadow: 0 0 14px rgba(168, 85, 247, 0.3);
     }
 
     .menu-item-body {
@@ -906,16 +934,28 @@
        ACTIVE CINEMA STRIP
        ============================================================ -->
   <div class="active-cinema-strip" id="active-cinema-section">
-    <div class="active-cinema-banner">
-      <div class="active-cinema-info">
-        <div class="active-cinema-icon" id="active-cinema-emoji">🏛️</div>
-        <div class="active-cinema-details">
-          <h3 id="active-cinema-name">Select a Cinema</h3>
-          <p id="active-cinema-address">Browse theaters above or search to get started</p>
+    <div class="active-cinema-banner" style="position:relative; overflow:hidden;">
+      <div style="display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap:wrap; gap:1.25rem;">
+        <div class="active-cinema-info">
+          <div class="active-cinema-icon" id="active-cinema-emoji" style="background-size:cover; background-position:center; overflow:hidden; border:1px solid rgba(255,255,255,0.18);">🏛️</div>
+          <div class="active-cinema-details">
+            <h3 id="active-cinema-name">Select a Cinema</h3>
+            <p id="active-cinema-address">Browse theaters above or search to get started</p>
+          </div>
+        </div>
+        <div class="active-cinema-badges" id="active-cinema-badges">
+          <!-- badges rendered dynamically -->
         </div>
       </div>
-      <div class="active-cinema-badges" id="active-cinema-badges">
-        <!-- badges rendered dynamically -->
+      <!-- Live Movie Marquee -->
+      <div id="active-cinema-movies" style="width:100%; border-top:1px solid rgba(255,255,255,0.08); padding-top:0.85rem; margin-top:0.4rem; display:flex; align-items:center; gap:0.65rem; overflow-x:auto; scrollbar-width:none;">
+        <span style="font-size:0.75rem; font-weight:800; color:var(--cb-purple-light); display:inline-flex; align-items:center; gap:0.35rem; white-space:nowrap;">
+          <span class="live-dot" style="width:6px; height:6px;"></span> NOW SHOWING:
+        </span>
+        <span class="badge badge-default" style="white-space:nowrap; background:rgba(255,255,255,0.05); font-size:0.74rem;">🎬 Avatar: Fire & Ash (IMAX 3D · 6:30 PM)</span>
+        <span class="badge badge-default" style="white-space:nowrap; background:rgba(255,255,255,0.05); font-size:0.74rem;">🎬 Deadpool & Wolverine (Dolby Atmos · 7:15 PM)</span>
+        <span class="badge badge-default" style="white-space:nowrap; background:rgba(255,255,255,0.05); font-size:0.74rem;">🎬 Dune: Part Two (Laser 4K · 9:45 PM)</span>
+        <span class="badge badge-default" style="white-space:nowrap; background:rgba(255,255,255,0.05); font-size:0.74rem;">🎬 Sinhabahu (Sinhala Feature · 4:00 PM)</span>
       </div>
     </div>
   </div>
@@ -951,6 +991,25 @@
         <div style="display:flex;align-items:center;gap:0.5rem;">
           <span style="font-size:0.8rem;color:var(--cb-text-muted);">Refreshing in</span>
           <span class="badge badge-green" id="menu-refresh-badge">8s</span>
+        </div>
+      </div>
+
+      <!-- Fulfillment Option -->
+      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:var(--r-md); padding:0.75rem 1rem; margin-bottom:1.25rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.75rem;">
+        <div>
+          <div style="font-size:0.82rem; font-weight:700; color:#fff; display:flex; align-items:center; gap:0.35rem;">
+            <span>⚡</span> Express Candy Bar Fulfillment
+          </div>
+          <div style="font-size:0.72rem; color:var(--cb-text-secondary);">Skip the lobby concession line or get intermission delivery to your seat</div>
+        </div>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+          <div class="segmented-control" id="seg-delivery-mode">
+            <button class="segment-item active" onclick="setFulfillmentMode('counter', this)">🍿 Counter Express</button>
+            <button class="segment-item" onclick="setFulfillmentMode('seat', this)">🛋️ In-Hall Seat Delivery</button>
+          </div>
+          <div id="seat-input-group" style="display:none; align-items:center; gap:0.4rem;">
+            <input type="text" id="delivery-seat-input" placeholder="Hall & Seat (e.g. Screen 1, F12)" style="background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.18); border-radius:var(--r-pill); color:#fff; font-size:0.76rem; padding:0.35rem 0.8rem; outline:none; width:190px;">
+          </div>
         </div>
       </div>
 
@@ -1074,6 +1133,10 @@
 
         <!-- Items -->
         <div style="padding:1.35rem;">
+          <div style="background:rgba(168,85,247,0.12); border:1px solid rgba(168,85,247,0.25); border-radius:var(--r-sm); padding:0.45rem 0.75rem; margin-bottom:0.85rem; font-size:0.75rem; color:#fff; display:flex; justify-content:space-between; align-items:center;">
+            <span id="voucher-fulfillment">⚡ Express Counter #2 Pickup (Skip Queue)</span>
+            <span class="badge badge-purple" style="font-size:0.65rem;">Priority Pass</span>
+          </div>
           <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--cb-text-muted);margin-bottom:0.65rem;">Selected Concessions</div>
           <div id="voucher-items" style="display:flex;flex-direction:column;gap:0.5rem;max-height:170px;overflow-y:auto;margin-bottom:1rem;"></div>
 
@@ -1088,13 +1151,78 @@
               <span id="voucher-discount">-LKR 0</span>
             </div>
             <div style="display:flex;justify-content:space-between;font-size:1.1rem;font-weight:800;border-top:1px solid rgba(255,255,255,0.08);padding-top:0.6rem;margin-top:0.15rem;">
-              <span>Pay at Counter</span>
-              <span id="voucher-final">LKR 0</span>
+              <span>Total Payable</span>
+              <span id="voucher-final" style="color:var(--cb-green);">LKR 0</span>
             </div>
           </div>
 
-          <div style="font-size:0.72rem;color:var(--cb-text-muted);margin-bottom:0.35rem;">
-            💳 LankaQR (5% rebate) · FriMi · Genie · eZ Cash · mCash · Koko BNPL · Visa/Master · Cash
+          <!-- Sri Lankan Payment Channels Selector -->
+          <div style="margin-bottom:1rem;">
+            <div style="font-size:0.75rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:var(--cb-text-secondary);margin-bottom:0.6rem;display:flex;justify-content:space-between;">
+              <span>Payment Channel (Sri Lanka)</span>
+              <span style="color:var(--cb-green);font-size:0.7rem;">✓ CBSL Certified</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.45rem;">
+              <button type="button" class="payment-channel-pill active" id="pay-btn-lankaqr" onclick="selectPaymentMethod('lankaqr', this)">
+                <span style="font-size:1.2rem;">🇱🇰</span>
+                <div style="text-align:left;">
+                  <div style="font-weight:700;font-size:0.76rem;">LankaQR</div>
+                  <div style="font-size:0.64rem;color:var(--cb-green);">5% Digital Rebate</div>
+                </div>
+              </button>
+              <button type="button" class="payment-channel-pill" id="pay-btn-frimi" onclick="selectPaymentMethod('frimi', this)">
+                <span style="font-size:1.2rem;">⚡</span>
+                <div style="text-align:left;">
+                  <div style="font-weight:700;font-size:0.76rem;">NTB FriMi</div>
+                  <div style="font-size:0.64rem;color:var(--cb-green);">10% Concession Cashback</div>
+                </div>
+              </button>
+              <button type="button" class="payment-channel-pill" id="pay-btn-koko" onclick="selectPaymentMethod('koko', this)">
+                <span style="font-size:1.2rem;">🪙</span>
+                <div style="text-align:left;">
+                  <div style="font-weight:700;font-size:0.76rem;">Koko (BNPL)</div>
+                  <div style="font-size:0.64rem;color:#a855f7;">3x Split No Interest</div>
+                </div>
+              </button>
+              <button type="button" class="payment-channel-pill" id="pay-btn-counter" onclick="selectPaymentMethod('counter', this)">
+                <span style="font-size:1.2rem;">💵</span>
+                <div style="text-align:left;">
+                  <div style="font-weight:700;font-size:0.76rem;">Pay on Collection</div>
+                  <div style="font-size:0.64rem;color:var(--cb-text-muted);">Cash / Card at Stand</div>
+                </div>
+              </button>
+            </div>
+
+            <!-- Dynamic LankaQR Container -->
+            <div id="lankaqr-box" style="background:#fff;border-radius:12px;padding:0.85rem;text-align:center;margin-top:0.75rem;color:#000;">
+              <div style="font-weight:800;font-size:0.78rem;letter-spacing:0.04em;">CBSL LANKAQR DYNAMIC PAYMENT</div>
+              <div style="font-size:0.68rem;color:#555;margin-bottom:0.4rem;">Scan with Q+, WePay, FriMi, SOLO, SmartPay, Seylan Pay</div>
+              <div style="display:inline-block;padding:6px;background:#fff;border:2px solid #000;border-radius:6px;">
+                <svg width="110" height="110" viewBox="0 0 110 110">
+                  <rect width="110" height="110" fill="#fff"/>
+                  <rect x="8" y="8" width="28" height="28" fill="#000"/><rect x="13" y="13" width="18" height="18" fill="#fff"/><rect x="17" y="17" width="10" height="10" fill="#000"/>
+                  <rect x="74" y="8" width="28" height="28" fill="#000"/><rect x="79" y="13" width="18" height="18" fill="#fff"/><rect x="83" y="17" width="10" height="10" fill="#000"/>
+                  <rect x="8" y="74" width="28" height="28" fill="#000"/><rect x="13" y="79" width="18" height="18" fill="#fff"/><rect x="17" y="83" width="10" height="10" fill="#000"/>
+                  <rect x="45" y="12" width="10" height="10" fill="#000"/><rect x="58" y="22" width="10" height="10" fill="#000"/>
+                  <rect x="42" y="42" width="26" height="26" fill="#000"/><rect x="48" y="48" width="14" height="14" fill="#fff"/><rect x="52" y="52" width="6" height="6" fill="#000"/>
+                  <rect x="14" y="48" width="10" height="10" fill="#000"/><rect x="86" y="48" width="10" height="10" fill="#000"/>
+                  <rect x="45" y="78" width="10" height="10" fill="#000"/><rect x="58" y="88" width="10" height="10" fill="#000"/>
+                  <rect x="78" y="78" width="16" height="16" fill="#000"/>
+                </svg>
+              </div>
+              <div style="font-family:var(--font-mono);font-size:0.68rem;font-weight:700;margin-top:0.25rem;" id="lankaqr-ref">REF: LK.CBSL.CB84920</div>
+            </div>
+
+            <!-- Dynamic Koko Breakdown -->
+            <div id="koko-box" style="display:none;background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.3);border-radius:10px;padding:0.75rem;margin-top:0.75rem;">
+              <div style="font-weight:700;font-size:0.82rem;color:#fff;">Koko 3-Month Split Installment</div>
+              <div style="font-size:0.72rem;color:var(--cb-text-secondary);margin-top:0.2rem;">Pay in 3 equal monthly installments with 0% interest:</div>
+              <div style="display:flex;justify-content:space-between;margin-top:0.4rem;font-weight:700;font-size:0.78rem;color:#a855f7;">
+                <span>Month 1: <span id="koko-m1">LKR 0</span></span>
+                <span>Month 2: <span id="koko-m2">LKR 0</span></span>
+                <span>Month 3: <span id="koko-m3">LKR 0</span></span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1146,7 +1274,7 @@
           </p>
           <div style="display:flex;gap:0.75rem;margin-top:1.25rem;">
             <button class="btn-secondary" style="flex:1;" onclick="closeVoucherModal()">Close</button>
-            <button class="btn-primary" style="flex:1;" onclick="alert('🎟️ Pass saved! Present barcode at counter.')">💾 Save Pass</button>
+            <button class="btn-primary" style="flex:1;" onclick="confirmOrderPass()">💾 Save Pass & Print</button>
           </div>
         </div>
       </div>
@@ -1259,17 +1387,17 @@
       }
       if (!cinemas || cinemas.length === 0) {
         cinemas = [
-          { id:"CMB-CCC", name:"Scope Cinemas Multiplex - Colombo City Centre", chain:"Scope Cinemas", city:"Colombo", province:"Western", address:"Level 3, Colombo City Centre", screens:6, latitude:6.9175, longitude:79.8550, map_url:"https://maps.google.com/?q=6.9175,79.8550", has_food_court_in_front:true, food_court_name:"The Food Studio @ CCC & Scope Candy Bar", food_court_location:"Level 3 Lobby", food_hours:"10:00 AM – 11:30 PM" },
-          { id:"CMB-HCM", name:"Scope Cinemas Multiplex - Havelock City Mall", chain:"Scope Cinemas", city:"Colombo", province:"Western", address:"Level 4, Havelock City Mall", screens:6, latitude:6.8778, longitude:79.8653, map_url:"https://maps.google.com/?q=6.8778,79.8653", has_food_court_in_front:true, food_court_name:"Havelock Food Lounge & Scope IMAX Candy Bar", food_court_location:"Level 4 Lobby", food_hours:"10:00 AM – 11:30 PM" },
-          { id:"CMB-LBT", name:"Liberty by Scope Cinemas", chain:"Scope Cinemas", city:"Colombo", province:"Western", address:"35 R. A. De Mel Mawatha, Colombo 03", screens:2, latitude:6.9073, longitude:79.8517, map_url:"https://maps.google.com/?q=6.9073,79.8517", has_food_court_in_front:true, food_court_name:"Liberty Foyer Concession Court", food_court_location:"Front Main Entrance", food_hours:"10:00 AM – 10:45 PM" },
-          { id:"KND-KCC", name:"Scope Partner Multiplex - KCC Kandy", chain:"Scope Cinemas Partner", city:"Kandy", province:"Central", address:"Level 3, KCC, Dalada Veediya, Kandy", screens:4, latitude:7.2936, longitude:80.6385, map_url:"https://maps.google.com/?q=7.2936,80.6385", has_food_court_in_front:true, food_court_name:"KCC World Food Court & Scope Candy Bar", food_court_location:"Level 3 Lobby", food_hours:"10:00 AM – 10:45 PM" },
-          { id:"KND-REG", name:"Regal Cinema Kandy", chain:"Ceylon Theatres", city:"Kandy", province:"Central", address:"Katugastota Road, Kandy", screens:2, latitude:7.2985, longitude:80.6335, map_url:"https://maps.google.com/?q=7.2985,80.6335", has_food_court_in_front:true, food_court_name:"Regal Foyer Concession Court", food_court_location:"Front Entrance", food_hours:"10:15 AM – 10:30 PM" },
-          { id:"GMP-REG", name:"Regal Cinema Gampaha", chain:"Ceylon Theatres", city:"Gampaha", province:"Western", address:"Bauddhaloka Mawatha, Gampaha", screens:2, latitude:7.0917, longitude:79.9998, map_url:"https://maps.google.com/?q=7.0917,79.9998", has_food_court_in_front:true, food_court_name:"Regal Front Foyer Food Plaza", food_court_location:"Front Foyer", food_hours:"10:00 AM – 10:30 PM" },
-          { id:"GLE-QNS", name:"Queens Cinema Galle", chain:"Independent", city:"Galle", province:"Southern", address:"Wakwella Road, Galle", screens:2, latitude:6.0535, longitude:80.2210, map_url:"https://maps.google.com/?q=6.0535,80.2210", has_food_court_in_front:true, food_court_name:"Queens Foyer Candy Bar", food_court_location:"Main Lobby", food_hours:"10:00 AM – 10:30 PM" },
-          { id:"NGB-RDO", name:"Rodeo Cinema Negombo", chain:"Western Coast", city:"Negombo", province:"Western", address:"Main Street, Negombo", screens:2, latitude:7.2083, longitude:79.8358, map_url:"https://maps.google.com/?q=7.2083,79.8358", has_food_court_in_front:true, food_court_name:"Rodeo Beach Concession Court", food_court_location:"Front Foyer", food_hours:"10:30 AM – 11:00 PM" },
-          { id:"KRN-MLD", name:"Maldini Cinema Kurunegala", chain:"Maldini", city:"Kurunegala", province:"North Western", address:"Colombo Road, Kurunegala", screens:2, latitude:7.4863, longitude:80.3623, map_url:"https://maps.google.com/?q=7.4863,80.3623", has_food_court_in_front:true, food_court_name:"North Star Concession Lobby", food_court_location:"Lobby Entrance", food_hours:"10:00 AM – 10:00 PM" },
-          { id:"MTR-SKC", name:"SK Cinema Matara", chain:"Southern Screen", city:"Matara", province:"Southern", address:"Anagarika Dharmapala Mw, Matara", screens:2, latitude:5.9485, longitude:80.5488, map_url:"https://maps.google.com/?q=5.9485,80.5488", has_food_court_in_front:true, food_court_name:"SK Concession Court", food_court_location:"Main Lobby", food_hours:"10:30 AM – 10:30 PM" },
-          { id:"JFN-RJA", name:"Rajah Cinema Jaffna", chain:"Northern Network", city:"Jaffna", province:"Northern", address:"Hospital Road, Jaffna", screens:3, latitude:9.6615, longitude:80.0255, map_url:"https://maps.google.com/?q=9.6615,80.0255", has_food_court_in_front:true, food_court_name:"Rajah Snack Point", food_court_location:"Main Entrance", food_hours:"10:00 AM – 10:00 PM" }
+          { id:"CMB-CCC", name:"Scope Cinemas Multiplex - Colombo City Centre", chain:"Scope Cinemas", city:"Colombo", province:"Western", address:"Level 3, Colombo City Centre", screens:6, latitude:6.9175, longitude:79.8550, map_url:"https://maps.google.com/?q=6.9175,79.8550", image:"cinema-multiplex.jpg", technology:"IMAX Laser • Dolby Atmos 7.1", has_food_court_in_front:true, food_court_name:"The Food Studio @ CCC & Scope Candy Bar", food_court_location:"Level 3 Lobby", food_hours:"10:00 AM – 11:30 PM" },
+          { id:"CMB-HCM", name:"Scope Cinemas Multiplex - Havelock City Mall", chain:"Scope Cinemas", city:"Colombo", province:"Western", address:"Level 4, Havelock City Mall", screens:6, latitude:6.8778, longitude:79.8653, map_url:"https://maps.google.com/?q=6.8778,79.8653", image:"cinema-imax.jpg", technology:"Sri Lanka's Largest IMAX • Laser", has_food_court_in_front:true, food_court_name:"Havelock Food Lounge & Scope IMAX Candy Bar", food_court_location:"Level 4 Lobby", food_hours:"10:00 AM – 11:30 PM" },
+          { id:"CMB-LBT", name:"Liberty by Scope Cinemas", chain:"Scope Cinemas", city:"Colombo", province:"Western", address:"35 R. A. De Mel Mawatha, Colombo 03", screens:2, latitude:6.9073, longitude:79.8517, map_url:"https://maps.google.com/?q=6.9073,79.8517", image:"cinema-heritage.jpg", technology:"Scope VIP Gold Class • Dolby 7.1", has_food_court_in_front:true, food_court_name:"Liberty Foyer Concession Court", food_court_location:"Front Main Entrance", food_hours:"10:00 AM – 10:45 PM" },
+          { id:"KND-KCC", name:"Scope Partner Multiplex - KCC Kandy", chain:"Scope Cinemas Partner", city:"Kandy", province:"Central", address:"Level 3, KCC, Dalada Veediya, Kandy", screens:4, latitude:7.2936, longitude:80.6385, map_url:"https://maps.google.com/?q=7.2936,80.6385", image:"cinema-multiplex.jpg", technology:"4K Laser Projection • Dolby Digital", has_food_court_in_front:true, food_court_name:"KCC World Food Court & Scope Candy Bar", food_court_location:"Level 3 Lobby", food_hours:"10:00 AM – 10:45 PM" },
+          { id:"KND-REG", name:"Regal Cinema Kandy", chain:"Ceylon Theatres", city:"Kandy", province:"Central", address:"Katugastota Road, Kandy", screens:2, latitude:7.2985, longitude:80.6335, map_url:"https://maps.google.com/?q=7.2985,80.6335", image:"cinema-heritage.jpg", technology:"Ceylon Theatres Classic • Dolby Surround", has_food_court_in_front:true, food_court_name:"Regal Foyer Concession Court", food_court_location:"Front Entrance", food_hours:"10:15 AM – 10:30 PM" },
+          { id:"GMP-REG", name:"Regal Cinema Gampaha", chain:"Ceylon Theatres", city:"Gampaha", province:"Western", address:"Bauddhaloka Mawatha, Gampaha", screens:2, latitude:7.0917, longitude:79.9998, map_url:"https://maps.google.com/?q=7.0917,79.9998", image:"cinema-heritage.jpg", technology:"Ceylon Theatres • Digital Screen", has_food_court_in_front:true, food_court_name:"Regal Front Foyer Food Plaza", food_court_location:"Front Foyer", food_hours:"10:00 AM – 10:30 PM" },
+          { id:"GLE-QNS", name:"Queens Cinema Galle", chain:"Independent", city:"Galle", province:"Southern", address:"Wakwella Road, Galle", screens:2, latitude:6.0535, longitude:80.2210, map_url:"https://maps.google.com/?q=6.0535,80.2210", image:"cinema-heritage.jpg", technology:"Heritage Galle Screen • Dolby Digital", has_food_court_in_front:true, food_court_name:"Queens Foyer Candy Bar", food_court_location:"Main Lobby", food_hours:"10:00 AM – 10:30 PM" },
+          { id:"NGB-RDO", name:"Rodeo Cinema Negombo", chain:"Western Coast", city:"Negombo", province:"Western", address:"Main Street, Negombo", screens:2, latitude:7.2083, longitude:79.8358, map_url:"https://maps.google.com/?q=7.2083,79.8358", image:"cinema-multiplex.jpg", technology:"Coastal Multiplex • RealD 3D", has_food_court_in_front:true, food_court_name:"Rodeo Beach Concession Court", food_court_location:"Front Foyer", food_hours:"10:30 AM – 11:00 PM" },
+          { id:"KRN-MLD", name:"Maldini Cinema Kurunegala", chain:"Maldini", city:"Kurunegala", province:"North Western", address:"Colombo Road, Kurunegala", screens:2, latitude:7.4863, longitude:80.3623, map_url:"https://maps.google.com/?q=7.4863,80.3623", image:"cinema-multiplex.jpg", technology:"North Western Cineplex • Dolby", has_food_court_in_front:true, food_court_name:"North Star Concession Lobby", food_court_location:"Lobby Entrance", food_hours:"10:00 AM – 10:00 PM" },
+          { id:"MTR-SKC", name:"SK Cinema Matara", chain:"Southern Screen", city:"Matara", province:"Southern", address:"Anagarika Dharmapala Mw, Matara", screens:2, latitude:5.9485, longitude:80.5488, map_url:"https://maps.google.com/?q=5.9485,80.5488", image:"cinema-heritage.jpg", technology:"Southern Screen • Dolby Surround", has_food_court_in_front:true, food_court_name:"SK Concession Court", food_court_location:"Main Lobby", food_hours:"10:30 AM – 10:30 PM" },
+          { id:"JFN-RJA", name:"Rajah Cinema Jaffna", chain:"Northern Network", city:"Jaffna", province:"Northern", address:"Hospital Road, Jaffna", screens:3, latitude:9.6615, longitude:80.0255, map_url:"https://maps.google.com/?q=9.6615,80.0255", image:"cinema-heritage.jpg", technology:"Northern Star • 4K Digital Cinema", has_food_court_in_front:true, food_court_name:"Rajah Snack Point", food_court_location:"Main Entrance", food_hours:"10:00 AM – 10:00 PM" }
         ];
       }
       allCinemasMaster = [...cinemas];
@@ -1287,10 +1415,22 @@
         const distBadge = (typeof c.distance_km === 'number' && c.distance_km < 9000)
           ? `<span class="badge badge-blue" style="font-size:0.68rem; font-weight:700;">📍 ${c.distance_km.toFixed(1)} km</span>`
           : '';
+        const cinemaImg = c.image || (c.name.toLowerCase().includes('imax') ? 'cinema-imax.jpg' : (c.screens >= 4 ? 'cinema-multiplex.jpg' : 'cinema-heritage.jpg'));
+        const techBadge = c.technology || `${c.screens} Screens • Dolby Atmos`;
+
         return `
           <div class="cinema-card ${isActive ? 'selected' : ''}" onclick="selectCinemaById('${c.id}')">
-            <div class="cinema-card-visual">
-              <div class="cinema-card-gradient" style="background:${gradients[i % gradients.length]};">🎬</div>
+            <div class="cinema-card-visual" style="background-image: url('${cinemaImg}'); background-size: cover; background-position: center; height: 135px; position: relative;">
+              <div style="position:absolute; inset:0; background: linear-gradient(180deg, rgba(6,6,11,0.2) 0%, rgba(6,6,11,0.88) 100%);"></div>
+              <span class="badge badge-purple" style="position:absolute; top:0.75rem; left:0.75rem; font-size:0.68rem; z-index:2; backdrop-filter:blur(8px);">
+                ${c.chain || 'Cinema'}
+              </span>
+              ${distBadge ? `<div style="position:absolute; top:0.75rem; right:0.75rem; z-index:2;">${distBadge}</div>` : ''}
+              <div style="position:absolute; bottom:0.6rem; left:0.75rem; right:0.75rem; display:flex; justify-content:space-between; align-items:center; z-index:2;">
+                <span style="font-size:0.7rem; color:rgba(255,255,255,0.95); font-weight:700;">
+                  ✨ ${techBadge}
+                </span>
+              </div>
             </div>
             <div class="cinema-card-body">
               <div class="cinema-card-name">${c.name}</div>
@@ -1300,9 +1440,8 @@
                 <span>${c.screens} Screen${c.screens > 1 ? 's' : ''}</span>
               </div>
               <div class="cinema-card-footer">
-                <span class="badge badge-green" style="font-size:0.68rem;">🍔 Food Court</span>
-                ${distBadge}
-                ${isActive ? '<span class="badge badge-purple">Active</span>' : ''}
+                <span class="badge badge-green" style="font-size:0.68rem;">🍔 In-Front Food Court</span>
+                ${isActive ? '<span class="badge badge-purple">Selected</span>' : ''}
               </div>
             </div>
           </div>
@@ -1316,14 +1455,22 @@
       activeCinema = cinema;
       renderCinemaCards();
 
+      const cinemaImg = cinema.image || (cinema.name.toLowerCase().includes('imax') ? 'cinema-imax.jpg' : (cinema.screens >= 4 ? 'cinema-multiplex.jpg' : 'cinema-heritage.jpg'));
+      const emojiEl = document.getElementById('active-cinema-emoji');
+      if (emojiEl) {
+        emojiEl.style.backgroundImage = `url('${cinemaImg}')`;
+        emojiEl.innerHTML = '';
+      }
+
       // Update active strip
       document.getElementById('active-cinema-name').textContent = cinema.name;
       document.getElementById('active-cinema-address').textContent = `📍 ${cinema.address || cinema.city} · ${cinema.food_court_name || 'Concession Counter'}`;
       document.getElementById('active-cinema-badges').innerHTML = `
         <span class="badge badge-purple">${cinema.chain || 'Independent'}</span>
         <span class="badge badge-green">${cinema.screens} Screens</span>
-        <span class="badge badge-blue">${cinema.food_hours || '10 AM – 10 PM'}</span>
-        ${cinema.map_url ? `<a href="${cinema.map_url}" target="_blank" class="badge badge-default" style="text-decoration:none;">🗺️ Map</a>` : ''}
+        <span class="badge badge-blue">${cinema.technology || 'Dolby Atmos & Laser'}</span>
+        <span class="badge badge-amber">${cinema.food_hours || '10:00 AM – 11:30 PM'}</span>
+        ${cinema.map_url ? `<a href="${cinema.map_url}" target="_blank" class="badge badge-default" style="text-decoration:none;">🗺️ Map & Directions</a>` : ''}
       `;
 
       // Update nav live pill
@@ -1346,21 +1493,44 @@
     async function loadMenu(cinemaId) {
       try {
         const data = await client.getLiveConcessions(cinemaId);
-        menu = data.items || [];
+        menu = (data.items || []).map(item => {
+          const price = item.price_lkr !== undefined ? item.price_lkr : (item.price || 0);
+          const orig = item.base_price_lkr !== undefined ? item.base_price_lkr : (item.original_price || price);
+          let img = item.image;
+          if (!img) {
+            if (item.category === 'Popcorn') img = 'popcorn.jpg';
+            else if (item.category === 'Beverage') img = 'beverage.jpg';
+            else if (item.category === 'Combo') img = 'combo.jpg';
+            else if (item.name && item.name.toLowerCase().includes('dog')) img = 'hotdog.jpg';
+            else if (item.name && (item.name.toLowerCase().includes('roll') || item.name.toLowerCase().includes('samosa'))) img = 'rolls.jpg';
+            else img = 'nachos.jpg';
+          }
+          return {
+            ...item,
+            price: price,
+            original_price: orig,
+            image: img
+          };
+        });
       } catch (err) {
-        console.warn('Menu fallback:', err);
+        console.warn('Menu fallback to authentic catalog:', err);
+      }
+      if (!menu || menu.length === 0) {
         menu = [
-          { id:"P01", category:"Popcorn", name:"Large Caramel Popcorn", size:"Large", price:1200, original_price:1500, description:"Freshly popped caramel coated cinema popcorn" },
-          { id:"P02", category:"Popcorn", name:"Medium Butter Popcorn", size:"Medium", price:800, original_price:950, description:"Classic salted butter cinema popcorn" },
-          { id:"P03", category:"Popcorn", name:"Cheese Popcorn Tub", size:"Large", price:1100, original_price:1300, description:"Creamy cheddar cheese seasoned popcorn" },
-          { id:"B01", category:"Beverage", name:"Coca-Cola Large", size:"Large", price:600, original_price:800, description:"Ice cold Coca-Cola fountain drink" },
-          { id:"B02", category:"Beverage", name:"Sprite Medium", size:"Medium", price:450, original_price:550, description:"Refreshing lemon-lime Sprite" },
-          { id:"B03", category:"Beverage", name:"Iced Milo", size:"Regular", price:520, original_price:650, description:"Chilled chocolate malt Milo" },
-          { id:"S01", category:"Snack", name:"Nachos with Cheese", size:"Regular", price:1100, original_price:1100, description:"Crispy tortilla chips with warm nacho cheese" },
-          { id:"S02", category:"Snack", name:"Hot Dog Classic", size:"Regular", price:950, original_price:1050, description:"Grilled beef hot dog with ketchup & mustard" },
-          { id:"S03", category:"Snack", name:"Chicken Bites", size:"6 pcs", price:1050, original_price:1200, description:"Crispy golden fried chicken bites" },
-          { id:"C01", category:"Combo", name:"Movie Night Combo", size:"For 2", price:2200, original_price:2800, description:"Large popcorn + 2 large drinks + nachos" },
-          { id:"C02", category:"Combo", name:"Solo Saver", size:"For 1", price:1300, original_price:1650, description:"Medium popcorn + drink + chicken bites" },
+          { id:"P01", category:"Popcorn", name:"Scope Warm Caramel Popcorn Tub", size:"Jumbo Souvenir Tub", price:1350, original_price:1600, image:"popcorn.jpg", price_trend:"down", description:"Scope signature crunchy caramelized warm corn in commemorative cinema tub" },
+          { id:"P02", category:"Popcorn", name:"Kochchi & White Cheddar Popcorn", size:"Large Bucket", price:1250, original_price:1450, image:"popcorn.jpg", price_trend:"down", description:"Hot butterfly corn tossed with fiery Sri Lankan green kochchi & cheddar dust" },
+          { id:"P03", category:"Popcorn", name:"Classic Clarified Butter Salted Popcorn", size:"Large Bucket", price:1100, original_price:1300, image:"popcorn.jpg", price_trend:"steady", description:"Freshly popped cinema corn drenched in golden clarified butter and sea salt" },
+          { id:"B01", category:"Beverage", name:"Chilled Milo Dinosaur Float", size:"Tall Glass", price:550, original_price:650, image:"beverage.jpg", price_trend:"down", description:"Chilled Ceylon chocolate malt Milo topped with vanilla ice cream and heaped cocoa" },
+          { id:"B02", category:"Beverage", name:"Elephant House Ginger Beer (EGB) Float", size:"Regular 450ml", price:480, original_price:580, image:"beverage.jpg", price_trend:"steady", description:"Authentic spicy Ceylon ginger beer with crushed ice and creamy vanilla float" },
+          { id:"B03", category:"Beverage", name:"Scope Fresh Passion Fruit Mint Sparkler", size:"Medium 500ml", price:750, original_price:900, image:"beverage.jpg", price_trend:"down", description:"Real island passion fruit pulp with crushed garden mint and sparkling soda" },
+          { id:"B04", category:"Beverage", name:"Scope Large Fountain Coca-Cola", size:"Large 650ml", price:650, original_price:800, image:"beverage.jpg", price_trend:"steady", description:"Ice-cold fountain Coca-Cola with fresh carbonation and lemon wedge" },
+          { id:"S01", category:"Snack", name:"IMAX Loaded Chicken Nachos", size:"Sharing Platter", price:1450, original_price:1700, image:"nachos.jpg", price_trend:"down", description:"Stone-ground corn chips with hot queso, jalapeños, salsa, and seasoned chicken" },
+          { id:"S02", category:"Snack", name:"Gourmet Brioche Chicken Hotdog", size:"Single", price:1150, original_price:1350, image:"hotdog.jpg", price_trend:"steady", description:"Artisan grilled chicken sausage in buttered brioche bun with sweet pickle relish" },
+          { id:"S03", category:"Snack", name:"Crispy Ceylon Chicken Rolls (2 pcs)", size:"Hot Snack", price:820, original_price:950, image:"rolls.jpg", price_trend:"down", description:"Crispy golden crumbed Sri Lankan bakery-style chicken rolls with chili dip" },
+          { id:"S04", category:"Snack", name:"Crispy Ceylon Chicken Samosas (4 pcs)", size:"Platter", price:750, original_price:900, image:"rolls.jpg", price_trend:"down", description:"Golden triangular pastries stuffed with spiced Ceylon chicken and sweet tamarind dip" },
+          { id:"C01", category:"Combo", name:"Scope Director's Deluxe Couple Combo", size:"Duo Feasting Pack", price:2950, original_price:3600, image:"combo.jpg", price_trend:"down", description:"1 Jumbo Caramel Popcorn + 2 Large Fountain Drinks + 1 Loaded Hot Nachos" },
+          { id:"C02", category:"Combo", name:"CinePass VIP Platinum Movie Feast", size:"Family (3-4 Pax)", price:4200, original_price:5200, image:"combo.jpg", price_trend:"down", description:"2 Jumbo Popcorns (Caramel + Kochchi) + 3 Drinks + 1 Brioche Hotdog + 1 Nachos" },
+          { id:"C03", category:"Combo", name:"Solo Movie Night Saver", size:"Single Pack", price:1650, original_price:2100, image:"combo.jpg", price_trend:"down", description:"1 Large Butter Popcorn + 1 Medium Fountain Drink + 2 Ceylon Rolls" }
         ];
       }
       updateFilterCounts();
@@ -1375,9 +1545,9 @@
         renderDeals(ads);
       } catch (err) {
         renderDeals([
-          { promo_code:"CINE-COMBO30", title:"Combo Flash Deal", subtitle:"Save 30% on any combo this weekend", discount_text:"30% OFF", is_flash_ad:true, badge_text:"FLASH" },
-          { promo_code:"CINE-CINEMA25", title:"CinePass Silver+ Perk", subtitle:"Unlock 25% on all beverages with Silver tier or above", discount_text:"25% OFF", badge_text:"VIP PERK" },
-          { promo_code:"CINE-STUDENT", title:"Student Special", subtitle:"Show your university ID for 15% off entire order", discount_text:"15% OFF", badge_text:"STUDENT" },
+          { promo_code:"CINE-COMBO30", title:"Combo Flash Deal", subtitle:"Save 30% on any couple or family combo this weekend", discount_text:"30% OFF", is_flash_ad:true, badge_text:"FLASH DEAL" },
+          { promo_code:"CINE-CINEMA25", title:"CinePass Silver+ Perk", subtitle:"Unlock 25% on all fountain beverages with Silver tier or above", discount_text:"25% OFF", badge_text:"VIP PERK" },
+          { promo_code:"CINE-STUDENT", title:"Student Movie Special", subtitle:"Show your school/university ID for 15% off entire order", discount_text:"15% OFF", badge_text:"STUDENT" },
         ]);
       }
     }
@@ -1420,30 +1590,38 @@
       }
 
       const emojiMap = { Popcorn:'🍿', Beverage:'🥤', Snack:'🌭', Combo:'🎬' };
+      const imageMap = { Popcorn:'popcorn.jpg', Beverage:'beverage.jpg', Snack:'nachos.jpg', Combo:'combo.jpg' };
 
       grid.innerHTML = filtered.map(item => {
-        const discountPrice = (item.discounts && item.discounts.length > 0) ? item.discounts[0].discounted_price : item.price;
-        const savings = (item.original_price || item.price) - discountPrice;
+        const price = (typeof item.price_lkr === 'number') ? item.price_lkr : (typeof item.price === 'number' ? item.price : 0);
+        const origPrice = (typeof item.base_price_lkr === 'number') ? item.base_price_lkr : (typeof item.original_price === 'number' ? item.original_price : price);
+        const savings = Math.max(0, origPrice - price);
         const emoji = emojiMap[item.category] || '🍴';
-        const bg = itemGradients[item.category] || 'linear-gradient(135deg, #1a1a2e, #2d2d44)';
+        const img = item.image || (item.category === 'Popcorn' ? 'popcorn.jpg' : item.category === 'Beverage' ? 'beverage.jpg' : item.category === 'Combo' ? 'combo.jpg' : 'nachos.jpg');
         const hasDrop = item.price_trend === 'down' || item.price_trend === 'flash_drop';
 
         return `
           <div class="menu-item-card">
-            <div class="menu-item-visual" style="background:${bg};">
-              <span>${emoji}</span>
-              ${hasDrop ? '<span class="badge badge-green" style="position:absolute;top:0.6rem;right:0.6rem;font-size:0.65rem;">⚡ Drop</span>' : ''}
+            <div class="menu-item-visual" style="background-image: url('${img}');">
+              <div style="position:absolute; inset:0; background: linear-gradient(180deg, rgba(6,6,11,0.2) 0%, rgba(6,6,11,0.85) 100%);"></div>
+              <span class="badge badge-purple" style="position:absolute; top:0.75rem; left:0.75rem; font-size:0.68rem; z-index:2; backdrop-filter:blur(8px);">
+                ${emoji} ${item.category}
+              </span>
+              ${hasDrop ? '<span class="badge badge-green" style="position:absolute; top:0.75rem; right:0.75rem; font-size:0.68rem; z-index:2; backdrop-filter:blur(8px);">⚡ Live Price Drop</span>' : ''}
+              <div style="position:absolute; bottom:0.65rem; left:0.75rem; font-size:0.72rem; color:rgba(255,255,255,0.85); z-index:2; font-weight:600;">
+                ${item.size || 'Cinema Portion'}
+              </div>
             </div>
             <div class="menu-item-body">
               <div class="menu-item-name">${item.name}</div>
               <div class="menu-item-desc">${item.description || item.category + ' · ' + (item.size || 'Regular')}</div>
-              ${savings > 0 ? `<div class="menu-item-save">Save LKR ${savings.toFixed(0)} with CinePass</div>` : ''}
+              ${savings > 0 ? `<div class="menu-item-save">Save LKR ${savings.toFixed(0)} with CinePass</div>` : '<div style="height:19px;"></div>'}
               <div class="menu-item-footer">
                 <div>
-                  <div class="menu-item-price">LKR ${item.price.toFixed(0)}</div>
-                  ${savings > 0 ? `<div class="menu-item-price-old">LKR ${(item.original_price || item.price).toFixed(0)}</div>` : ''}
+                  <div class="menu-item-price">LKR ${price.toFixed(0)}</div>
+                  ${savings > 0 ? `<div class="menu-item-price-old">LKR ${origPrice.toFixed(0)}</div>` : ''}
                 </div>
-                <button class="add-to-cart-btn" onclick="addToCartById('${item.id}')">+ Add</button>
+                <button class="add-to-cart-btn" onclick="addToCartById('${item.id}')">+ Add to Tray</button>
               </div>
             </div>
           </div>
@@ -1477,8 +1655,11 @@
     function addToCartById(id) {
       const item = menu.find(i => i.id === id);
       if (item) {
-        cart.push(item);
+        const price = (typeof item.price_lkr === 'number') ? item.price_lkr : (typeof item.price === 'number' ? item.price : 0);
+        const originalPrice = (typeof item.base_price_lkr === 'number') ? item.base_price_lkr : (typeof item.original_price === 'number' ? item.original_price : price);
+        cart.push({ ...item, price, original_price: originalPrice });
         updateCart();
+        showNotification(`Added ${item.name} to tray`, 'success');
       }
     }
 
@@ -1487,7 +1668,19 @@
       if (cart.length === 0) { bar.style.display = 'none'; return; }
       bar.style.display = 'flex';
       document.getElementById('cart-count-badge').textContent = cart.length;
-      document.getElementById('cart-total').textContent = `LKR ${cart.reduce((s, i) => s + i.price, 0).toFixed(0)}`;
+      const subtotal = cart.reduce((s, i) => s + ((typeof i.price_lkr === 'number') ? i.price_lkr : (typeof i.price === 'number' ? i.price : 0)), 0);
+      document.getElementById('cart-total').textContent = `LKR ${subtotal.toFixed(0)}`;
+    }
+
+    /* ── Fulfillment Mode ──────────────────────────── */
+    let fulfillmentMode = 'counter';
+    function setFulfillmentMode(mode, btn) {
+      fulfillmentMode = mode;
+      document.querySelectorAll('#seg-delivery-mode .segment-item').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      const seatGroup = document.getElementById('seat-input-group');
+      if (seatGroup) seatGroup.style.display = mode === 'seat' ? 'flex' : 'none';
+      showNotification(mode === 'seat' ? '🛋️ Intermission Seat Delivery selected' : '⚡ Express Counter Pickup selected', 'info');
     }
 
 
@@ -1537,21 +1730,23 @@
           </div>
 
           <div class="result-items-grid">
-            ${res.items.map(item => `
+            ${res.items.map(item => {
+              const p = (typeof item.price_lkr === 'number') ? item.price_lkr : (typeof item.price === 'number' ? item.price : 0);
+              return `
               <div class="result-item">
                 <div style="font-weight:700;font-size:0.9rem;">${item.name}</div>
                 <div style="font-size:0.75rem;color:var(--cb-text-secondary);">${item.category} · ${item.size || 'Regular'}</div>
-                <div style="font-weight:700;margin-top:0.3rem;">LKR ${item.price.toFixed(0)}</div>
+                <div style="font-weight:700;margin-top:0.3rem;">LKR ${p.toFixed(0)}</div>
               </div>
-            `).join('')}
+            `;}).join('')}
           </div>
 
           <div class="result-summary">
             <div>
-              <span style="font-size:0.8rem;color:var(--cb-text-secondary);">Original: <del>LKR ${res.original_total.toFixed(0)}</del></span>
+              <span style="font-size:0.8rem;color:var(--cb-text-secondary);">Original: <del>LKR ${(res.original_total || 0).toFixed(0)}</del></span>
               <div style="font-size:1.3rem;font-weight:800;color:var(--cb-green);">
-                LKR ${res.final_total.toFixed(0)}
-                <span style="font-size:0.82rem;font-weight:600;">(Saved LKR ${res.discount_amount.toFixed(0)})</span>
+                LKR ${(res.final_total || 0).toFixed(0)}
+                <span style="font-size:0.82rem;font-weight:600;">(Saved LKR ${(res.discount_amount || 0).toFixed(0)})</span>
               </div>
             </div>
             <button class="btn-primary btn-green" onclick='openVoucherWithResult(${JSON.stringify(res).replace(/'/g, "&#39;")})'>
@@ -1570,24 +1765,95 @@
       openVoucherModal(res);
     }
 
+    let currentPaymentMethod = 'lankaqr';
+
+    function selectPaymentMethod(method, btn) {
+      currentPaymentMethod = method;
+      document.querySelectorAll('.payment-channel-pill').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+
+      const qrBox = document.getElementById('lankaqr-box');
+      const kokoBox = document.getElementById('koko-box');
+
+      if (method === 'lankaqr') {
+        if (qrBox) qrBox.style.display = 'block';
+        if (kokoBox) kokoBox.style.display = 'none';
+        showNotification('LankaQR selected (5% digital rebate applied)', 'success');
+      } else if (method === 'koko') {
+        if (qrBox) qrBox.style.display = 'none';
+        if (kokoBox) kokoBox.style.display = 'block';
+        showNotification('Koko 3-month split selected (0% interest)', 'info');
+      } else if (method === 'frimi') {
+        if (qrBox) qrBox.style.display = 'none';
+        if (kokoBox) kokoBox.style.display = 'none';
+        showNotification('FriMi selected (10% concession cashback)', 'success');
+      } else {
+        if (qrBox) qrBox.style.display = 'none';
+        if (kokoBox) kokoBox.style.display = 'none';
+        showNotification('Pay in LKR at concession counter on collection', 'info');
+      }
+    }
+
+    function confirmOrderPass() {
+      const cinemaName = activeCinema ? activeCinema.name : 'Cinema';
+      const serial = document.getElementById('voucher-serial').textContent;
+      showNotification(`🎉 Order Confirmed! Pass ${serial} issued for ${cinemaName}.`, 'success');
+      setTimeout(() => {
+        closeVoucherModal();
+      }, 1800);
+    }
+
     function openVoucherModal(customRes = null) {
       const items = customRes ? customRes.items : cart;
-      const subtotal = customRes ? customRes.original_total : items.reduce((s, i) => s + i.price, 0);
+      const subtotal = customRes ? customRes.original_total : items.reduce((s, i) => s + ((typeof i.price_lkr === 'number') ? i.price_lkr : (typeof i.price === 'number' ? i.price : 0)), 0);
       const discount = customRes ? customRes.discount_amount : (subtotal > 2000 ? subtotal * 0.25 : subtotal * 0.15);
-      const final_ = subtotal - discount;
+      const final_ = Math.max(0, subtotal - discount);
 
       document.getElementById('voucher-cinema').textContent = activeCinema ? activeCinema.name : 'Cinema';
       document.getElementById('voucher-tier').textContent = `${tier} VIP`;
-      document.getElementById('voucher-items').innerHTML = items.map(i => `
-        <div style="display:flex;justify-content:space-between;font-size:0.85rem;">
-          <span>• ${i.name}</span>
-          <span style="font-weight:600;">LKR ${i.price.toFixed(0)}</span>
-        </div>
-      `).join('');
+
+      const fulfillEl = document.getElementById('voucher-fulfillment');
+      if (fulfillEl) {
+        if (fulfillmentMode === 'seat') {
+          const hall = document.getElementById('seat-hall') ? document.getElementById('seat-hall').value : 'Screen 1';
+          const seat = document.getElementById('seat-no') ? document.getElementById('seat-no').value : 'F12';
+          fulfillEl.innerHTML = `🛋️ Intermission Seat Delivery · <strong>${hall}, Seat ${seat}</strong>`;
+        } else {
+          fulfillEl.innerHTML = `⚡ Express Counter #2 Pickup (Skip Queue)`;
+        }
+      }
+
+      document.getElementById('voucher-items').innerHTML = items.map(i => {
+        const p = (typeof i.price_lkr === 'number') ? i.price_lkr : (typeof i.price === 'number' ? i.price : 0);
+        return `
+          <div style="display:flex;justify-content:space-between;font-size:0.85rem;">
+            <span>• ${i.name}</span>
+            <span style="font-weight:600;">LKR ${p.toFixed(0)}</span>
+          </div>
+        `;
+      }).join('');
       document.getElementById('voucher-subtotal').textContent = `LKR ${subtotal.toFixed(0)}`;
       document.getElementById('voucher-discount').textContent = `-LKR ${discount.toFixed(0)}`;
       document.getElementById('voucher-final').textContent = `LKR ${final_.toFixed(0)}`;
-      document.getElementById('voucher-serial').textContent = `CB-${activeCinema ? activeCinema.id : 'CINE'}-${Math.floor(10000 + Math.random() * 90000)}-2026`;
+
+      const serialNumber = `CB-${activeCinema ? activeCinema.id : 'CINE'}-${Math.floor(10000 + Math.random() * 90000)}-2026`;
+      document.getElementById('voucher-serial').textContent = serialNumber;
+
+      const lankaQrRef = document.getElementById('lankaqr-ref');
+      if (lankaQrRef) {
+        lankaQrRef.textContent = `REF: LK.CBSL.${activeCinema ? activeCinema.id : 'CB'}.${Math.floor(10000 + Math.random() * 90000)}`;
+      }
+
+      // Koko 3-month split calculation
+      const splitAmount = Math.round(final_ / 3);
+      const k1 = document.getElementById('koko-m1');
+      const k2 = document.getElementById('koko-m2');
+      const k3 = document.getElementById('koko-m3');
+      if (k1 && k2 && k3) {
+        k1.textContent = `LKR ${splitAmount.toLocaleString()}`;
+        k2.textContent = `LKR ${splitAmount.toLocaleString()}`;
+        k3.textContent = `LKR ${splitAmount.toLocaleString()}`;
+      }
 
       document.getElementById('voucher-modal').classList.add('open');
     }
@@ -1624,8 +1890,15 @@
       }
       grid.innerHTML = list.map(c => {
         const isActive = activeCinema && activeCinema.id === c.id;
+        const cinemaImg = c.image || (c.name.toLowerCase().includes('imax') ? 'cinema-imax.jpg' : (c.screens >= 4 ? 'cinema-multiplex.jpg' : 'cinema-heritage.jpg'));
+        const techBadge = c.technology || `${c.screens} Screens • Dolby Atmos`;
         return `
           <div class="glass-card" style="padding:1.15rem;cursor:pointer;${isActive ? 'border-color:var(--cb-purple);box-shadow:var(--cb-shadow-glow-purple);' : ''}" onclick="selectFromModal('${c.id}')">
+            <div style="background-image: url('${cinemaImg}'); background-size: cover; background-position: center; height: 110px; border-radius: var(--r-sm); position: relative; margin-bottom: 0.75rem;">
+              <div style="position:absolute; inset:0; background: linear-gradient(180deg, rgba(6,6,11,0.2) 0%, rgba(6,6,11,0.85) 100%); border-radius: var(--r-sm);"></div>
+              <span class="badge badge-purple" style="position:absolute; top:0.5rem; left:0.5rem; font-size:0.65rem; z-index:2; backdrop-filter:blur(6px);">${c.chain || 'Independent'}</span>
+              <span style="position:absolute; bottom:0.4rem; left:0.5rem; font-size:0.68rem; color:#fff; font-weight:700; z-index:2;">✨ ${techBadge}</span>
+            </div>
             <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem;margin-bottom:0.35rem;">
               <h4 style="font-size:0.98rem;font-weight:700;">${c.name}</h4>
               <span class="badge badge-blue" style="font-size:0.68rem;white-space:nowrap;">${c.chain || 'Independent'}</span>

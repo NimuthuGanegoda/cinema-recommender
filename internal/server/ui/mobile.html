@@ -227,7 +227,7 @@
       background: var(--apple-surface);
       border: var(--apple-border);
       border-radius: var(--radius-md);
-      padding: 0.95rem 1.1rem;
+      padding: 0.85rem 1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -239,13 +239,43 @@
       transform: scale(0.98);
     }
 
+    .concession-thumb {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-sm);
+      background-size: cover;
+      background-position: center;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      flex-shrink: 0;
+    }
+
+    .payment-channel-pill-mobile {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-sm);
+      padding: 0.5rem 0.6rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s ease;
+    }
+
+    .payment-channel-pill-mobile.active {
+      border-color: var(--dracula-purple, #bd93f9);
+      background: rgba(189, 147, 249, 0.15);
+      box-shadow: 0 0 10px rgba(189, 147, 249, 0.3);
+    }
+
     .add-btn {
       background: rgba(189, 147, 249, 0.16);
       border: 1px solid rgba(189, 147, 249, 0.38);
       color: var(--dracula-purple, #bd93f9);
-      padding: 0.28rem 0.75rem;
+      padding: 0.32rem 0.8rem;
       border-radius: var(--radius-pill);
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.15s ease;
@@ -371,21 +401,31 @@
 
     <!-- Cinema Details Card -->
     <div class="cinema-info-card">
-      <div class="cinema-chain-row">
-        <span style="font-size:0.95rem; font-weight:700;" id="m-display-name">Scope Partner Multiplex - KCC Kandy</span>
-        <span class="apple-badge blue" id="m-display-chain" style="font-size:0.68rem;">Scope Cinemas Partner</span>
+      <div id="m-cinema-banner" style="background-image: url('cinema-multiplex.jpg'); background-size: cover; background-position: center; height: 110px; border-radius: var(--radius-md); position: relative; margin-bottom: 0.65rem; overflow: hidden;">
+        <div style="position:absolute; inset:0; background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.85) 100%);"></div>
+        <span class="apple-badge blue" id="m-display-chain" style="position:absolute; top:0.5rem; left:0.5rem; font-size:0.65rem; z-index:2; backdrop-filter:blur(6px);">Scope Cinemas</span>
+        <span class="apple-badge purple" id="m-display-tech" style="position:absolute; bottom:0.4rem; left:0.5rem; font-size:0.65rem; z-index:2;">✨ IMAX Laser • Dolby Atmos</span>
       </div>
-      <div style="font-size:0.78rem; color:var(--apple-text-secondary);" id="m-display-location">
-        Level 3, Kandy City Centre • 4 Screens
+      <div class="cinema-chain-row">
+        <span style="font-size:0.98rem; font-weight:700;" id="m-display-name">Scope Cinemas Multiplex - CCC</span>
+      </div>
+      <div style="font-size:0.78rem; color:var(--apple-text-secondary); margin-bottom:0.25rem;" id="m-display-location">
+        Level 3, Colombo City Centre • 6 Screens
+      </div>
+
+      <!-- Now Showing Movie Marquee -->
+      <div style="background:rgba(255,255,255,0.05); border-radius:var(--radius-sm); padding:0.4rem 0.65rem; font-size:0.7rem; color:rgba(255,255,255,0.85); display:flex; align-items:center; gap:0.4rem; margin-bottom:0.35rem;">
+        <span>🎬</span>
+        <marquee scrollamount="3" style="flex:1;">NOW SHOWING: Avatar: Fire & Ash (3D IMAX) • Deadpool & Wolverine • Dune: Part Two • Sinhabahu</marquee>
       </div>
 
       <!-- In-Front Food Court Badge -->
-      <div style="background:rgba(48,209,88,0.12); border:1px solid rgba(48,209,88,0.32); border-radius:var(--radius-sm); padding:0.55rem 0.75rem; margin-top:0.35rem;">
+      <div style="background:rgba(48,209,88,0.12); border:1px solid rgba(48,209,88,0.32); border-radius:var(--radius-sm); padding:0.55rem 0.75rem;">
         <div style="font-size:0.72rem; color:var(--apple-green); font-weight:700; display:flex; align-items:center; gap:0.35rem;">
           🍔 Verified Food Court Directly in Front
         </div>
         <div style="font-size:0.82rem; font-weight:700; color:#fff; margin-top:0.15rem;" id="m-display-foodcourt-name">
-          KCC World Food Court & Scope Candy Bar
+          The Food Studio @ CCC & Scope Candy Bar
         </div>
         <div style="font-size:0.7rem; color:var(--apple-text-secondary); margin-top:0.1rem;" id="m-display-foodcourt-loc">
           (Level 3 Lobby directly in front of cinema entrance)
@@ -512,14 +552,37 @@
 
       <!-- Items Section -->
       <div style="padding:1.25rem;">
+        <!-- Order Fulfillment Option -->
+        <div style="margin-bottom:0.85rem;">
+          <div style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--apple-text-tertiary); margin-bottom:0.4rem;">
+            Order Fulfillment Mode
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.4rem;">
+            <button type="button" class="apple-btn-secondary active" id="m-btn-fulfill-counter" onclick="setMobileFulfillment('counter', this)" style="font-size:0.75rem; padding:0.4rem; text-align:center;">
+              ⚡ Express Counter
+            </button>
+            <button type="button" class="apple-btn-secondary" id="m-btn-fulfill-seat" onclick="setMobileFulfillment('seat', this)" style="font-size:0.75rem; padding:0.4rem; text-align:center;">
+              🛋️ Seat Delivery
+            </button>
+          </div>
+          <div id="m-seat-input-row" style="display:none; gap:0.4rem; margin-top:0.45rem;">
+            <input type="text" id="m-seat-hall" value="Screen 1" placeholder="Hall / Screen" style="flex:1; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-radius:6px; padding:0.35rem 0.5rem; color:#fff; font-size:0.75rem;">
+            <input type="text" id="m-seat-no" value="Row F12" placeholder="Seat #" style="flex:1; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-radius:6px; padding:0.35rem 0.5rem; color:#fff; font-size:0.75rem;">
+          </div>
+          <div id="m-pass-fulfill-badge" style="background:rgba(168,85,247,0.12); border:1px solid rgba(168,85,247,0.25); border-radius:var(--radius-xs); padding:0.4rem 0.65rem; font-size:0.72rem; color:#fff; margin-top:0.45rem; display:flex; justify-content:space-between; align-items:center;">
+            <span id="m-fulfillment-text">⚡ Express Counter #2 Pickup (Skip Queue)</span>
+            <span class="apple-badge purple" style="font-size:0.6rem;">Priority Pass</span>
+          </div>
+        </div>
+
         <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--apple-text-tertiary); margin-bottom:0.6rem;">
           Concession Order
         </div>
-        <div id="pass-view-items" style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem;">
+        <div id="pass-view-items" style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem; max-height:160px; overflow-y:auto;">
           <!-- Item rows -->
         </div>
 
-        <div style="background:rgba(255,255,255,0.04); border-radius:var(--radius-sm); padding:0.85rem; display:flex; flex-direction:column; gap:0.35rem; font-size:0.82rem;">
+        <div style="background:rgba(255,255,255,0.04); border-radius:var(--radius-sm); padding:0.85rem; display:flex; flex-direction:column; gap:0.35rem; font-size:0.82rem; margin-bottom:0.85rem;">
           <div style="display:flex; justify-content:space-between; color:var(--apple-text-secondary);">
             <span>Subtotal:</span>
             <span id="pass-view-subtotal">LKR 0</span>
@@ -529,8 +592,76 @@
             <span id="pass-view-savings">-LKR 0</span>
           </div>
           <div style="display:flex; justify-content:space-between; font-size:1.15rem; font-weight:800; border-top:1px solid rgba(255,255,255,0.1); padding-top:0.5rem; margin-top:0.2rem;">
-            <span>Pay at Counter:</span>
-            <span style="color:#fff;" id="pass-view-final">LKR 0</span>
+            <span>Payable Amount:</span>
+            <span style="color:var(--apple-green);" id="pass-view-final">LKR 0</span>
+          </div>
+        </div>
+
+        <!-- Sri Lankan Payment Channels -->
+        <div style="margin-bottom:0.85rem;">
+          <div style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--apple-text-tertiary); margin-bottom:0.5rem; display:flex; justify-content:space-between;">
+            <span>Payment Channel (Sri Lanka)</span>
+            <span style="color:var(--apple-green); font-size:0.65rem;">✓ CBSL Certified</span>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.4rem;">
+            <button type="button" class="payment-channel-pill-mobile active" id="m-pay-lankaqr" onclick="selectMobilePayment('lankaqr', this)">
+              <span style="font-size:1.1rem;">🇱🇰</span>
+              <div>
+                <div style="font-weight:700; font-size:0.74rem;">LankaQR</div>
+                <div style="font-size:0.6rem; color:var(--apple-green);">5% Rebate</div>
+              </div>
+            </button>
+            <button type="button" class="payment-channel-pill-mobile" id="m-pay-frimi" onclick="selectMobilePayment('frimi', this)">
+              <span style="font-size:1.1rem;">⚡</span>
+              <div>
+                <div style="font-weight:700; font-size:0.74rem;">NTB FriMi</div>
+                <div style="font-size:0.6rem; color:var(--apple-green);">10% Cashback</div>
+              </div>
+            </button>
+            <button type="button" class="payment-channel-pill-mobile" id="m-pay-koko" onclick="selectMobilePayment('koko', this)">
+              <span style="font-size:1.1rem;">🪙</span>
+              <div>
+                <div style="font-weight:700; font-size:0.74rem;">Koko (BNPL)</div>
+                <div style="font-size:0.6rem; color:#a855f7;">3x Split 0%</div>
+              </div>
+            </button>
+            <button type="button" class="payment-channel-pill-mobile" id="m-pay-counter" onclick="selectMobilePayment('counter', this)">
+              <span style="font-size:1.1rem;">💵</span>
+              <div>
+                <div style="font-weight:700; font-size:0.74rem;">Pay at Stand</div>
+                <div style="font-size:0.6rem; color:var(--apple-text-tertiary);">Cash/Card</div>
+              </div>
+            </button>
+          </div>
+
+          <!-- Dynamic LankaQR Box -->
+          <div id="m-lankaqr-box" style="background:#fff; border-radius:8px; padding:0.75rem; text-align:center; margin-top:0.65rem; color:#000;">
+            <div style="font-weight:800; font-size:0.74rem; letter-spacing:0.03em;">CBSL LANKAQR DYNAMIC QR</div>
+            <div style="font-size:0.62rem; color:#555; margin-bottom:0.35rem;">Scan with Q+, WePay, FriMi, SOLO, SmartPay</div>
+            <div style="display:inline-block; padding:4px; background:#fff; border:1px solid #000; border-radius:4px;">
+              <svg width="95" height="95" viewBox="0 0 110 110">
+                <rect width="110" height="110" fill="#fff"/>
+                <rect x="8" y="8" width="28" height="28" fill="#000"/><rect x="13" y="13" width="18" height="18" fill="#fff"/><rect x="17" y="17" width="10" height="10" fill="#000"/>
+                <rect x="74" y="8" width="28" height="28" fill="#000"/><rect x="79" y="13" width="18" height="18" fill="#fff"/><rect x="83" y="17" width="10" height="10" fill="#000"/>
+                <rect x="8" y="74" width="28" height="28" fill="#000"/><rect x="13" y="79" width="18" height="18" fill="#fff"/><rect x="17" y="83" width="10" height="10" fill="#000"/>
+                <rect x="45" y="12" width="10" height="10" fill="#000"/><rect x="58" y="22" width="10" height="10" fill="#000"/>
+                <rect x="42" y="42" width="26" height="26" fill="#000"/><rect x="48" y="48" width="14" height="14" fill="#fff"/><rect x="52" y="52" width="6" height="6" fill="#000"/>
+                <rect x="14" y="48" width="10" height="10" fill="#000"/><rect x="86" y="48" width="10" height="10" fill="#000"/>
+                <rect x="45" y="78" width="10" height="10" fill="#000"/><rect x="58" y="88" width="10" height="10" fill="#000"/>
+                <rect x="78" y="78" width="16" height="16" fill="#000"/>
+              </svg>
+            </div>
+            <div style="font-family:var(--apple-font-mono); font-size:0.65rem; font-weight:700; margin-top:0.25rem;" id="m-lankaqr-ref">REF: LK.CBSL.CB84920</div>
+          </div>
+
+          <!-- Dynamic Koko Breakdown -->
+          <div id="m-koko-box" style="display:none; background:rgba(168,85,247,0.12); border:1px solid rgba(168,85,247,0.3); border-radius:8px; padding:0.65rem; margin-top:0.65rem;">
+            <div style="font-weight:700; font-size:0.78rem; color:#fff;">Koko 3-Month Split Installment</div>
+            <div style="display:flex; justify-content:space-between; margin-top:0.35rem; font-size:0.72rem; color:#a855f7; font-weight:700;">
+              <span>M1: <span id="m-koko-m1">LKR 0</span></span>
+              <span>M2: <span id="m-koko-m2">LKR 0</span></span>
+              <span>M3: <span id="m-koko-m3">LKR 0</span></span>
+            </div>
           </div>
         </div>
       </div>
@@ -581,6 +712,9 @@
         <p style="font-size:0.75rem; color:var(--apple-text-secondary); margin-top:0.85rem; line-height:1.4;">
           Show this barcode at the candy bar counter before order punching.
         </p>
+        <button class="apple-btn-green apple-btn-primary" style="width:100%; margin-top:1rem; padding:0.75rem; font-size:0.88rem;" onclick="confirmMobileOrderPass()">
+          🎉 Confirm Order & Issue Pass
+        </button>
       </div>
     </div>
   </div>
@@ -686,26 +820,21 @@
         const cinemas = await client.getCinemas();
         mCinemas = cinemas;
       } catch (err) {
-        console.error('Failed to load cinemas from API. Falling back to Demo Mode:', err);
+        console.warn('API fallback to Sri Lankan theater registry:', err);
+      }
+      if (!mCinemas || mCinemas.length === 0) {
         mCinemas = [
-          {
-            id: "DEMO-KCC", name: "Scope Partner Multiplex - KCC", chain: "Scope Cinemas", city: "Kandy",
-            province: "Central Province", address: "Level 3, KCC", screens: 4, is_outside_colombo: true,
-            has_food_court_in_front: true, food_court_name: "KCC World Food Court & Candy Bar",
-            food_place_name: "KCC World Food Court"
-          },
-          {
-            id: "DEMO-CCC", name: "Scope Cinemas Multiplex - CCC", chain: "Scope Cinemas", city: "Colombo",
-            province: "Western Province", address: "Colombo City Centre", screens: 6, is_outside_colombo: false,
-            has_food_court_in_front: true, food_court_name: "CCC Candy Bar & Food Court",
-            food_place_name: "CCC Food Court"
-          },
-          {
-            id: "DEMO-HCM", name: "Scope Cinemas Multiplex - HCM", chain: "Scope Cinemas", city: "Colombo",
-            province: "Western Province", address: "Havelock City Mall", screens: 6, is_outside_colombo: false,
-            has_food_court_in_front: true, food_court_name: "HCM Food Lounge & IMAX Candy Bar",
-            food_place_name: "HCM Food Lounge"
-          }
+          { id:"CMB-CCC", name:"Scope Cinemas Multiplex - CCC", chain:"Scope Cinemas", city:"Colombo", province:"Western", address:"Level 3, Colombo City Centre", screens:6, latitude:6.9175, longitude:79.8550, image:"cinema-multiplex.jpg", technology:"IMAX Laser • Dolby Atmos 7.1", has_food_court_in_front:true, food_court_name:"The Food Studio @ CCC & Scope Candy Bar", food_court_location:"Level 3 Lobby", food_hours:"10:00 AM – 11:30 PM" },
+          { id:"CMB-HCM", name:"Scope Cinemas Multiplex - HCM", chain:"Scope Cinemas", city:"Colombo", province:"Western", address:"Level 4, Havelock City Mall", screens:6, latitude:6.8778, longitude:79.8653, image:"cinema-imax.jpg", technology:"Sri Lanka's Largest IMAX • Laser", has_food_court_in_front:true, food_court_name:"Havelock Food Lounge & Scope IMAX Candy Bar", food_court_location:"Level 4 Lobby", food_hours:"10:00 AM – 11:30 PM" },
+          { id:"CMB-LBT", name:"Liberty by Scope Cinemas", chain:"Scope Cinemas", city:"Colombo", province:"Western", address:"35 R. A. De Mel Mw, Colombo 03", screens:2, latitude:6.9073, longitude:79.8517, image:"cinema-heritage.jpg", technology:"Scope VIP Gold Class • Dolby 7.1", has_food_court_in_front:true, food_court_name:"Liberty Foyer Concession Court", food_court_location:"Front Main Entrance", food_hours:"10:00 AM – 10:45 PM" },
+          { id:"KND-KCC", name:"Scope Partner Multiplex - KCC", chain:"Scope Partner", city:"Kandy", province:"Central", address:"Level 3, KCC, Dalada Veediya", screens:4, latitude:7.2936, longitude:80.6385, image:"cinema-multiplex.jpg", technology:"4K Laser Projection • Dolby Digital", has_food_court_in_front:true, food_court_name:"KCC World Food Court & Scope Candy Bar", food_court_location:"Level 3 Lobby", food_hours:"10:00 AM – 10:45 PM" },
+          { id:"KND-REG", name:"Regal Cinema Kandy", chain:"Ceylon Theatres", city:"Kandy", province:"Central", address:"Katugastota Road, Kandy", screens:2, latitude:7.2985, longitude:80.6335, image:"cinema-heritage.jpg", technology:"Ceylon Theatres Classic • Dolby Surround", has_food_court_in_front:true, food_court_name:"Regal Foyer Concession Court", food_court_location:"Front Entrance", food_hours:"10:15 AM – 10:30 PM" },
+          { id:"GMP-REG", name:"Regal Cinema Gampaha", chain:"Ceylon Theatres", city:"Gampaha", province:"Western", address:"Bauddhaloka Mw, Gampaha", screens:2, latitude:7.0917, longitude:79.9998, image:"cinema-heritage.jpg", technology:"Ceylon Theatres • Digital Screen", has_food_court_in_front:true, food_court_name:"Regal Front Foyer Food Plaza", food_court_location:"Front Foyer", food_hours:"10:00 AM – 10:30 PM" },
+          { id:"GLE-QNS", name:"Queens Cinema Galle", chain:"Independent", city:"Galle", province:"Southern", address:"Wakwella Road, Galle", screens:2, latitude:6.0535, longitude:80.2210, image:"cinema-heritage.jpg", technology:"Heritage Galle Screen • Dolby Digital", has_food_court_in_front:true, food_court_name:"Queens Foyer Candy Bar", food_court_location:"Main Lobby", food_hours:"10:00 AM – 10:30 PM" },
+          { id:"NGB-RDO", name:"Rodeo Cinema Negombo", chain:"Western Coast", city:"Negombo", province:"Western", address:"Main Street, Negombo", screens:2, latitude:7.2083, longitude:79.8358, image:"cinema-multiplex.jpg", technology:"Coastal Multiplex • RealD 3D", has_food_court_in_front:true, food_court_name:"Rodeo Beach Concession Court", food_court_location:"Front Foyer", food_hours:"10:30 AM – 11:00 PM" },
+          { id:"KRN-MLD", name:"Maldini Cinema Kurunegala", chain:"Maldini", city:"Kurunegala", province:"North Western", address:"Colombo Road, Kurunegala", screens:2, latitude:7.4863, longitude:80.3623, image:"cinema-multiplex.jpg", technology:"North Western Cineplex • Dolby", has_food_court_in_front:true, food_court_name:"North Star Concession Lobby", food_court_location:"Lobby Entrance", food_hours:"10:00 AM – 10:00 PM" },
+          { id:"MTR-SKC", name:"SK Cinema Matara", chain:"Southern Screen", city:"Matara", province:"Southern", address:"Anagarika Dharmapala Mw, Matara", screens:2, latitude:5.9485, longitude:80.5488, image:"cinema-heritage.jpg", technology:"Southern Screen • Dolby Surround", has_food_court_in_front:true, food_court_name:"SK Concession Court", food_court_location:"Main Lobby", food_hours:"10:30 AM – 10:30 PM" },
+          { id:"JFN-RJA", name:"Rajah Cinema Jaffna", chain:"Northern Network", city:"Jaffna", province:"Northern", address:"Hospital Road, Jaffna", screens:3, latitude:9.6615, longitude:80.0255, image:"cinema-heritage.jpg", technology:"Northern Star • 4K Digital Cinema", has_food_court_in_front:true, food_court_name:"Rajah Snack Point", food_court_location:"Main Entrance", food_hours:"10:00 AM – 10:00 PM" }
         ];
       }
       
@@ -734,6 +863,16 @@
       document.getElementById('m-display-name').textContent = cinema.name;
       document.getElementById('m-display-chain').textContent = cinema.chain || 'Independent Circuit';
       document.getElementById('m-display-location').textContent = `${cinema.address || cinema.city} • ${cinema.screens} Screens`;
+
+      const cinemaImg = cinema.image || (cinema.name.toLowerCase().includes('imax') ? 'cinema-imax.jpg' : (cinema.screens >= 4 ? 'cinema-multiplex.jpg' : 'cinema-heritage.jpg'));
+      const banner = document.getElementById('m-cinema-banner');
+      if (banner) {
+        banner.style.backgroundImage = `url('${cinemaImg}')`;
+      }
+      const techEl = document.getElementById('m-display-tech');
+      if (techEl) {
+        techEl.textContent = `✨ ${cinema.technology || 'Dolby Atmos & Laser'}`;
+      }
       
       const fcName = cinema.food_court_name || cinema.food_place_name || 'Theater Concession Counter';
       const fcLoc = cinema.food_court_location || 'Directly in front of cinema entrance';
@@ -758,13 +897,44 @@
     async function loadMobileConcessions(cinemaId) {
       try {
         const data = await client.getLiveConcessions(cinemaId);
-        mMenu = data.items || [];
+        mMenu = (data.items || []).map(item => {
+          const price = item.price_lkr !== undefined ? item.price_lkr : (item.price || 0);
+          const orig = item.base_price_lkr !== undefined ? item.base_price_lkr : (item.original_price || price);
+          let img = item.image;
+          if (!img) {
+            if (item.category === 'Popcorn') img = 'popcorn.jpg';
+            else if (item.category === 'Beverage') img = 'beverage.jpg';
+            else if (item.category === 'Combo') img = 'combo.jpg';
+            else if (item.name && item.name.toLowerCase().includes('dog')) img = 'hotdog.jpg';
+            else if (item.name && (item.name.toLowerCase().includes('roll') || item.name.toLowerCase().includes('samosa'))) img = 'rolls.jpg';
+            else img = 'nachos.jpg';
+          }
+          return {
+            ...item,
+            price: price,
+            original_price: orig,
+            image: img
+          };
+        });
       } catch (err) {
         console.error('Failed to load mobile concessions, using fallback:', err);
+      }
+      if (!mMenu || mMenu.length === 0) {
         mMenu = [
-          { id: "POP-01", category: "Popcorn", name: "Large Caramel Popcorn", size: "Large", price: 1200, original_price: 1500 },
-          { id: "BEV-01", category: "Beverages", name: "Coke Large", size: "Large", price: 600, original_price: 800 },
-          { id: "SNC-01", category: "Snacks", name: "Nachos with Cheese", size: "Regular", price: 1100, original_price: 1100 }
+          { id:"P01", category:"Popcorn", name:"Scope Warm Caramel Popcorn Tub", size:"Jumbo Souvenir Tub", price:1350, original_price:1600, image:"popcorn.jpg", price_trend:"down" },
+          { id:"P02", category:"Popcorn", name:"Kochchi & White Cheddar Popcorn", size:"Large Bucket", price:1250, original_price:1450, image:"popcorn.jpg", price_trend:"down" },
+          { id:"P03", category:"Popcorn", name:"Classic Clarified Butter Salted Popcorn", size:"Large Bucket", price:1100, original_price:1300, image:"popcorn.jpg", price_trend:"steady" },
+          { id:"B01", category:"Beverage", name:"Chilled Milo Dinosaur Float", size:"Tall Glass", price:550, original_price:650, image:"beverage.jpg", price_trend:"down" },
+          { id:"B02", category:"Beverage", name:"Elephant House Ginger Beer (EGB) Float", size:"Regular 450ml", price:480, original_price:580, image:"beverage.jpg", price_trend:"steady" },
+          { id:"B03", category:"Beverage", name:"Scope Fresh Passion Fruit Mint Sparkler", size:"Medium 500ml", price:750, original_price:900, image:"beverage.jpg", price_trend:"down" },
+          { id:"B04", category:"Beverage", name:"Scope Large Fountain Coca-Cola", size:"Large 650ml", price:650, original_price:800, image:"beverage.jpg", price_trend:"steady" },
+          { id:"S01", category:"Snack", name:"IMAX Loaded Chicken Nachos", size:"Sharing Platter", price:1450, original_price:1700, image:"nachos.jpg", price_trend:"down" },
+          { id:"S02", category:"Snack", name:"Gourmet Brioche Chicken Hotdog", size:"Single", price:1150, original_price:1350, image:"hotdog.jpg", price_trend:"steady" },
+          { id:"S03", category:"Snack", name:"Crispy Ceylon Chicken Rolls (2 pcs)", size:"Hot Snack", price:820, original_price:950, image:"rolls.jpg", price_trend:"down" },
+          { id:"S04", category:"Snack", name:"Crispy Ceylon Chicken Samosas (4 pcs)", size:"Platter", price:750, original_price:900, image:"rolls.jpg", price_trend:"down" },
+          { id:"C01", category:"Combo", name:"Scope Director's Deluxe Couple Combo", size:"Duo Feasting Pack", price:2950, original_price:3600, image:"combo.jpg", price_trend:"down" },
+          { id:"C02", category:"Combo", name:"CinePass VIP Platinum Movie Feast", size:"Family (3-4 Pax)", price:4200, original_price:5200, image:"combo.jpg", price_trend:"down" },
+          { id:"C03", category:"Combo", name:"Solo Movie Night Saver", size:"Single Pack", price:1650, original_price:2100, image:"combo.jpg", price_trend:"down" }
         ];
       }
       updateMobileCatCounts();
@@ -777,8 +947,11 @@
       try {
         ads = await client.getCinemaAds(cinemaId);
       } catch (err) {
-        console.error('Failed to load mobile ads, using fallback:', err);
-        ads = [{ promo_code: "DEMO-COMBO", title: "Demo Flash Deal", discount_text: "30% OFF", is_flash_ad: true }];
+        ads = [
+          { promo_code:"CINE-COMBO30", title:"Combo Flash Deal", subtitle:"Save 30% on couple & family combos", discount_text:"30% OFF", is_flash_ad:true, badge_text:"FLASH DEAL" },
+          { promo_code:"CINE-CINEMA25", title:"CinePass VIP Perk", subtitle:"Unlock 25% on all fountain drinks", discount_text:"25% OFF", badge_text:"VIP PERK" },
+          { promo_code:"CINE-STUDENT", title:"Student Movie Special", subtitle:"Show Student ID for 15% concession off", discount_text:"15% OFF", badge_text:"STUDENT" }
+        ];
       }
 
       if (!ads || ads.length === 0) {
@@ -792,9 +965,11 @@
               ${ad.badge_text || 'PROMO'}
             </span>
             <div style="font-size:0.88rem; font-weight:700;">${ad.title}</div>
+            <div style="font-size:0.72rem; color:var(--apple-text-secondary); margin-top:0.2rem;">${ad.subtitle || 'Exclusive moviegoer discount'}</div>
           </div>
-          <div style="font-size:0.75rem; color:var(--apple-green); font-weight:700; border-top:1px solid rgba(255,255,255,0.06); padding-top:0.4rem;">
-            ${ad.discount_text}
+          <div style="font-size:0.75rem; color:var(--apple-green); font-weight:700; border-top:1px solid rgba(255,255,255,0.06); padding-top:0.4rem; display:flex; justify-content:space-between; align-items:center;">
+            <span>${ad.discount_text}</span>
+            <span style="font-size:0.68rem; color:var(--dracula-purple);">Claim →</span>
           </div>
         </div>
       `).join('');
@@ -822,26 +997,26 @@
       }
 
       container.innerHTML = filtered.map(item => {
-        const emoji = item.category === 'Popcorn' ? '🍿' : item.category === 'Beverage' ? '🥤' : item.category === 'Combo' ? '🎬' : '🌭';
-        const bestDiscount = (item.discounts && item.discounts.length > 0) ? item.discounts[0] : null;
-        const discountPrice = bestDiscount ? bestDiscount.discounted_price : item.price;
-        const savings = item.price - discountPrice;
+        const p = (typeof item.price_lkr === 'number') ? item.price_lkr : (typeof item.price === 'number' ? item.price : 0);
+        const orig = (typeof item.base_price_lkr === 'number') ? item.base_price_lkr : (typeof item.original_price === 'number' ? item.original_price : p);
+        const savings = Math.max(0, orig - p);
+        const img = item.image || (item.category === 'Popcorn' ? 'popcorn.jpg' : item.category === 'Beverage' ? 'beverage.jpg' : item.category === 'Combo' ? 'combo.jpg' : 'nachos.jpg');
 
         return `
           <div class="concession-item-row">
-            <div style="display:flex; align-items:center; gap:0.65rem; flex:1;">
-              <span style="font-size:1.6rem;">${emoji}</span>
-              <div>
-                <div style="font-size:0.92rem; font-weight:700;">${item.name}</div>
+            <div style="display:flex; align-items:center; gap:0.75rem; flex:1; min-width:0;">
+              <div class="concession-thumb" style="background-image: url('${img}');"></div>
+              <div style="min-width:0;">
+                <div style="font-size:0.92rem; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.name}</div>
                 <div style="font-size:0.74rem; color:var(--apple-text-secondary);">${item.category} • ${item.size || 'Standard'}</div>
                 ${savings > 0 ? `
-                  <div style="font-size:0.68rem; color:var(--apple-green); font-weight:600;">Save LKR ${savings.toFixed(0)}</div>
+                  <div style="font-size:0.68rem; color:var(--apple-green); font-weight:600;">Save LKR ${savings.toFixed(0)} with CinePass</div>
                 ` : ''}
               </div>
             </div>
-            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.35rem;">
-              <div style="font-size:0.95rem; font-weight:800;">LKR ${item.price.toFixed(0)}</div>
-              <button class="add-btn" style="padding:0.25rem 0.65rem; font-size:0.75rem;" onclick="addMobileCartById('${item.id}')">
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.35rem; flex-shrink:0;">
+              <div style="font-size:0.95rem; font-weight:800;">LKR ${p.toFixed(0)}</div>
+              <button class="add-btn" onclick="addMobileCartById('${item.id}')">
                 + Add
               </button>
             </div>
@@ -881,25 +1056,32 @@
       if (!container) return;
       container.innerHTML = mCinemas.map(c => {
         const isSelected = mCurrentCinema && mCurrentCinema.id === c.id;
+        const cinemaImg = c.image || (c.name.toLowerCase().includes('imax') ? 'cinema-imax.jpg' : (c.screens >= 4 ? 'cinema-multiplex.jpg' : 'cinema-heritage.jpg'));
+        const techBadge = c.technology || `${c.screens} Screens • Dolby Atmos`;
+
         return `
-          <div style="background:var(--apple-surface-elevated); border:1px solid ${isSelected ? 'var(--apple-blue-ios)' : 'rgba(255,255,255,0.08)'}; border-radius:var(--radius-md); padding:0.95rem; display:flex; flex-direction:column; gap:0.6rem;">
+          <div style="background:var(--apple-surface-elevated); border:1px solid ${isSelected ? 'var(--dracula-purple)' : 'rgba(255,255,255,0.08)'}; border-radius:var(--radius-md); padding:0.85rem; display:flex; flex-direction:column; gap:0.55rem;">
+            <div style="background-image: url('${cinemaImg}'); background-size: cover; background-position: center; height: 95px; border-radius: var(--radius-sm); position: relative; overflow:hidden;">
+              <div style="position:absolute; inset:0; background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.85) 100%);"></div>
+              <span class="apple-badge blue" style="position:absolute; top:0.4rem; left:0.4rem; font-size:0.62rem; z-index:2;">${c.chain || 'Circuit'}</span>
+              <span style="position:absolute; bottom:0.35rem; left:0.4rem; font-size:0.65rem; color:#fff; font-weight:700; z-index:2;">✨ ${techBadge}</span>
+            </div>
+
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
               <div>
                 <div style="font-size:0.95rem; font-weight:700; color:#fff;">${c.name}</div>
                 <div style="font-size:0.75rem; color:var(--apple-text-secondary);">${c.city} • ${c.screens} Screens</div>
               </div>
-              <span class="apple-badge blue" style="font-size:0.65rem;">${c.chain || 'Circuit'}</span>
             </div>
 
-            <div style="background:rgba(0,0,0,0.4); border:1px solid rgba(48,209,88,0.25); border-radius:var(--radius-xs); padding:0.5rem 0.65rem;">
+            <div style="background:rgba(0,0,0,0.4); border:1px solid rgba(48,209,88,0.25); border-radius:var(--radius-xs); padding:0.45rem 0.6rem;">
               <div style="font-size:0.7rem; color:var(--apple-green); font-weight:700;">🍔 Food Court in Front:</div>
-              <div style="font-size:0.78rem; font-weight:600; color:#fff;">${c.food_court_name || c.food_place_name}</div>
-              <div style="font-size:0.68rem; color:var(--apple-text-tertiary);">${c.food_court_location || 'Directly facing cinema entrance'}</div>
-              <div style="font-size:0.65rem; color:var(--apple-purple); font-weight:600; margin-top:0.15rem;">🍿 Cinema food and drinks only</div>
+              <div style="font-size:0.78rem; font-weight:600; color:#fff;">${c.food_court_name || 'Concession Counter'}</div>
+              <div style="font-size:0.65rem; color:var(--apple-text-tertiary);">${c.food_court_location || 'Lobby entrance'}</div>
             </div>
 
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span style="font-size:0.7rem; color:var(--apple-text-secondary);">🕒 ${c.food_hours || '10 AM - 10:30 PM'}</span>
+              <span style="font-size:0.7rem; color:var(--apple-text-secondary);">🕒 ${c.food_hours || '10:00 AM – 11:30 PM'}</span>
               <button class="${isSelected ? 'apple-btn-secondary' : 'apple-btn-primary'}" style="font-size:0.75rem; padding:0.35rem 0.8rem;" onclick="selectMobileCinemaFromDirectory('${c.id}')">
                 ${isSelected ? '✓ Active' : 'Select'}
               </button>
@@ -938,8 +1120,71 @@
     }
 
     function addMobileCart(item) {
-      mCart.push(item);
+      const p = (typeof item.price_lkr === 'number') ? item.price_lkr : (typeof item.price === 'number' ? item.price : 0);
+      const orig = (typeof item.base_price_lkr === 'number') ? item.base_price_lkr : (typeof item.original_price === 'number' ? item.original_price : p);
+      mCart.push({ ...item, price: p, original_price: orig });
       updateMobileCartUI();
+      showMobileToast(`Added ${item.name} to tray`);
+    }
+
+    let mPaymentMethod = 'lankaqr';
+    function selectMobilePayment(method, btn) {
+      mPaymentMethod = method;
+      document.querySelectorAll('.payment-channel-pill-mobile').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+
+      const qrBox = document.getElementById('m-lankaqr-box');
+      const kokoBox = document.getElementById('m-koko-box');
+
+      if (method === 'lankaqr') {
+        if (qrBox) qrBox.style.display = 'block';
+        if (kokoBox) kokoBox.style.display = 'none';
+        showMobileToast('LankaQR selected (5% digital rebate applied)');
+      } else if (method === 'koko') {
+        if (qrBox) qrBox.style.display = 'none';
+        if (kokoBox) kokoBox.style.display = 'block';
+        showMobileToast('Koko 3-month split selected (0% interest)');
+      } else if (method === 'frimi') {
+        if (qrBox) qrBox.style.display = 'none';
+        if (kokoBox) kokoBox.style.display = 'none';
+        showMobileToast('NTB FriMi selected (10% concession cashback)');
+      } else {
+        if (qrBox) qrBox.style.display = 'none';
+        if (kokoBox) kokoBox.style.display = 'none';
+        showMobileToast('Pay at candy bar stand on collection');
+      }
+    }
+
+    let mFulfillmentMode = 'counter';
+    function setMobileFulfillment(mode, btn) {
+      mFulfillmentMode = mode;
+      document.getElementById('m-btn-fulfill-counter').classList.toggle('active', mode === 'counter');
+      document.getElementById('m-btn-fulfill-seat').classList.toggle('active', mode === 'seat');
+
+      const seatRow = document.getElementById('m-seat-input-row');
+      if (seatRow) seatRow.style.display = mode === 'seat' ? 'flex' : 'none';
+
+      const fulfillBadge = document.getElementById('m-fulfillment-text');
+      if (fulfillBadge) {
+        if (mode === 'seat') {
+          const hall = document.getElementById('m-seat-hall') ? document.getElementById('m-seat-hall').value : 'Screen 1';
+          const seat = document.getElementById('m-seat-no') ? document.getElementById('m-seat-no').value : 'Row F12';
+          fulfillBadge.innerHTML = `🛋️ Intermission Seat Delivery · <strong>${hall}, ${seat}</strong>`;
+          showMobileToast('Intermission Seat Delivery selected');
+        } else {
+          fulfillBadge.innerHTML = `⚡ Express Counter #2 Pickup (Skip Queue)`;
+          showMobileToast('Express Counter Pickup selected');
+        }
+      }
+    }
+
+    function confirmMobileOrderPass() {
+      const cinemaName = mCurrentCinema ? mCurrentCinema.name : 'Cinema';
+      const serial = document.getElementById('pass-view-serial').textContent;
+      showMobileToast(`🎉 Pass ${serial} issued for ${cinemaName}!`);
+      setTimeout(() => {
+        switchToTab('pass');
+      }, 1000);
     }
 
     function updateMobileCartUI() {
@@ -956,39 +1201,63 @@
       if (mCart.length === 0) {
         trayList.innerHTML = '<div style="color:var(--apple-text-tertiary); font-size:0.85rem; text-align:center; padding:2rem;">Your concession tray is empty. Add snacks from the Explore tab!</div>';
       } else {
-        trayList.innerHTML = mCart.map((item, idx) => `
-          <div style="background:var(--apple-surface); border:var(--apple-border); border-radius:var(--radius-sm); padding:0.8rem 1rem; display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <div style="font-weight:700; font-size:0.9rem;">${item.name}</div>
-              <div style="font-size:0.72rem; color:var(--apple-text-secondary);">${item.category}</div>
+        trayList.innerHTML = mCart.map((item, idx) => {
+          const p = (typeof item.price_lkr === 'number') ? item.price_lkr : (typeof item.price === 'number' ? item.price : 0);
+          return `
+            <div style="background:var(--apple-surface); border:var(--apple-border); border-radius:var(--radius-sm); padding:0.8rem 1rem; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-weight:700; font-size:0.9rem;">${item.name}</div>
+                <div style="font-size:0.72rem; color:var(--apple-text-secondary);">${item.category} • ${item.size || 'Standard'}</div>
+              </div>
+              <div style="display:flex; align-items:center; gap:0.6rem;">
+                <span style="font-weight:800; font-size:0.92rem;">LKR ${p.toFixed(0)}</span>
+                <button onclick="removeMobileCart(${idx})" style="background:none; border:none; color:var(--apple-red); cursor:pointer; font-size:1.1rem;">✕</button>
+              </div>
             </div>
-            <div style="display:flex; align-items:center; gap:0.6rem;">
-              <span style="font-weight:800; font-size:0.92rem;">LKR ${item.price.toFixed(0)}</span>
-              <button onclick="removeMobileCart(${idx})" style="background:none; border:none; color:var(--apple-red); cursor:pointer; font-size:1.1rem;">✕</button>
-            </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       }
 
-      const subtotal = mCart.reduce((s, i) => s + i.price, 0);
+      const subtotal = mCart.reduce((s, i) => s + ((typeof i.price_lkr === 'number') ? i.price_lkr : (typeof i.price === 'number' ? i.price : 0)), 0);
       const savings = subtotal > 2000 ? subtotal * 0.25 : subtotal * 0.15;
-      const finalTotal = subtotal - savings;
+      const finalTotal = Math.max(0, subtotal - savings);
 
       document.getElementById('m-tray-subtotal').textContent = `LKR ${subtotal.toFixed(0)}`;
       document.getElementById('m-tray-savings').textContent = `-LKR ${savings.toFixed(0)}`;
       document.getElementById('m-tray-final').textContent = `LKR ${finalTotal.toFixed(0)}`;
 
       // Update Pass Screen
-      document.getElementById('pass-view-items').innerHTML = mCart.map(item => `
-        <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
-          <span>• ${item.name}</span>
-          <span style="font-weight:600;">LKR ${item.price.toFixed(0)}</span>
-        </div>
-      `).join('');
+      document.getElementById('pass-view-items').innerHTML = mCart.map(item => {
+        const p = (typeof item.price_lkr === 'number') ? item.price_lkr : (typeof item.price === 'number' ? item.price : 0);
+        return `
+          <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+            <span>• ${item.name}</span>
+            <span style="font-weight:600;">LKR ${p.toFixed(0)}</span>
+          </div>
+        `;
+      }).join('');
       document.getElementById('pass-view-subtotal').textContent = `LKR ${subtotal.toFixed(0)}`;
       document.getElementById('pass-view-savings').textContent = `-LKR ${savings.toFixed(0)}`;
       document.getElementById('pass-view-final').textContent = `LKR ${finalTotal.toFixed(0)}`;
-      document.getElementById('pass-view-serial').textContent = `CB-PASS-${Math.floor(10000 + Math.random() * 90000)}`;
+
+      const serialNumber = `CB-${mCurrentCinema ? mCurrentCinema.id : 'PASS'}-${Math.floor(10000 + Math.random() * 90000)}-2026`;
+      document.getElementById('pass-view-serial').textContent = serialNumber;
+
+      const lankaQrRef = document.getElementById('m-lankaqr-ref');
+      if (lankaQrRef) {
+        lankaQrRef.textContent = `REF: LK.CBSL.${mCurrentCinema ? mCurrentCinema.id : 'CB'}.${Math.floor(10000 + Math.random() * 90000)}`;
+      }
+
+      // Koko 3-month split calculation
+      const splitAmount = Math.round(finalTotal / 3);
+      const k1 = document.getElementById('m-koko-m1');
+      const k2 = document.getElementById('m-koko-m2');
+      const k3 = document.getElementById('m-koko-m3');
+      if (k1 && k2 && k3) {
+        k1.textContent = `LKR ${splitAmount.toLocaleString()}`;
+        k2.textContent = `LKR ${splitAmount.toLocaleString()}`;
+        k3.textContent = `LKR ${splitAmount.toLocaleString()}`;
+      }
     }
 
     function removeMobileCart(idx) {
@@ -1045,25 +1314,27 @@
         resBox.innerHTML = `
           <div class="apple-card" style="padding:1.15rem; border-color:rgba(48,209,88,0.35);">
             <span class="apple-badge green" style="font-size:0.7rem; margin-bottom:0.4rem;">Optimal Bundle Unlocked</span>
-            <div style="font-size:1.05rem; font-weight:700; margin-bottom:0.6rem;">Applied: ${result.applied_promo}</div>
+            <div style="font-size:1.05rem; font-weight:700; margin-bottom:0.6rem;">Applied: ${result.applied_promo || 'Best Value Saver'}</div>
             
             <div style="display:flex; flex-direction:column; gap:0.4rem; margin-bottom:0.85rem;">
-              ${result.items.map(item => `
+              ${result.items.map(item => {
+                const p = (typeof item.price_lkr === 'number') ? item.price_lkr : (typeof item.price === 'number' ? item.price : 0);
+                return `
                 <div style="display:flex; justify-content:space-between; font-size:0.8rem; background:rgba(255,255,255,0.04); padding:0.4rem 0.6rem; border-radius:6px;">
                   <span>${item.name}</span>
-                  <span style="font-weight:700;">LKR ${item.price.toFixed(0)}</span>
+                  <span style="font-weight:700;">LKR ${p.toFixed(0)}</span>
                 </div>
-              `).join('')}
+              `;}).join('')}
             </div>
 
             <div style="border-top:1px solid rgba(255,255,255,0.1); padding-top:0.6rem; margin-bottom:0.85rem;">
               <div style="font-size:1.15rem; font-weight:800; color:var(--apple-green);">
-                LKR ${result.final_total.toFixed(0)} 
-                <span style="font-size:0.75rem;">(Saved LKR ${result.discount_amount.toFixed(0)})</span>
+                LKR ${(result.final_total || 0).toFixed(0)} 
+                <span style="font-size:0.75rem;">(Saved LKR ${(result.discount_amount || 0).toFixed(0)})</span>
               </div>
             </div>
 
-            <button class="apple-btn-green apple-btn-primary" style="width:100%; padding:0.65rem; font-size:0.85rem;" onclick="applyOptimizedBundleMobile(${JSON.stringify(result.items).replace(/"/g, '&quot;')})">
+            <button class="apple-btn-green apple-btn-primary" style="width:100%; padding:0.65rem; font-size:0.85rem;" onclick='applyOptimizedBundleMobile(${JSON.stringify(result.items).replace(/'/g, "&#39;")})'>
               🎟️ Use in CinePass
             </button>
           </div>
@@ -1113,39 +1384,77 @@
     }
 
     function applyOptimizedBundleMobile(items) {
-      mCart = items;
+      mCart = items.map(item => {
+        const p = (typeof item.price_lkr === 'number') ? item.price_lkr : (typeof item.price === 'number' ? item.price : 0);
+        const orig = (typeof item.base_price_lkr === 'number') ? item.base_price_lkr : (typeof item.original_price === 'number' ? item.original_price : p);
+        return { ...item, price: p, original_price: orig };
+      });
       updateMobileCartUI();
       switchToTab('pass');
     }
 
+    function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
+      if (!lat1 || !lon1 || !lat2 || !lon2) return 9999;
+      const R = 6371.0;
+      const dLat = (lat2 - lat1) * (Math.PI / 180.0);
+      const dLon = (lon2 - lon1) * (Math.PI / 180.0);
+      const rLat1 = lat1 * (Math.PI / 180.0);
+      const rLat2 = lat2 * (Math.PI / 180.0);
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(rLat1) * Math.cos(rLat2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return Math.round(R * c * 10) / 10;
+    }
+
     function handleMobileDetectGPS() {
       if (!navigator.geolocation) {
-        showMobileToast('Geolocation not supported');
+        showMobileToast('GPS not available in browser');
         return;
       }
-      showMobileToast('📡 Detecting nearest cinema...');
+      showMobileToast('📡 Locating nearest Sri Lankan theater...');
+
+      const safetyTimer = setTimeout(() => {
+        showMobileToast('Location response delayed. Please choose theater.');
+      }, 8000);
+
       navigator.geolocation.getCurrentPosition(async (pos) => {
+        clearTimeout(safetyTimer);
         try {
           const lat = pos.coords.latitude;
           const lng = pos.coords.longitude;
-          const sorted = await client.getCinemas({ lat, lng });
-          if (sorted && sorted.length > 0) {
-            mCinemas = sorted;
-            selectMobileCinema(sorted[0]);
-            const dropdown = document.getElementById('m-cinema-dropdown');
-            if (dropdown) dropdown.value = sorted[0].id;
-            const dist = sorted[0].distance_km;
-            const distStr = (typeof dist === 'number' && dist >= 0) ? ` (${dist.toFixed(1)} km away)` : '';
-            showMobileToast(`📍 Nearest: ${sorted[0].name}${distStr}`);
+
+          mCinemas.forEach(c => {
+            if (c.latitude && c.longitude) {
+              c.distance_km = calculateHaversineDistance(lat, lng, c.latitude, c.longitude);
+            } else {
+              c.distance_km = 9999;
+            }
+          });
+
+          mCinemas.sort((a, b) => (a.distance_km || 9999) - (b.distance_km || 9999));
+
+          const dropdown = document.getElementById('m-cinema-dropdown');
+          if (dropdown) {
+            dropdown.innerHTML = mCinemas.map(c => `
+              <option value="${c.id}">${c.name} (${c.city})</option>
+            `).join('');
+            dropdown.value = mCinemas[0].id;
           }
+
+          selectMobileCinema(mCinemas[0]);
+          const nearest = mCinemas[0];
+          const dist = nearest.distance_km;
+          const distStr = (typeof dist === 'number' && dist < 9000) ? ` (${dist.toFixed(1)} km away)` : '';
+          showMobileToast(`📍 Nearest: ${nearest.name}${distStr}`);
         } catch (e) {
           console.error(e);
           showMobileToast('Please select cinema from dropdown');
         }
       }, (err) => {
+        clearTimeout(safetyTimer);
         console.warn('Geolocation error:', err);
         showMobileToast('Location access denied');
-      }, { timeout: 10000, enableHighAccuracy: true });
+      }, { timeout: 8000, enableHighAccuracy: true });
     }
 
     function startMobileTicker() {
