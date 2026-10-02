@@ -3,8 +3,8 @@
   "sync_interval": "1h",
   "sync_interval_seconds": 3600,
   "source": "Scope Cinemas Sri Lanka & EAP Films Real-Time Telemetry Feed",
-  "last_synced_at": "2026-10-02T09:00:00Z",
-  "next_sync_at": "2026-10-02T10:00:00Z",
+  "last_synced_at": "2026-10-02T10:58:49.786Z",
+  "next_sync_at": "2026-10-02T11:58:49.786Z",
   "total_movies": 12,
   "total_cinemas_covered": 13,
   "movies": [
@@ -16,11 +16,31 @@
       "genre": "Romance / Drama",
       "duration": "2h 18m",
       "rating": "U",
-      "formats": ["2D Digital", "Dolby 7.1"],
-      "cinema_ids": ["CMB-CCC", "CMB-HCM", "CMB-SVY", "GMP-RGL", "GLE-QNS", "KRN-IMP", "KDY-KCC"],
-      "showtimes": ["10:30 AM", "1:45 PM", "4:30 PM", "7:15 PM"],
+      "formats": [
+        "2D Digital",
+        "Dolby 7.1"
+      ],
+      "cinema_ids": [
+        "CMB-CCC",
+        "CMB-HCM",
+        "CMB-SVY",
+        "GMP-RGL",
+        "GLE-QNS",
+        "KRN-IMP",
+        "KDY-KCC"
+      ],
+      "showtimes": [
+        "10:30 AM",
+        "1:45 PM",
+        "4:30 PM",
+        "7:15 PM"
+      ],
       "director": "Sanjaya Nirmal",
-      "cast": ["Dinakshie Priyasad", "Sajitha Anuththara", "Bimal Jayakodi"],
+      "cast": [
+        "Dinakshie Priyasad",
+        "Sajitha Anuththara",
+        "Bimal Jayakodi"
+      ],
       "synopsis": "A deeply emotional Sri Lankan romantic journey celebrating enduring love, cultural nuances, and heart-stirring music.",
       "status": "now_showing",
       "release_date": "October 2026",
@@ -35,11 +55,32 @@
       "genre": "Superhero / Action / Sci-Fi",
       "duration": "3h 02m",
       "rating": "PG-13",
-      "formats": ["IMAX 3D", "Dolby Atmos", "Laser 4K"],
-      "cinema_ids": ["CMB-CCC", "CMB-HCM", "CMB-OGF", "CMB-SVY", "KDY-KCC"],
-      "showtimes": ["11:00 AM", "3:00 PM", "6:45 PM", "10:15 PM"],
+      "formats": [
+        "IMAX 3D",
+        "Dolby Atmos",
+        "Laser 4K"
+      ],
+      "cinema_ids": [
+        "CMB-CCC",
+        "CMB-HCM",
+        "CMB-OGF",
+        "CMB-SVY",
+        "KDY-KCC"
+      ],
+      "showtimes": [
+        "11:00 AM",
+        "3:00 PM",
+        "6:45 PM",
+        "10:15 PM"
+      ],
       "director": "Anthony Russo, Joe Russo",
-      "cast": ["Robert Downey Jr.", "Chris Evans", "Mark Ruffalo", "Chris Hemsworth", "Scarlett Johansson"],
+      "cast": [
+        "Robert Downey Jr.",
+        "Chris Evans",
+        "Mark Ruffalo",
+        "Chris Hemsworth",
+        "Scarlett Johansson"
+      ],
       "synopsis": "The legendary epic Marvel conclusion returns to Sri Lankan IMAX screens with newly restored audio and high-frame-rate visuals.",
       "status": "now_showing",
       "release_date": "October 2026 Theatrical Encore",
@@ -54,11 +95,30 @@
       "genre": "Action / Crime / Thriller",
       "duration": "2h 35m",
       "rating": "U/A",
-      "formats": ["Dolby Atmos", "2D Digital"],
-      "cinema_ids": ["CMB-CCC", "CMB-HCM", "CMB-OGF", "CMB-SVY", "MTR-SKC", "JFN-CGS"],
-      "showtimes": ["10:45 AM", "2:00 PM", "5:30 PM", "8:45 PM"],
+      "formats": [
+        "Dolby Atmos",
+        "2D Digital"
+      ],
+      "cinema_ids": [
+        "CMB-CCC",
+        "CMB-HCM",
+        "CMB-OGF",
+        "CMB-SVY",
+        "MTR-SKC",
+        "JFN-CGS"
+      ],
+      "showtimes": [
+        "10:45 AM",
+        "2:00 PM",
+        "5:30 PM",
+        "8:45 PM"
+      ],
       "director": "Karthik Subbaraj",
-      "cast": ["Vijay Sethupathi", "SJ Suryah", "Pooja Hegde"],
+      "cast": [
+        "Vijay Sethupathi",
+        "SJ Suryah",
+        "Pooja Hegde"
+      ],
       "synopsis": "A gritty neo-noir underworld showdown with pulse-raising soundtrack, dynamic cinematography, and explosive twists.",
       "status": "now_showing",
       "release_date": "October 2026",
@@ -73,11 +133,30 @@
       "genre": "Mystery / Psychological Thriller",
       "duration": "2h 10m",
       "rating": "U/A",
-      "formats": ["2D Digital", "Surround 5.1"],
-      "cinema_ids": ["CMB-CCC", "CMB-HCM", "CMB-LBT", "CMB-MJC", "GMP-RGL", "KDY-KCC"],
-      "showtimes": ["1:30 PM", "4:15 PM", "7:00 PM", "9:45 PM"],
+      "formats": [
+        "2D Digital",
+        "Surround 5.1"
+      ],
+      "cinema_ids": [
+        "CMB-CCC",
+        "CMB-HCM",
+        "CMB-LBT",
+        "CMB-MJC",
+        "GMP-RGL",
+        "KDY-KCC"
+      ],
+      "showtimes": [
+        "1:30 PM",
+        "4:15 PM",
+        "7:00 PM",
+        "9:45 PM"
+      ],
       "director": "Channa Deshapriya",
-      "cast": ["Hemal Ranasinghe", "Udari Warnakulasooriya", "Jackson Anthony"],
+      "cast": [
+        "Hemal Ranasinghe",
+        "Udari Warnakulasooriya",
+        "Jackson Anthony"
+      ],
       "synopsis": "An intricate psychological mystery surrounding an ancient family heirloom and forgotten truths buried in Sri Lanka's central highlands.",
       "status": "now_showing",
       "release_date": "October 2026",
@@ -92,11 +171,32 @@
       "genre": "Action / Adventure / Sci-Fi",
       "duration": "2h 28m",
       "rating": "PG-13",
-      "formats": ["IMAX 3D", "4DX", "Dolby Atmos"],
-      "cinema_ids": ["CMB-CCC", "CMB-HCM", "CMB-OGF", "CMB-LBT", "CMB-MJC", "KDY-KCC"],
-      "showtimes": ["10:15 AM", "1:15 PM", "4:45 PM", "8:00 PM", "11:00 PM"],
+      "formats": [
+        "IMAX 3D",
+        "4DX",
+        "Dolby Atmos"
+      ],
+      "cinema_ids": [
+        "CMB-CCC",
+        "CMB-HCM",
+        "CMB-OGF",
+        "CMB-LBT",
+        "CMB-MJC",
+        "KDY-KCC"
+      ],
+      "showtimes": [
+        "10:15 AM",
+        "1:15 PM",
+        "4:45 PM",
+        "8:00 PM",
+        "11:00 PM"
+      ],
       "director": "Destin Daniel Cretton",
-      "cast": ["Tom Holland", "Zendaya", "Mark Ruffalo"],
+      "cast": [
+        "Tom Holland",
+        "Zendaya",
+        "Mark Ruffalo"
+      ],
       "synopsis": "Peter Parker balances college life in NYC while grappling with mysterious street vigilantes and high-tech corporate threats.",
       "status": "now_showing",
       "release_date": "October 2026",
@@ -111,11 +211,28 @@
       "genre": "Musical / Youth Comedy / Drama",
       "duration": "2h 20m",
       "rating": "U",
-      "formats": ["2D Digital", "Dolby Atmos"],
-      "cinema_ids": ["CMB-OGF", "CMB-SVY", "NGB-AQU", "JFN-CGS"],
-      "showtimes": ["11:30 AM", "3:15 PM", "6:30 PM", "9:30 PM"],
+      "formats": [
+        "2D Digital",
+        "Dolby Atmos"
+      ],
+      "cinema_ids": [
+        "CMB-OGF",
+        "CMB-SVY",
+        "NGB-AQU",
+        "JFN-CGS"
+      ],
+      "showtimes": [
+        "11:30 AM",
+        "3:15 PM",
+        "6:30 PM",
+        "9:30 PM"
+      ],
       "director": "Hiphop Tamizha Aadhi",
-      "cast": ["Hiphop Tamizha Aadhi", "Aathmika", "Vivek"],
+      "cast": [
+        "Hiphop Tamizha Aadhi",
+        "Aathmika",
+        "Vivek"
+      ],
       "synopsis": "The exuberant musical sequel following an indie music collective chasing their concert dreams against industry titans.",
       "status": "now_showing",
       "release_date": "October 2026",
@@ -130,11 +247,28 @@
       "genre": "Action / Rural Drama",
       "duration": "2h 25m",
       "rating": "U/A",
-      "formats": ["2D Digital", "Dolby 7.1"],
-      "cinema_ids": ["CMB-CCC", "CMB-HCM", "JFN-CGS", "CMB-MJC", "MTR-SKC"],
-      "showtimes": ["1:00 PM", "4:30 PM", "7:45 PM"],
+      "formats": [
+        "2D Digital",
+        "Dolby 7.1"
+      ],
+      "cinema_ids": [
+        "CMB-CCC",
+        "CMB-HCM",
+        "JFN-CGS",
+        "CMB-MJC",
+        "MTR-SKC"
+      ],
+      "showtimes": [
+        "1:00 PM",
+        "4:30 PM",
+        "7:45 PM"
+      ],
       "director": "Mari Selvaraj",
-      "cast": ["Dhanush", "Fahadh Faasil", "Keerthy Suresh"],
+      "cast": [
+        "Dhanush",
+        "Fahadh Faasil",
+        "Keerthy Suresh"
+      ],
       "synopsis": "A hard-hitting story of community resilience, grassroots sports triumphs, and village solidarity.",
       "status": "now_showing",
       "release_date": "October 2026",
@@ -149,11 +283,27 @@
       "genre": "Crime / Suspense Thriller",
       "duration": "2h 05m",
       "rating": "U/A",
-      "formats": ["2D Digital"],
-      "cinema_ids": ["CMB-CCC", "CMB-LBT", "CMB-SVY", "GLE-QNS", "KRN-IMP"],
-      "showtimes": ["3:30 PM", "6:45 PM", "9:30 PM"],
+      "formats": [
+        "2D Digital"
+      ],
+      "cinema_ids": [
+        "CMB-CCC",
+        "CMB-LBT",
+        "CMB-SVY",
+        "GLE-QNS",
+        "KRN-IMP"
+      ],
+      "showtimes": [
+        "3:30 PM",
+        "6:45 PM",
+        "9:30 PM"
+      ],
       "director": "Udayakantha Warnasuriya",
-      "cast": ["Pubudu Chathuranga", "Mahendra Perera", "Dilhani Ekanayake"],
+      "cast": [
+        "Pubudu Chathuranga",
+        "Mahendra Perera",
+        "Dilhani Ekanayake"
+      ],
       "synopsis": "A stormy night at an isolated tea plantation mansion triggers an intricate battle of wits between seven strangers.",
       "status": "now_showing",
       "release_date": "October 2026",
@@ -168,11 +318,28 @@
       "genre": "Epic / Adventure / Fantasy",
       "duration": "2h 40m",
       "rating": "PG-13",
-      "formats": ["IMAX 3D", "Dolby Atmos"],
-      "cinema_ids": ["CMB-CCC", "CMB-HCM", "CMB-OGF", "KDY-KCC"],
-      "showtimes": ["12:00 PM", "4:00 PM", "7:30 PM", "10:30 PM"],
+      "formats": [
+        "IMAX 3D",
+        "Dolby Atmos"
+      ],
+      "cinema_ids": [
+        "CMB-CCC",
+        "CMB-HCM",
+        "CMB-OGF",
+        "KDY-KCC"
+      ],
+      "showtimes": [
+        "12:00 PM",
+        "4:00 PM",
+        "7:30 PM",
+        "10:30 PM"
+      ],
       "director": "Christopher Nolan",
-      "cast": ["Christian Bale", "Cillian Murphy", "Florence Pugh"],
+      "cast": [
+        "Christian Bale",
+        "Cillian Murphy",
+        "Florence Pugh"
+      ],
       "synopsis": "A breathtaking cinematic voyage adapting the ancient Mediterranean myth with groundbreaking practical effects and IMAX grandeur.",
       "status": "now_showing",
       "release_date": "October 2026",
@@ -187,11 +354,31 @@
       "genre": "Animation / Family / Comedy",
       "duration": "1h 34m",
       "rating": "U",
-      "formats": ["2D Digital", "3D Digital"],
-      "cinema_ids": ["CMB-CCC", "CMB-HCM", "CMB-OGF", "CMB-LBT", "CMB-MJC", "GMP-RGL", "NGB-AQU"],
-      "showtimes": ["10:00 AM", "12:15 PM", "2:30 PM", "5:00 PM"],
+      "formats": [
+        "2D Digital",
+        "3D Digital"
+      ],
+      "cinema_ids": [
+        "CMB-CCC",
+        "CMB-HCM",
+        "CMB-OGF",
+        "CMB-LBT",
+        "CMB-MJC",
+        "GMP-RGL",
+        "NGB-AQU"
+      ],
+      "showtimes": [
+        "10:00 AM",
+        "12:15 PM",
+        "2:30 PM",
+        "5:00 PM"
+      ],
       "director": "Pierre Coffin, Kyle Balda",
-      "cast": ["Steve Carell", "Pierre Coffin", "Taraji P. Henson"],
+      "cast": [
+        "Steve Carell",
+        "Pierre Coffin",
+        "Taraji P. Henson"
+      ],
       "synopsis": "The mischievous Minions stumble into a subterranean monster kingdom and try to become the gentle beasts' life coaches.",
       "status": "now_showing",
       "release_date": "October 2026",
@@ -206,11 +393,27 @@
       "genre": "Romance / Philosophical Drama",
       "duration": "2h 15m",
       "rating": "U/A",
-      "formats": ["2D Digital", "Dolby 7.1"],
-      "cinema_ids": ["CMB-CCC", "CMB-OGF", "JFN-CGS", "CMB-SVY"],
-      "showtimes": ["2:15 PM", "5:45 PM", "8:30 PM"],
+      "formats": [
+        "2D Digital",
+        "Dolby 7.1"
+      ],
+      "cinema_ids": [
+        "CMB-CCC",
+        "CMB-OGF",
+        "JFN-CGS",
+        "CMB-SVY"
+      ],
+      "showtimes": [
+        "2:15 PM",
+        "5:45 PM",
+        "8:30 PM"
+      ],
       "director": "Ram",
-      "cast": ["Nivin Pauly", "Soori", "Anjali"],
+      "cast": [
+        "Nivin Pauly",
+        "Soori",
+        "Anjali"
+      ],
       "synopsis": "A poetic, timeless love story crossing scenic terrains and human endurance, scored by Yuvan Shankar Raja.",
       "status": "now_showing",
       "release_date": "October 2026",
@@ -225,11 +428,26 @@
       "genre": "Action / Wilderness Thriller",
       "duration": "1h 58m",
       "rating": "A",
-      "formats": ["Dolby Atmos", "Laser 4K"],
-      "cinema_ids": ["CMB-CCC", "CMB-HCM", "CMB-OGF"],
-      "showtimes": ["6:00 PM", "8:45 PM", "11:15 PM"],
+      "formats": [
+        "Dolby Atmos",
+        "Laser 4K"
+      ],
+      "cinema_ids": [
+        "CMB-CCC",
+        "CMB-HCM",
+        "CMB-OGF"
+      ],
+      "showtimes": [
+        "6:00 PM",
+        "8:45 PM",
+        "11:15 PM"
+      ],
       "director": "David Ayer",
-      "cast": ["Jason Statham", "Josh Hutcherson", "Jeremy Irons"],
+      "cast": [
+        "Jason Statham",
+        "Josh Hutcherson",
+        "Jeremy Irons"
+      ],
       "synopsis": "A retired Navy SEAL survivalist is thrust into relentless combat defending a remote sanctuary from elite mercenaries.",
       "status": "now_showing",
       "release_date": "October 2026",
