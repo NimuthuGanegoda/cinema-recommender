@@ -10,22 +10,6 @@
   <link rel="apple-touch-icon" href="app-icon.jpg">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="apple-design-system.css?v=2.2">
-
-  <script>
-    // 📱 Auto-redirect mobile browsers to mobile shell
-    (function() {
-      try {
-        var params = new URLSearchParams(window.location.search);
-        if (params.get('view') === 'desktop') return;
-        var isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent);
-        var isMobileScreen = window.innerWidth <= 768 || (window.matchMedia && window.matchMedia("(max-width: 768px)").matches);
-        if (isMobileUA || isMobileScreen) {
-          window.location.replace('mobile.html' + (window.location.search || ''));
-        }
-      } catch (e) {}
-    })();
-  </script>
-
   <script src="cinema-client.js?v=2.4"></script>
 
   <style>
@@ -890,7 +874,6 @@
       <button class="nav-link active" onclick="scrollToSection('hero-section')">Explore</button>
       <button class="nav-link" onclick="scrollToSection('menu-anchor')">Menu</button>
       <button class="nav-link" onclick="scrollToSection('optimizer-anchor')">Optimizer</button>
-      <a href="mobile.html" class="nav-link">📱 Mobile</a>
     </div>
 
     <div class="nav-right">
