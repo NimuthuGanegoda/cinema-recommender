@@ -494,10 +494,10 @@
         Moviegoers
       </label>
       <div class="apple-segmented-control" style="width:100%;">
-        <button class="apple-segment-item" style="flex:1;" onclick="setMobileParty(1)">1 Solo</button>
-        <button class="apple-segment-item active" style="flex:1;" onclick="setMobileParty(2)">2 Duo</button>
-        <button class="apple-segment-item" style="flex:1;" onclick="setMobileParty(3)">3 Trio</button>
-        <button class="apple-segment-item" style="flex:1;" onclick="setMobileParty(4)">4+ Group</button>
+        <button class="apple-segment-item" style="flex:1;" onclick="setMobileParty(1, this)">1 Solo</button>
+        <button class="apple-segment-item active" style="flex:1;" onclick="setMobileParty(2, this)">2 Duo</button>
+        <button class="apple-segment-item" style="flex:1;" onclick="setMobileParty(3, this)">3 Trio</button>
+        <button class="apple-segment-item" style="flex:1;" onclick="setMobileParty(4, this)">4+ Group</button>
       </div>
     </div>
 
@@ -507,9 +507,9 @@
         CinePass VIP Tier
       </label>
       <div class="apple-segmented-control" style="width:100%;">
-        <button class="apple-segment-item active" style="flex:1;" onclick="setMobileTier('Standard')">Standard</button>
-        <button class="apple-segment-item" style="flex:1;" onclick="setMobileTier('Student')">Student</button>
-        <button class="apple-segment-item" style="flex:1;" onclick="setMobileTier('Platinum')">Platinum</button>
+        <button class="apple-segment-item active" style="flex:1;" onclick="setMobileTier('Standard', this)">Standard</button>
+        <button class="apple-segment-item" style="flex:1;" onclick="setMobileTier('Student', this)">Student</button>
+        <button class="apple-segment-item" style="flex:1;" onclick="setMobileTier('Platinum', this)">Platinum</button>
       </div>
     </div>
 
@@ -921,20 +921,27 @@
       }
       if (!mMenu || mMenu.length === 0) {
         mMenu = [
-          { id:"P01", category:"Popcorn", name:"Scope Warm Caramel Popcorn Tub", size:"Jumbo Souvenir Tub", price:1350, original_price:1600, image:"popcorn.jpg", price_trend:"down" },
-          { id:"P02", category:"Popcorn", name:"Kochchi & White Cheddar Popcorn", size:"Large Bucket", price:1250, original_price:1450, image:"popcorn.jpg", price_trend:"down" },
-          { id:"P03", category:"Popcorn", name:"Classic Clarified Butter Salted Popcorn", size:"Large Bucket", price:1100, original_price:1300, image:"popcorn.jpg", price_trend:"steady" },
-          { id:"B01", category:"Beverage", name:"Chilled Milo Dinosaur Float", size:"Tall Glass", price:550, original_price:650, image:"beverage.jpg", price_trend:"down" },
-          { id:"B02", category:"Beverage", name:"Elephant House Ginger Beer (EGB) Float", size:"Regular 450ml", price:480, original_price:580, image:"beverage.jpg", price_trend:"steady" },
-          { id:"B03", category:"Beverage", name:"Scope Fresh Passion Fruit Mint Sparkler", size:"Medium 500ml", price:750, original_price:900, image:"beverage.jpg", price_trend:"down" },
-          { id:"B04", category:"Beverage", name:"Scope Large Fountain Coca-Cola", size:"Large 650ml", price:650, original_price:800, image:"beverage.jpg", price_trend:"steady" },
-          { id:"S01", category:"Snack", name:"IMAX Loaded Chicken Nachos", size:"Sharing Platter", price:1450, original_price:1700, image:"nachos.jpg", price_trend:"down" },
-          { id:"S02", category:"Snack", name:"Gourmet Brioche Chicken Hotdog", size:"Single", price:1150, original_price:1350, image:"hotdog.jpg", price_trend:"steady" },
-          { id:"S03", category:"Snack", name:"Crispy Ceylon Chicken Rolls (2 pcs)", size:"Hot Snack", price:820, original_price:950, image:"rolls.jpg", price_trend:"down" },
-          { id:"S04", category:"Snack", name:"Crispy Ceylon Chicken Samosas (4 pcs)", size:"Platter", price:750, original_price:900, image:"rolls.jpg", price_trend:"down" },
-          { id:"C01", category:"Combo", name:"Scope Director's Deluxe Couple Combo", size:"Duo Feasting Pack", price:2950, original_price:3600, image:"combo.jpg", price_trend:"down" },
-          { id:"C02", category:"Combo", name:"CinePass VIP Platinum Movie Feast", size:"Family (3-4 Pax)", price:4200, original_price:5200, image:"combo.jpg", price_trend:"down" },
-          { id:"C03", category:"Combo", name:"Solo Movie Night Saver", size:"Single Pack", price:1650, original_price:2100, image:"combo.jpg", price_trend:"down" }
+          { id:"P01", category:"Popcorn", name:"Scope Warm Caramel Popcorn Tub", size:"Jumbo Souvenir Tub", price:1350, original_price:1600, image:"popcorn.jpg", price_trend:"down", description:"Scope signature crunchy caramelized warm corn in commemorative cinema souvenir tub" },
+          { id:"P02", category:"Popcorn", name:"Kochchi & White Cheddar Popcorn", size:"Large Bucket", price:1250, original_price:1450, image:"popcorn.jpg", price_trend:"down", description:"Hot butterfly corn tossed with fiery Sri Lankan green kochchi & Wisconsin cheddar dust" },
+          { id:"P03", category:"Popcorn", name:"Classic Clarified Butter Salted Popcorn", size:"Large Bucket", price:1100, original_price:1300, image:"popcorn.jpg", price_trend:"steady", description:"Freshly popped butterfly corn drenched in golden clarified butter and pure sea salt" },
+          { id:"P04", category:"Popcorn", name:"Scope Double Chocolate Glazed Popcorn", size:"Large Bucket", price:1250, original_price:1450, image:"popcorn.jpg", price_trend:"down", description:"Crunchy popped corn generously drizzled with rich Belgian milk and dark chocolate glaze" },
+          { id:"B01", category:"Beverage", name:"Chilled Milo Dinosaur Float", size:"Tall Glass", price:550, original_price:650, image:"beverage.jpg", price_trend:"down", description:"Chilled Ceylon chocolate malt Milo topped with vanilla ice cream and heaped cocoa powder" },
+          { id:"B02", category:"Beverage", name:"Elephant House Ginger Beer (EGB) Float", size:"Regular 450ml", price:480, original_price:580, image:"beverage.jpg", price_trend:"steady", description:"Authentic spicy Ceylon ginger beer with crushed ice and creamy vanilla ice cream float" },
+          { id:"B03", category:"Beverage", name:"Scope Fresh Passion Fruit Mint Sparkler", size:"Medium 500ml", price:750, original_price:900, image:"beverage.jpg", price_trend:"down", description:"Real island passion fruit pulp with crushed garden mint and sparkling soda" },
+          { id:"B04", category:"Beverage", name:"Scope Large Fountain Coca-Cola", size:"Large 650ml", price:650, original_price:800, image:"beverage.jpg", price_trend:"steady", description:"Ice-cold fountain Coca-Cola with fresh carbonation and lemon wedge" },
+          { id:"B05", category:"Beverage", name:"Scope Creamy Iced Coffee Float", size:"Tall Glass", price:680, original_price:800, image:"beverage.jpg", price_trend:"steady", description:"Rich brewed Ceylon coffee with sweetened milk, dark cocoa dust, and vanilla float" },
+          { id:"S01", category:"Snack", name:"Scope Kitchen Kochchi Cheese Sticks (4 pcs)", size:"Hot Snack", price:950, original_price:1100, image:"rolls.jpg", price_trend:"down", description:"Golden crumbed molten mozzarella sticks spiked with spicy green kochchi chili dip" },
+          { id:"S02", category:"Snack", name:"Scope Kitchen Crispy Chicken Strips (4 pcs)", size:"Hot Snack", price:1150, original_price:1350, image:"rolls.jpg", price_trend:"steady", description:"Golden crumbed tender chicken breast strips served with house garlic mayonnaise dip" },
+          { id:"S03", category:"Snack", name:"Loaded Steak & Queso Fries", size:"Sharing Platter", price:1450, original_price:1700, image:"nachos.jpg", price_trend:"down", description:"Crispy skin-on seasoned fries smothered in hot jalapeño queso and tender steak strips" },
+          { id:"S04", category:"Snack", name:"IMAX Loaded Chicken Nachos", size:"Sharing Platter", price:1450, original_price:1700, image:"nachos.jpg", price_trend:"down", description:"Stone-ground corn chips with hot queso, jalapeños, salsa, and seasoned chicken" },
+          { id:"S05", category:"Snack", name:"Gourmet Brioche Chicken Hotdog", size:"Single", price:1150, original_price:1350, image:"hotdog.jpg", price_trend:"steady", description:"Artisan grilled chicken sausage in buttered brioche bun with sweet pickle relish" },
+          { id:"S06", category:"Snack", name:"Spicy Beef Chili Dog with Jalapeños", size:"Single", price:1350, original_price:1550, image:"hotdog.jpg", price_trend:"down", description:"Grilled beef frankfurter loaded with spiced meat chili, melted cheddar, and jalapeño slices" },
+          { id:"S07", category:"Snack", name:"Crispy Ceylon Chicken Rolls (2 pcs)", size:"Hot Snack", price:820, original_price:950, image:"rolls.jpg", price_trend:"down", description:"Crispy golden crumbed Sri Lankan bakery-style spicy chicken rolls with chili dip" },
+          { id:"S08", category:"Snack", name:"Crispy Vegetable Samosa Platter (4 pcs)", size:"Sharing Plate", price:750, original_price:900, image:"rolls.jpg", price_trend:"steady", description:"Golden spiced potato and pea pastry triangles served with sweet tamarind chutney" },
+          { id:"C01", category:"Combo", name:"Scope Director's Deluxe Couple Combo", size:"Duo Feast", price:2950, original_price:3600, image:"combo.jpg", price_trend:"down", description:"1 Jumbo Caramel Popcorn + 2 Large Fountain Drinks + 1 Loaded Nachos Platter" },
+          { id:"C02", category:"Combo", name:"CinePass VIP Platinum Movie Feast", size:"Family (3-4 Pax)", price:4200, original_price:5200, image:"combo.jpg", price_trend:"down", description:"2 Jumbo Popcorns (Caramel + Cheese) + 3 Drinks + 1 Brioche Hotdog + 1 Nachos Platter" },
+          { id:"C03", category:"Combo", name:"Scope Kitchen Movie Meal Box", size:"Solo Combo", price:2250, original_price:2700, image:"combo.jpg", price_trend:"down", description:"1 Large Caramel Popcorn + 1 Kochchi Cheese Sticks (4 pcs) + 1 Chilled Milo Dinosaur Float" },
+          { id:"C04", category:"Combo", name:"Solo Movie Snack Saver", size:"Single Pack", price:1650, original_price:2100, image:"combo.jpg", price_trend:"down", description:"1 Large Clarified Butter Popcorn + 1 Medium Fountain Drink + 2 Ceylon Bakery Rolls" }
         ];
       }
       updateMobileCatCounts();
@@ -1179,12 +1186,16 @@
     }
 
     function confirmMobileOrderPass() {
+      if (!mCart || mCart.length === 0) {
+        showMobileToast('Tray is empty! Add snacks from Explore tab first.');
+        return;
+      }
       const cinemaName = mCurrentCinema ? mCurrentCinema.name : 'Cinema';
       const serial = document.getElementById('pass-view-serial').textContent;
       showMobileToast(`🎉 Pass ${serial} issued for ${cinemaName}!`);
       setTimeout(() => {
-        switchToTab('pass');
-      }, 1000);
+        window.print();
+      }, 500);
     }
 
     function updateMobileCartUI() {
@@ -1199,7 +1210,14 @@
       // Update Tray Screen
       const trayList = document.getElementById('m-tray-items-list');
       if (mCart.length === 0) {
-        trayList.innerHTML = '<div style="color:var(--apple-text-tertiary); font-size:0.85rem; text-align:center; padding:2rem;">Your concession tray is empty. Add snacks from the Explore tab!</div>';
+        trayList.innerHTML = `
+          <div style="color:var(--apple-text-tertiary); font-size:0.85rem; text-align:center; padding:2.5rem 1rem;">
+            <div style="font-size:2.2rem; margin-bottom:0.5rem;">🍿</div>
+            <div style="font-weight:700; color:#fff; font-size:1rem; margin-bottom:0.25rem;">Your Tray is Empty</div>
+            <p style="color:var(--apple-text-secondary); font-size:0.78rem; margin-bottom:1.25rem;">Explore authentic cinema popcorn, snacks, and floats!</p>
+            <button class="apple-btn-secondary" style="padding:0.6rem 1.4rem; font-size:0.82rem; border-radius:999px;" onclick="switchToTab('explore')">🍿 Browse Concessions</button>
+          </div>
+        `;
       } else {
         trayList.innerHTML = mCart.map((item, idx) => {
           const p = (typeof item.price_lkr === 'number') ? item.price_lkr : (typeof item.price === 'number' ? item.price : 0);
@@ -1227,15 +1245,26 @@
       document.getElementById('m-tray-final').textContent = `LKR ${finalTotal.toFixed(0)}`;
 
       // Update Pass Screen
-      document.getElementById('pass-view-items').innerHTML = mCart.map(item => {
-        const p = (typeof item.price_lkr === 'number') ? item.price_lkr : (typeof item.price === 'number' ? item.price : 0);
-        return `
-          <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
-            <span>• ${item.name}</span>
-            <span style="font-weight:600;">LKR ${p.toFixed(0)}</span>
+      if (mCart.length === 0) {
+        document.getElementById('pass-view-items').innerHTML = `
+          <div style="color:var(--apple-text-tertiary); font-size:0.82rem; text-align:center; padding:1.5rem 0.5rem;">
+            <div style="font-size:1.8rem; margin-bottom:0.35rem;">🎟️</div>
+            <div style="color:#fff; font-weight:700;">No items on this pass yet</div>
+            <p style="font-size:0.72rem; color:var(--apple-text-secondary); margin-top:0.2rem; margin-bottom:0.85rem;">Select items from Explore or run Optimizer.</p>
+            <button class="apple-btn-secondary" style="padding:0.45rem 1rem; font-size:0.78rem; border-radius:999px;" onclick="switchToTab('explore')">Add Snacks</button>
           </div>
         `;
-      }).join('');
+      } else {
+        document.getElementById('pass-view-items').innerHTML = mCart.map(item => {
+          const p = (typeof item.price_lkr === 'number') ? item.price_lkr : (typeof item.price === 'number' ? item.price : 0);
+          return `
+            <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+              <span>• ${item.name}</span>
+              <span style="font-weight:600;">LKR ${p.toFixed(0)}</span>
+            </div>
+          `;
+        }).join('');
+      }
       document.getElementById('pass-view-subtotal').textContent = `LKR ${subtotal.toFixed(0)}`;
       document.getElementById('pass-view-savings').textContent = `-LKR ${savings.toFixed(0)}`;
       document.getElementById('pass-view-final').textContent = `LKR ${finalTotal.toFixed(0)}`;
@@ -1280,19 +1309,25 @@
       document.getElementById('m-opt-budget').value = val;
     }
 
-    function setMobileParty(size) {
+    function setMobileParty(size, btn) {
       mParty = size;
-      const btns = event.target.parentElement.querySelectorAll('.apple-segment-item');
-      btns.forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
+      const target = btn || (window.event && window.event.target);
+      if (target && target.parentElement) {
+        const btns = target.parentElement.querySelectorAll('.apple-segment-item');
+        btns.forEach(b => b.classList.remove('active'));
+        target.classList.add('active');
+      }
     }
 
-    function setMobileTier(tier) {
+    function setMobileTier(tier, btn) {
       mTier = tier;
       document.getElementById('pass-view-tier').textContent = `${tier} VIP`;
-      const btns = event.target.parentElement.querySelectorAll('.apple-segment-item');
-      btns.forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
+      const target = btn || (window.event && window.event.target);
+      if (target && target.parentElement) {
+        const btns = target.parentElement.querySelectorAll('.apple-segment-item');
+        btns.forEach(b => b.classList.remove('active'));
+        target.classList.add('active');
+      }
     }
 
     async function handleMobileOptimize() {

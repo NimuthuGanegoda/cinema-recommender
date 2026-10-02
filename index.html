@@ -832,6 +832,47 @@
         margin: 0 auto 1rem;
       }
     }
+
+    /* --- Print Stylesheet for Apple Wallet Pass --- */
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #voucher-modal, #voucher-modal * {
+        visibility: visible !important;
+      }
+      #voucher-modal {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        background: #fff !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: flex-start !important;
+        padding: 0 !important;
+      }
+      .modal-body {
+        width: 100% !important;
+        max-width: 480px !important;
+        box-shadow: none !important;
+        border: 2px solid #000 !important;
+      }
+      .wallet-pass {
+        background: #fff !important;
+        color: #000 !important;
+      }
+      .wallet-pass-header {
+        background: #111 !important;
+        color: #fff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      button, .btn-primary, .btn-secondary {
+        display: none !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -858,7 +899,7 @@
         <span style="font-size:0.78rem; font-weight:600;" id="nav-live-cinema">Loading...</span>
         <span style="font-size:0.72rem; color:var(--cb-green); font-weight:600;" id="nav-sync-timer">8s</span>
       </div>
-      <span class="badge badge-purple" id="nav-tier-badge">🎟️ CinePass</span>
+      <span class="badge badge-purple" id="nav-tier-badge" style="cursor:pointer;" onclick="openVoucherModal()" title="View CinePass Wallet Voucher">🎟️ CinePass</span>
     </div>
   </nav>
 
@@ -1471,6 +1512,7 @@
         <span class="badge badge-blue">${cinema.technology || 'Dolby Atmos & Laser'}</span>
         <span class="badge badge-amber">${cinema.food_hours || '10:00 AM – 11:30 PM'}</span>
         ${cinema.map_url ? `<a href="${cinema.map_url}" target="_blank" class="badge badge-default" style="text-decoration:none;">🗺️ Map & Directions</a>` : ''}
+        <button class="btn-secondary" style="font-size:0.75rem; padding:0.25rem 0.75rem; cursor:pointer;" onclick="openAllCinemasModal()">🔄 Change Theater</button>
       `;
 
       // Update nav live pill
@@ -1517,20 +1559,27 @@
       }
       if (!menu || menu.length === 0) {
         menu = [
-          { id:"P01", category:"Popcorn", name:"Scope Warm Caramel Popcorn Tub", size:"Jumbo Souvenir Tub", price:1350, original_price:1600, image:"popcorn.jpg", price_trend:"down", description:"Scope signature crunchy caramelized warm corn in commemorative cinema tub" },
-          { id:"P02", category:"Popcorn", name:"Kochchi & White Cheddar Popcorn", size:"Large Bucket", price:1250, original_price:1450, image:"popcorn.jpg", price_trend:"down", description:"Hot butterfly corn tossed with fiery Sri Lankan green kochchi & cheddar dust" },
-          { id:"P03", category:"Popcorn", name:"Classic Clarified Butter Salted Popcorn", size:"Large Bucket", price:1100, original_price:1300, image:"popcorn.jpg", price_trend:"steady", description:"Freshly popped cinema corn drenched in golden clarified butter and sea salt" },
-          { id:"B01", category:"Beverage", name:"Chilled Milo Dinosaur Float", size:"Tall Glass", price:550, original_price:650, image:"beverage.jpg", price_trend:"down", description:"Chilled Ceylon chocolate malt Milo topped with vanilla ice cream and heaped cocoa" },
-          { id:"B02", category:"Beverage", name:"Elephant House Ginger Beer (EGB) Float", size:"Regular 450ml", price:480, original_price:580, image:"beverage.jpg", price_trend:"steady", description:"Authentic spicy Ceylon ginger beer with crushed ice and creamy vanilla float" },
+          { id:"P01", category:"Popcorn", name:"Scope Warm Caramel Popcorn Tub", size:"Jumbo Souvenir Tub", price:1350, original_price:1600, image:"popcorn.jpg", price_trend:"down", description:"Scope signature crunchy caramelized warm corn in commemorative cinema souvenir tub" },
+          { id:"P02", category:"Popcorn", name:"Kochchi & White Cheddar Popcorn", size:"Large Bucket", price:1250, original_price:1450, image:"popcorn.jpg", price_trend:"down", description:"Hot butterfly corn tossed with fiery Sri Lankan green kochchi & Wisconsin cheddar dust" },
+          { id:"P03", category:"Popcorn", name:"Classic Clarified Butter Salted Popcorn", size:"Large Bucket", price:1100, original_price:1300, image:"popcorn.jpg", price_trend:"steady", description:"Freshly popped butterfly corn drenched in golden clarified butter and pure sea salt" },
+          { id:"P04", category:"Popcorn", name:"Scope Double Chocolate Glazed Popcorn", size:"Large Bucket", price:1250, original_price:1450, image:"popcorn.jpg", price_trend:"down", description:"Crunchy popped corn generously drizzled with rich Belgian milk and dark chocolate glaze" },
+          { id:"B01", category:"Beverage", name:"Chilled Milo Dinosaur Float", size:"Tall Glass", price:550, original_price:650, image:"beverage.jpg", price_trend:"down", description:"Chilled Ceylon chocolate malt Milo topped with vanilla ice cream and heaped cocoa powder" },
+          { id:"B02", category:"Beverage", name:"Elephant House Ginger Beer (EGB) Float", size:"Regular 450ml", price:480, original_price:580, image:"beverage.jpg", price_trend:"steady", description:"Authentic spicy Ceylon ginger beer with crushed ice and creamy vanilla ice cream float" },
           { id:"B03", category:"Beverage", name:"Scope Fresh Passion Fruit Mint Sparkler", size:"Medium 500ml", price:750, original_price:900, image:"beverage.jpg", price_trend:"down", description:"Real island passion fruit pulp with crushed garden mint and sparkling soda" },
           { id:"B04", category:"Beverage", name:"Scope Large Fountain Coca-Cola", size:"Large 650ml", price:650, original_price:800, image:"beverage.jpg", price_trend:"steady", description:"Ice-cold fountain Coca-Cola with fresh carbonation and lemon wedge" },
-          { id:"S01", category:"Snack", name:"IMAX Loaded Chicken Nachos", size:"Sharing Platter", price:1450, original_price:1700, image:"nachos.jpg", price_trend:"down", description:"Stone-ground corn chips with hot queso, jalapeños, salsa, and seasoned chicken" },
-          { id:"S02", category:"Snack", name:"Gourmet Brioche Chicken Hotdog", size:"Single", price:1150, original_price:1350, image:"hotdog.jpg", price_trend:"steady", description:"Artisan grilled chicken sausage in buttered brioche bun with sweet pickle relish" },
-          { id:"S03", category:"Snack", name:"Crispy Ceylon Chicken Rolls (2 pcs)", size:"Hot Snack", price:820, original_price:950, image:"rolls.jpg", price_trend:"down", description:"Crispy golden crumbed Sri Lankan bakery-style chicken rolls with chili dip" },
-          { id:"S04", category:"Snack", name:"Crispy Ceylon Chicken Samosas (4 pcs)", size:"Platter", price:750, original_price:900, image:"rolls.jpg", price_trend:"down", description:"Golden triangular pastries stuffed with spiced Ceylon chicken and sweet tamarind dip" },
-          { id:"C01", category:"Combo", name:"Scope Director's Deluxe Couple Combo", size:"Duo Feasting Pack", price:2950, original_price:3600, image:"combo.jpg", price_trend:"down", description:"1 Jumbo Caramel Popcorn + 2 Large Fountain Drinks + 1 Loaded Hot Nachos" },
-          { id:"C02", category:"Combo", name:"CinePass VIP Platinum Movie Feast", size:"Family (3-4 Pax)", price:4200, original_price:5200, image:"combo.jpg", price_trend:"down", description:"2 Jumbo Popcorns (Caramel + Kochchi) + 3 Drinks + 1 Brioche Hotdog + 1 Nachos" },
-          { id:"C03", category:"Combo", name:"Solo Movie Night Saver", size:"Single Pack", price:1650, original_price:2100, image:"combo.jpg", price_trend:"down", description:"1 Large Butter Popcorn + 1 Medium Fountain Drink + 2 Ceylon Rolls" }
+          { id:"B05", category:"Beverage", name:"Scope Creamy Iced Coffee Float", size:"Tall Glass", price:680, original_price:800, image:"beverage.jpg", price_trend:"steady", description:"Rich brewed Ceylon coffee with sweetened milk, dark cocoa dust, and vanilla float" },
+          { id:"S01", category:"Snack", name:"Scope Kitchen Kochchi Cheese Sticks (4 pcs)", size:"Hot Snack", price:950, original_price:1100, image:"rolls.jpg", price_trend:"down", description:"Golden crumbed molten mozzarella sticks spiked with spicy green kochchi chili dip" },
+          { id:"S02", category:"Snack", name:"Scope Kitchen Crispy Chicken Strips (4 pcs)", size:"Hot Snack", price:1150, original_price:1350, image:"rolls.jpg", price_trend:"steady", description:"Golden crumbed tender chicken breast strips served with house garlic mayonnaise dip" },
+          { id:"S03", category:"Snack", name:"Loaded Steak & Queso Fries", size:"Sharing Platter", price:1450, original_price:1700, image:"nachos.jpg", price_trend:"down", description:"Crispy skin-on seasoned fries smothered in hot jalapeño queso and tender steak strips" },
+          { id:"S04", category:"Snack", name:"IMAX Loaded Chicken Nachos", size:"Sharing Platter", price:1450, original_price:1700, image:"nachos.jpg", price_trend:"down", description:"Stone-ground corn chips with hot queso, jalapeños, salsa, and seasoned chicken" },
+          { id:"S05", category:"Snack", name:"Gourmet Brioche Chicken Hotdog", size:"Single", price:1150, original_price:1350, image:"hotdog.jpg", price_trend:"steady", description:"Artisan grilled chicken sausage in buttered brioche bun with sweet pickle relish" },
+          { id:"S06", category:"Snack", name:"Spicy Beef Chili Dog with Jalapeños", size:"Single", price:1350, original_price:1550, image:"hotdog.jpg", price_trend:"down", description:"Grilled beef frankfurter loaded with spiced meat chili, melted cheddar, and jalapeño slices" },
+          { id:"S07", category:"Snack", name:"Crispy Ceylon Chicken Rolls (2 pcs)", size:"Hot Snack", price:820, original_price:950, image:"rolls.jpg", price_trend:"down", description:"Crispy golden crumbed Sri Lankan bakery-style spicy chicken rolls with chili dip" },
+          { id:"S08", category:"Snack", name:"Crispy Vegetable Samosa Platter (4 pcs)", size:"Sharing Plate", price:750, original_price:900, image:"rolls.jpg", price_trend:"steady", description:"Golden spiced potato and pea pastry triangles served with sweet tamarind chutney" },
+          { id:"C01", category:"Combo", name:"Scope Director's Deluxe Couple Combo", size:"Duo Feast", price:2950, original_price:3600, image:"combo.jpg", price_trend:"down", description:"1 Jumbo Caramel Popcorn + 2 Large Fountain Drinks + 1 Loaded Nachos Platter" },
+          { id:"C02", category:"Combo", name:"CinePass VIP Platinum Movie Feast", size:"Family (3-4 Pax)", price:4200, original_price:5200, image:"combo.jpg", price_trend:"down", description:"2 Jumbo Popcorns (Caramel + Cheese) + 3 Drinks + 1 Brioche Hotdog + 1 Nachos Platter" },
+          { id:"C03", category:"Combo", name:"Scope Kitchen Movie Meal Box", size:"Solo Combo", price:2250, original_price:2700, image:"combo.jpg", price_trend:"down", description:"1 Large Caramel Popcorn + 1 Kochchi Cheese Sticks (4 pcs) + 1 Chilled Milo Dinosaur Float" },
+          { id:"C04", category:"Combo", name:"Solo Movie Snack Saver", size:"Single Pack", price:1650, original_price:2100, image:"combo.jpg", price_trend:"down", description:"1 Large Clarified Butter Popcorn + 1 Medium Fountain Drink + 2 Ceylon Bakery Rolls" }
         ];
       }
       updateFilterCounts();
@@ -1575,6 +1624,8 @@
 
     function applyDeal(code) {
       if (code) setPromo(code);
+      scrollToSection('optimizer-anchor');
+      showNotification(`Applied promo code ${code}! Finding best bundle...`, 'success');
       handleOptimize();
     }
 
@@ -1795,12 +1846,16 @@
     }
 
     function confirmOrderPass() {
+      if (!cart || cart.length === 0) {
+        showNotification('Your tray is empty! Add snacks before saving your pass.', 'warning');
+        return;
+      }
       const cinemaName = activeCinema ? activeCinema.name : 'Cinema';
       const serial = document.getElementById('voucher-serial').textContent;
       showNotification(`🎉 Order Confirmed! Pass ${serial} issued for ${cinemaName}.`, 'success');
       setTimeout(() => {
-        closeVoucherModal();
-      }, 1800);
+        window.print();
+      }, 500);
     }
 
     function openVoucherModal(customRes = null) {
@@ -1815,23 +1870,33 @@
       const fulfillEl = document.getElementById('voucher-fulfillment');
       if (fulfillEl) {
         if (fulfillmentMode === 'seat') {
-          const hall = document.getElementById('seat-hall') ? document.getElementById('seat-hall').value : 'Screen 1';
-          const seat = document.getElementById('seat-no') ? document.getElementById('seat-no').value : 'F12';
-          fulfillEl.innerHTML = `🛋️ Intermission Seat Delivery · <strong>${hall}, Seat ${seat}</strong>`;
+          const seatInput = document.getElementById('delivery-seat-input') ? document.getElementById('delivery-seat-input').value.trim() : '';
+          fulfillEl.innerHTML = `🛋️ Intermission Seat Delivery · <strong>${seatInput || 'Screen 1, Seat F12'}</strong>`;
         } else {
           fulfillEl.innerHTML = `⚡ Express Counter #2 Pickup (Skip Queue)`;
         }
       }
 
-      document.getElementById('voucher-items').innerHTML = items.map(i => {
-        const p = (typeof i.price_lkr === 'number') ? i.price_lkr : (typeof i.price === 'number' ? i.price : 0);
-        return `
-          <div style="display:flex;justify-content:space-between;font-size:0.85rem;">
-            <span>• ${i.name}</span>
-            <span style="font-weight:600;">LKR ${p.toFixed(0)}</span>
+      if (!items || items.length === 0) {
+        document.getElementById('voucher-items').innerHTML = `
+          <div style="text-align:center; padding:1.2rem 0.5rem; color:var(--cb-text-secondary); font-size:0.85rem;">
+            <div style="font-size:2rem; margin-bottom:0.4rem;">🍿</div>
+            <div style="font-weight:700; color:#fff;">Your concession tray is empty!</div>
+            <div style="font-size:0.75rem; color:var(--cb-text-muted); margin-top:0.25rem; margin-bottom:0.85rem;">Add some cinema snacks or use the Optimizer to generate your pass.</div>
+            <button class="btn-secondary" style="padding:0.4rem 0.9rem; font-size:0.78rem;" onclick="closeVoucherModal(); scrollToSection('menu-anchor');">🍿 Browse Concessions</button>
           </div>
         `;
-      }).join('');
+      } else {
+        document.getElementById('voucher-items').innerHTML = items.map(i => {
+          const p = (typeof i.price_lkr === 'number') ? i.price_lkr : (typeof i.price === 'number' ? i.price : 0);
+          return `
+            <div style="display:flex;justify-content:space-between;font-size:0.85rem;">
+              <span>• ${i.name}</span>
+              <span style="font-weight:600;">LKR ${p.toFixed(0)}</span>
+            </div>
+          `;
+        }).join('');
+      }
       document.getElementById('voucher-subtotal').textContent = `LKR ${subtotal.toFixed(0)}`;
       document.getElementById('voucher-discount').textContent = `-LKR ${discount.toFixed(0)}`;
       document.getElementById('voucher-final').textContent = `LKR ${final_.toFixed(0)}`;
