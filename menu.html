@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Concession Menu · CineBite Sri Lanka</title>
+  <meta name="description" content="Order fresh popcorn, chilled beverages, Ceylon hot bakery bites, and combo boxes with live dynamic pricing and instant VIP discounts.">
+  <link rel="icon" type="image/jpeg" href="app-icon.jpg">
+  <link rel="stylesheet" href="apple-design-system.css?v=2.2">
+  <script src="cinema-client.js?v=2.4"></script>
+
+  <style>
+    body {
+      background: var(--cb-bg);
+      color: var(--cb-text);
+      font-family: var(--font);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--cb-surface-glass);
+      backdrop-filter: var(--cb-glass-blur);
+      -webkit-backdrop-filter: var(--cb-glass-blur);
+      border-bottom: var(--cb-border);
+      padding: 0 1.5rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .nav-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--r-sm);
+      background: var(--cb-purple-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 16px rgba(168, 85, 247, 0.25);
+    }
+
+    .nav-brand-text {
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .nav-link {
+      padding: 0.5rem 0.9rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--cb-text-secondary);
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      transition: all var(--duration-fast) ease;
+      border: none;
+      background: none;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--cb-text);
+      background: var(--cb-surface);
+    }
+
+    .nav-link.active {
+      color: #fff;
+      background: rgba(168, 85, 247, 0.18);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .page-container {
+      max-width: 1240px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 5rem;
+      flex: 1;
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+    }
+
+    .page-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin: 0 0 0.5rem 0;
+      background: linear-gradient(135deg, #ffffff 40%, rgba(255,255,255,0.6) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .page-subtitle {
+      font-size: 0.95rem;
+      color: var(--cb-text-secondary);
+      margin: 0;
+      max-width: 650px;
+      line-height: 1.5;
+    }
+
+    .theater-banner {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--r-lg);
+      padding: 1rem 1.4rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .menu-filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--r-md);
+      padding: 0.85rem 1.2rem;
+    }
+
+    .category-chips {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .category-chip {
+      padding: 0.45rem 0.9rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: var(--r-pill);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--cb-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all var(--duration-fast) ease;
+    }
+
+    .category-chip:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    .category-chip.active {
+      background: var(--cb-purple-gradient);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 2px 10px rgba(168, 85, 247, 0.35);
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .menu-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .menu-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(168, 85, 247, 0.4);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(168, 85, 247, 0.15);
+    }
+
+    .menu-card-img {
+      height: 160px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+
+    .menu-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(6,6,11,0.1) 0%, rgba(6,6,11,0.85) 100%);
+    }
+
+    .menu-card-body {
+      padding: 1.2rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .item-name {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0 0 0.3rem 0;
+      line-height: 1.3;
+    }
+
+    .item-desc {
+      font-size: 0.8rem;
+      color: var(--cb-text-secondary);
+      line-height: 1.45;
+      margin: 0 0 0.85rem 0;
+    }
+
+    .price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .price-current {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .price-orig {
+      font-size: 0.85rem;
+      color: var(--cb-text-muted);
+      text-decoration: line-through;
+    }
+
+    .sticky-cart-bar {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 90;
+      background: rgba(16, 16, 26, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      border-radius: var(--r-pill);
+      padding: 0.65rem 1.4rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(168, 85, 247, 0.25);
+      display: none;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .site-footer {
+      background: var(--cb-bg-subtle);
+      border-top: var(--cb-border);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--cb-text-muted);
+      margin-top: auto;
+    }
+
+    @media (max-width: 768px) {
+      .navbar { padding: 0 1rem; }
+      .nav-links { gap: 0.15rem; }
+      .nav-link { padding: 0.4rem 0.6rem; font-size: 0.78rem; }
+      .page-container { padding: 1.25rem 1rem 4rem; }
+      .page-title { font-size: 1.75rem; }
+      .menu-filter-bar { flex-direction: column; align-items: stretch; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand">
+      <div class="nav-logo">🍿</div>
+      <span class="nav-brand-text">CineBite</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">🏠 Home</a>
+      <a href="movies.html" class="nav-link">🎬 Movies</a>
+      <a href="cinemas.html" class="nav-link">🏛️ Theaters</a>
+      <a href="menu.html" class="nav-link active">🍿 Concessions</a>
+      <a href="optimizer.html" class="nav-link">✨ Optimizer</a>
+      <a href="deals.html" class="nav-link">⚡ Deals & VIP</a>
+    </div>
+
+    <div class="nav-right">
+      <a href="checkout.html" class="btn-primary" style="font-size:0.78rem; padding:0.4rem 0.85rem; text-decoration:none;">🛒 Cart (<span id="cart-count">0</span>)</a>
+    </div>
+  </nav>
+
+  <!-- Page Container -->
+  <main class="page-container">
+
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Live Concession Menu</h1>
+        <p class="page-subtitle">
+          Freshly popped warm butterfly corn, Ceylon bakery bites, ice-cold fountain drinks, and exclusive CinePass VIP discount combos.
+        </p>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:var(--r-md); padding:0.85rem 1.2rem; display:flex; align-items:center; gap:0.75rem;">
+        <span class="live-dot" style="width:8px; height:8px; background:#30d158; border-radius:50%; display:inline-block;"></span>
+        <div>
+          <div style="font-size:0.8rem; font-weight:700; color:#fff;">Live Telemetry Pricing</div>
+          <div style="font-size:0.74rem; color:var(--cb-text-muted);">
+            Next update in <span id="pricing-ticker" style="color:#30d158; font-weight:700;">8s</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Cinema Selector Banner -->
+    <div class="theater-banner">
+      <div style="display:flex; align-items:center; gap:0.85rem;">
+        <div style="font-size:1.6rem;">🏛️</div>
+        <div>
+          <div style="font-size:0.75rem; color:var(--cb-text-muted); text-transform:uppercase; letter-spacing:0.04em;">Selected Theater Menu:</div>
+          <div style="font-size:1.05rem; font-weight:700; color:#fff;" id="active-theater-name">Scope Cinemas Multiplex - Colombo City Centre</div>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:0.75rem;">
+        <select id="theater-dropdown" class="theater-select" onchange="onTheaterSwitch(this.value)" style="background:#11111a; border:1px solid rgba(255,255,255,0.15); color:#fff; padding:0.45rem 0.85rem; border-radius:var(--r-sm); font-size:0.82rem; cursor:pointer;">
+          <!-- Loaded via JS -->
+        </select>
+        <div style="display:flex; background:rgba(255,255,255,0.05); padding:0.25rem; border-radius:var(--r-sm); gap:0.25rem;">
+          <button class="filter-chip active" id="btn-pickup" onclick="setFulfillment('pickup')" style="font-size:0.72rem; padding:0.25rem 0.6rem;">🍿 Counter Pickup</button>
+          <button class="filter-chip" id="btn-seat" onclick="setFulfillment('seat')" style="font-size:0.72rem; padding:0.25rem 0.6rem;">🛋️ Seat Delivery</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Filters & Search -->
+    <div class="menu-filter-bar">
+      <div class="category-chips">
+        <button class="category-chip active" id="cat-all" onclick="filterCategory('ALL')">All Items</button>
+        <button class="category-chip" id="cat-popcorn" onclick="filterCategory('Popcorn')">🍿 Popcorn</button>
+        <button class="category-chip" id="cat-beverage" onclick="filterCategory('Beverage')">🥤 Beverages</button>
+        <button class="category-chip" id="cat-snack" onclick="filterCategory('Snack')">🌭 Snacks & Bakery</button>
+        <button class="category-chip" id="cat-combo" onclick="filterCategory('Combo')">🍱 Combos & Feasts</button>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:0.75rem;">
+        <input type="text" id="menu-search" placeholder="Search menu..." oninput="onSearchMenu(this.value)" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:var(--r-sm); color:#fff; padding:0.4rem 0.85rem; font-size:0.82rem; outline:none; width:160px;">
+      </div>
+    </div>
+
+    <!-- Concession Menu Grid -->
+    <div class="menu-grid" id="menu-container">
+      <!-- Dynamically populated -->
+    </div>
+
+  </main>
+
+  <!-- Sticky Bottom Cart Banner -->
+  <div class="sticky-cart-bar" id="sticky-cart">
+    <div>
+      <div style="font-size:0.75rem; color:var(--cb-text-muted);">Cart Total (<span id="cart-item-count">0</span> items)</div>
+      <div style="font-size:1.15rem; font-weight:800; color:#fff;" id="cart-total-price">LKR 0</div>
+    </div>
+    <a href="checkout.html" class="btn-primary" style="font-size:0.82rem; padding:0.55rem 1.25rem; text-decoration:none; box-shadow:0 4px 16px rgba(168,85,247,0.4);">
+      Review & Checkout →
+    </a>
+  </div>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <p>CineBite — Universal Cinema Concession & Theatrical Showtime Engine · Built for Sri Lankan Moviegoers</p>
+  </footer>
+
+  <script>
+    const client = new CinemaClient();
+    let menuItems = [];
+    let cinemas = [];
+    let activeCinemaId = localStorage.getItem('cinebite_active_cinema_id') || 'CMB-CCC';
+    let currentCategory = 'ALL';
+    let searchQuery = '';
+    let cart = [];
+    let fulfillment = 'pickup';
+    let countdown = 8;
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      loadCartFromStorage();
+      await loadCinemas();
+      await loadConcessions();
+      startTicker();
+    });
+
+    function loadCartFromStorage() {
+      try {
+        const raw = localStorage.getItem('cinebite_cart');
+        cart = raw ? JSON.parse(raw) : [];
+        updateCartUI();
+      } catch (e) { cart = []; }
+    }
+
+    function saveCartToStorage() {
+      localStorage.setItem('cinebite_cart', JSON.stringify(cart));
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      const count = cart.reduce((s, i) => s + (i.quantity || 1), 0);
+      const subtotal = cart.reduce((s, i) => s + (i.price * (i.quantity || 1)), 0);
+
+      document.getElementById('cart-count').textContent = count;
+      document.getElementById('cart-item-count').textContent = count;
+      document.getElementById('cart-total-price').textContent = `LKR ${subtotal.toLocaleString()}`;
+
+      const sticky = document.getElementById('sticky-cart');
+      if (sticky) {
+        sticky.style.display = count > 0 ? 'flex' : 'none';
+      }
+    }
+
+    async function loadCinemas() {
+      try {
+        cinemas = await client.getCinemas();
+      } catch (e) {
+        cinemas = SRI_LANKAN_CINEMAS || [];
+      }
+
+      const select = document.getElementById('theater-dropdown');
+      select.innerHTML = cinemas.map(c => `
+        <option value="${c.id}" ${c.id === activeCinemaId ? 'selected' : ''}>${c.name} (${c.city})</option>
+      `).join('');
+
+      updateActiveTheaterDisplay();
+    }
+
+    function updateActiveTheaterDisplay() {
+      const active = cinemas.find(c => c.id === activeCinemaId);
+      const el = document.getElementById('active-theater-name');
+      if (el) el.textContent = active ? active.name : 'Cinema Concession Counter';
+    }
+
+    async function loadConcessions() {
+      try {
+        const data = await client.getLiveConcessions(activeCinemaId);
+        menuItems = (data.items || []).map(item => {
+          let img = item.image;
+          if (!img) {
+            if (item.category === 'Popcorn') img = 'popcorn.jpg';
+            else if (item.category === 'Beverage') img = 'beverage.jpg';
+            else if (item.category === 'Combo') img = 'combo.jpg';
+            else if (item.name && item.name.toLowerCase().includes('dog')) img = 'hotdog.jpg';
+            else if (item.name && (item.name.toLowerCase().includes('roll') || item.name.toLowerCase().includes('samosa'))) img = 'rolls.jpg';
+            else img = 'nachos.jpg';
+          }
+          return {
+            ...item,
+            image: img,
+            price: item.price_lkr || item.price || 1200,
+            original_price: item.base_price_lkr || item.original_price || (item.price * 1.2)
+          };
+        });
+        renderMenu();
+      } catch (err) {
+        console.error('Failed to load concessions:', err);
+      }
+    }
+
+    function onTheaterSwitch(id) {
+      activeCinemaId = id;
+      localStorage.setItem('cinebite_active_cinema_id', id);
+      updateActiveTheaterDisplay();
+      loadConcessions();
+    }
+
+    function setFulfillment(mode) {
+      fulfillment = mode;
+      document.getElementById('btn-pickup').classList.toggle('active', mode === 'pickup');
+      document.getElementById('btn-seat').classList.toggle('active', mode === 'seat');
+      localStorage.setItem('cinebite_fulfillment', mode);
+    }
+
+    function filterCategory(cat) {
+      currentCategory = cat;
+      document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+      const active = document.getElementById('cat-' + cat.toLowerCase());
+      if (active) active.classList.add('active');
+      renderMenu();
+    }
+
+    function onSearchMenu(query) {
+      searchQuery = query.toLowerCase().trim();
+      renderMenu();
+    }
+
+    function renderMenu() {
+      const container = document.getElementById('menu-container');
+      let list = [...menuItems];
+
+      if (currentCategory !== 'ALL') {
+        list = list.filter(i => i.category && i.category.toLowerCase() === currentCategory.toLowerCase());
+      }
+
+      if (searchQuery) {
+        list = list.filter(i =>
+          i.name.toLowerCase().includes(searchQuery) ||
+          (i.description && i.description.toLowerCase().includes(searchQuery)) ||
+          (i.category && i.category.toLowerCase().includes(searchQuery))
+        );
+      }
+
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column:1/-1; text-align:center; padding:3rem; background:rgba(255,255,255,0.02); border-radius:var(--r-md); border:1px dashed rgba(255,255,255,0.1);">
+            <div style="font-size:2rem; margin-bottom:0.5rem;">🍿</div>
+            <div style="font-size:1.1rem; font-weight:700; color:#fff; margin-bottom:0.25rem;">No Concession Items Match</div>
+            <div style="font-size:0.85rem; color:var(--cb-text-secondary); margin-bottom:1rem;">Try searching another item or clearing your category filter.</div>
+            <button class="btn-secondary" onclick="filterCategory('ALL')">View All Items</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = list.map(item => {
+        const inCart = cart.find(x => x.id === item.id);
+        const qty = inCart ? inCart.quantity : 0;
+
+        return `
+          <div class="menu-card">
+            <div>
+              <div class="menu-card-img" style="background-image:url('${item.image}');">
+                <div class="menu-card-overlay"></div>
+                <div style="position:absolute; top:0.75rem; left:0.75rem; z-index:2;">
+                  <span class="badge badge-purple" style="font-size:0.68rem; backdrop-filter:blur(8px);">${item.category}</span>
+                </div>
+                <div style="position:absolute; top:0.75rem; right:0.75rem; z-index:2;">
+                  <span class="badge badge-green" style="font-size:0.68rem;">Live Deal</span>
+                </div>
+              </div>
+
+              <div class="menu-card-body">
+                <div>
+                  <h3 class="item-name">${item.name}</h3>
+                  <div style="font-size:0.72rem; color:var(--cb-purple-light); font-weight:600; margin-bottom:0.35rem;">${item.size || 'Standard Cinema Size'}</div>
+                  <p class="item-desc">${item.description || 'Fresh cinema concession prepared hot at counter.'}</p>
+                </div>
+
+                <div>
+                  <div class="price-row">
+                    <span class="price-current">LKR ${item.price.toLocaleString()}</span>
+                    ${item.original_price > item.price ? `<span class="price-orig">LKR ${Math.round(item.original_price).toLocaleString()}</span>` : ''}
+                  </div>
+
+                  <div style="display:flex; gap:0.5rem; align-items:center;">
+                    ${qty > 0 ? `
+                      <div style="display:flex; align-items:center; background:rgba(255,255,255,0.08); border-radius:var(--r-sm); border:1px solid rgba(255,255,255,0.12); flex:1; justify-content:space-between; padding:0.25rem 0.5rem;">
+                        <button onclick="changeCartQty('${item.id}', -1)" style="background:none; border:none; color:#fff; font-size:1rem; cursor:pointer; padding:0.2rem 0.5rem;">−</button>
+                        <span style="font-weight:700; font-size:0.85rem; color:#fff;">${qty}</span>
+                        <button onclick="changeCartQty('${item.id}', 1)" style="background:none; border:none; color:#fff; font-size:1rem; cursor:pointer; padding:0.2rem 0.5rem;">+</button>
+                      </div>
+                    ` : `
+                      <button class="btn-primary" style="flex:1; font-size:0.8rem; padding:0.5rem 0.85rem; cursor:pointer;" onclick="addToCart('${item.id}')">
+                        + Add to Cart
+                      </button>
+                    `}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function addToCart(id) {
+      const item = menuItems.find(x => x.id === id);
+      if (!item) return;
+      const existing = cart.find(x => x.id === id);
+      if (existing) {
+        existing.quantity = (existing.quantity || 1) + 1;
+      } else {
+        cart.push({ ...item, quantity: 1, cinema_id: activeCinemaId });
+      }
+      saveCartToStorage();
+      renderMenu();
+    }
+
+    function changeCartQty(id, delta) {
+      const idx = cart.findIndex(x => x.id === id);
+      if (idx === -1) return;
+      cart[idx].quantity = (cart[idx].quantity || 1) + delta;
+      if (cart[idx].quantity <= 0) {
+        cart.splice(idx, 1);
+      }
+      saveCartToStorage();
+      renderMenu();
+    }
+
+    function startTicker() {
+      setInterval(() => {
+        countdown--;
+        if (countdown <= 0) {
+          countdown = 8;
+          loadConcessions();
+        }
+        const el = document.getElementById('pricing-ticker');
+        if (el) el.textContent = countdown + 's';
+      }, 1000);
+    }
+  </script>
+
+</body>
+</html>

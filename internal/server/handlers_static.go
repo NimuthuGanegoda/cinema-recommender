@@ -24,7 +24,7 @@ func isMobileBrowser(ua string) bool {
 	return false
 }
 
-// Handler: Root serves index.html (Desktop Web UI) or auto-redirects mobile browsers to /mobile
+// Handler: Root serves index.html (Responsive Multi-Page Web UI) or redirects mobile browsers to /mobile
 func (s *Server) handleRoot(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
@@ -50,6 +50,42 @@ func (s *Server) handleRoot(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(content)
+}
+
+func (s *Server) serveHTMLPage(w http.ResponseWriter, pageFile string) {
+	content, err := uiAssets.ReadFile("ui/" + pageFile)
+	if err != nil {
+		http.Error(w, pageFile+" asset not found", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(content)
+}
+
+func (s *Server) handleMoviesPage(w http.ResponseWriter, r *http.Request) {
+	s.serveHTMLPage(w, "movies.html")
+}
+
+func (s *Server) handleCinemasPage(w http.ResponseWriter, r *http.Request) {
+	s.serveHTMLPage(w, "cinemas.html")
+}
+
+func (s *Server) handleMenuPage(w http.ResponseWriter, r *http.Request) {
+	s.serveHTMLPage(w, "menu.html")
+}
+
+func (s *Server) handleOptimizerPage(w http.ResponseWriter, r *http.Request) {
+	s.serveHTMLPage(w, "optimizer.html")
+}
+
+func (s *Server) handleDealsPage(w http.ResponseWriter, r *http.Request) {
+	s.serveHTMLPage(w, "deals.html")
+}
+
+func (s *Server) handleCheckoutPage(w http.ResponseWriter, r *http.Request) {
+	s.serveHTMLPage(w, "checkout.html")
 }
 
 // Handler: Mobile serves mobile.html (Dedicated Mobile Application)

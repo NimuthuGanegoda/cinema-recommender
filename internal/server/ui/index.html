@@ -782,9 +782,19 @@
        ================================================================ */
     @media (max-width: 768px) {
       .navbar {
-        padding: 0 1.25rem;
+        padding: 0 0.75rem;
       }
-      .nav-links { display: none; }
+      .nav-links {
+        gap: 0.15rem;
+        overflow-x: auto;
+        max-width: calc(100vw - 220px);
+        scrollbar-width: none;
+      }
+      .nav-link {
+        padding: 0.35rem 0.5rem;
+        font-size: 0.76rem;
+        white-space: nowrap;
+      }
       .hero {
         padding: 3rem 1.25rem 2.5rem;
       }
@@ -865,15 +875,18 @@
        NAVBAR
        ============================================================ -->
   <nav class="navbar">
-    <a href="/" class="nav-brand">
+    <a href="index.html" class="nav-brand">
       <div class="nav-logo">🍿</div>
       <span class="nav-brand-text">CineBite</span>
     </a>
 
     <div class="nav-links">
-      <button class="nav-link active" onclick="scrollToSection('hero-section')">Explore</button>
-      <button class="nav-link" onclick="scrollToSection('menu-anchor')">Menu</button>
-      <button class="nav-link" onclick="scrollToSection('optimizer-anchor')">Optimizer</button>
+      <a href="index.html" class="nav-link active">🏠 Home</a>
+      <a href="movies.html" class="nav-link">🎬 Movies</a>
+      <a href="cinemas.html" class="nav-link">🏛️ Theaters</a>
+      <a href="menu.html" class="nav-link">🍿 Concessions</a>
+      <a href="optimizer.html" class="nav-link">✨ Optimizer</a>
+      <a href="deals.html" class="nav-link">⚡ Deals & VIP</a>
     </div>
 
     <div class="nav-right">
@@ -882,7 +895,8 @@
         <span style="font-size:0.78rem; font-weight:600;" id="nav-live-cinema">Loading...</span>
         <span style="font-size:0.72rem; color:var(--cb-green); font-weight:600;" id="nav-sync-timer">8s</span>
       </div>
-      <span class="badge badge-purple" id="nav-tier-badge" style="cursor:pointer;" onclick="openVoucherModal()" title="View CinePass Wallet Voucher">🎟️ CinePass</span>
+      <a href="checkout.html" class="btn-primary" style="font-size:0.78rem; padding:0.4rem 0.85rem; text-decoration:none;" id="nav-cart-btn">🛒 Cart (<span id="cart-count">0</span>)</a>
+      <span class="badge badge-purple" id="nav-tier-badge" style="cursor:pointer;" onclick="openVoucherModal()" title="View CinePass Wallet Voucher">🎟️ VIP</span>
     </div>
   </nav>
 
@@ -1168,15 +1182,15 @@
   <!-- ============================================================
        FLOATING CART BAR
        ============================================================ -->
-  <div class="floating-bar" id="floating-cart" style="display:none;" onclick="openVoucherModal()">
+  <div class="floating-bar" id="floating-cart" style="display:none;">
     <span class="badge badge-purple" style="font-size:0.78rem;padding:0.25rem 0.6rem;" id="cart-count-badge">0</span>
     <div style="display:flex;flex-direction:column;">
       <span style="font-size:0.7rem;color:var(--cb-text-muted);">Total</span>
       <span style="font-size:1rem;font-weight:800;" id="cart-total">LKR 0</span>
     </div>
-    <button class="btn-primary" style="padding:0.45rem 0.95rem;font-size:0.8rem;">
-      🎟️ View Pass
-    </button>
+    <a href="checkout.html" class="btn-primary" style="padding:0.45rem 0.95rem;font-size:0.8rem;text-decoration:none;display:inline-flex;align-items:center;gap:0.35rem;">
+      🛒 Checkout Pass →
+    </a>
   </div>
 
 
@@ -1391,7 +1405,24 @@
        FOOTER
        ============================================================ -->
   <footer class="site-footer">
-    <p>CineBite — Smart Cinema Concession Deals · Built with ♥ for Sri Lankan Moviegoers</p>
+    <div style="max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1.5rem;">
+      <div style="display:flex; align-items:center; gap:0.6rem;">
+        <span style="font-size:1.4rem;">🍿</span>
+        <span style="font-weight:800; color:#fff; font-size:1.1rem;">CineBite Sri Lanka</span>
+      </div>
+      <div style="display:flex; gap:1.5rem; flex-wrap:wrap;">
+        <a href="index.html" style="color:#fff; text-decoration:none; font-weight:700;">Home</a>
+        <a href="movies.html" style="color:var(--cb-text-secondary); text-decoration:none;">Movies</a>
+        <a href="cinemas.html" style="color:var(--cb-text-secondary); text-decoration:none;">Theaters</a>
+        <a href="menu.html" style="color:var(--cb-text-secondary); text-decoration:none;">Concessions</a>
+        <a href="optimizer.html" style="color:var(--cb-text-secondary); text-decoration:none;">AI Optimizer</a>
+        <a href="deals.html" style="color:var(--cb-text-secondary); text-decoration:none;">Deals & VIP</a>
+        <a href="checkout.html" style="color:var(--cb-text-secondary); text-decoration:none;">Checkout</a>
+      </div>
+      <div>
+        © 2026 CineBite Sri Lanka. All cinema concession trademarks belong to their respective circuits.
+      </div>
+    </div>
   </footer>
 
 
@@ -1437,6 +1468,7 @@
 
     /* ── Init ──────────────────────────────────────── */
     window.addEventListener('DOMContentLoaded', async () => {
+      initCartFromStorage();
       await loadCinemas();
       await loadMovies();
       setupSearch();
@@ -1934,7 +1966,12 @@
       if (item) {
         const price = (typeof item.price_lkr === 'number') ? item.price_lkr : (typeof item.price === 'number' ? item.price : 0);
         const originalPrice = (typeof item.base_price_lkr === 'number') ? item.base_price_lkr : (typeof item.original_price === 'number' ? item.original_price : price);
-        cart.push({ ...item, price, original_price: originalPrice });
+        const existing = cart.find(x => x.id === item.id);
+        if (existing) {
+          existing.quantity = (existing.quantity || 1) + 1;
+        } else {
+          cart.push({ ...item, price, original_price: originalPrice, quantity: 1, cinema_id: activeCinema ? activeCinema.id : '' });
+        }
         updateCart();
         showNotification(`Added ${item.name} to tray`, 'success');
       }
@@ -1942,11 +1979,28 @@
 
     function updateCart() {
       const bar = document.getElementById('floating-cart');
-      if (cart.length === 0) { bar.style.display = 'none'; return; }
-      bar.style.display = 'flex';
-      document.getElementById('cart-count-badge').textContent = cart.length;
-      const subtotal = cart.reduce((s, i) => s + ((typeof i.price_lkr === 'number') ? i.price_lkr : (typeof i.price === 'number' ? i.price : 0)), 0);
-      document.getElementById('cart-total').textContent = `LKR ${subtotal.toFixed(0)}`;
+      const totalItems = cart.reduce((s, i) => s + (i.quantity || 1), 0);
+      const cartCountEl = document.getElementById('cart-count');
+      if (cartCountEl) cartCountEl.textContent = totalItems;
+      localStorage.setItem('cinebite_cart', JSON.stringify(cart));
+
+      if (cart.length === 0) { if (bar) bar.style.display = 'none'; return; }
+      if (bar) bar.style.display = 'flex';
+      const countBadge = document.getElementById('cart-count-badge');
+      if (countBadge) countBadge.textContent = totalItems;
+      const subtotal = cart.reduce((s, i) => s + (((typeof i.price_lkr === 'number') ? i.price_lkr : (typeof i.price === 'number' ? i.price : 0)) * (i.quantity || 1)), 0);
+      const totEl = document.getElementById('cart-total');
+      if (totEl) totEl.textContent = `LKR ${subtotal.toFixed(0)}`;
+    }
+
+    function initCartFromStorage() {
+      try {
+        const raw = localStorage.getItem('cinebite_cart');
+        if (raw) {
+          cart = JSON.parse(raw);
+          updateCart();
+        }
+      } catch (e) {}
     }
 
     /* ── Fulfillment Mode ──────────────────────────── */

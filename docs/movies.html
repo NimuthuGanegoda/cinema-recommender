@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Now Showing & Showtimes · CineBite Sri Lanka</title>
+  <meta name="description" content="Discover movies currently playing across Sri Lankan cinemas. Real-time showtimes, IMAX 3D, Dolby Atmos, and 1-hour automated schedule updates.">
+  <link rel="icon" type="image/jpeg" href="app-icon.jpg">
+  <link rel="stylesheet" href="apple-design-system.css?v=2.2">
+  <script src="cinema-client.js?v=2.4"></script>
+
+  <style>
+    body {
+      background: var(--cb-bg);
+      color: var(--cb-text);
+      font-family: var(--font);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--cb-surface-glass);
+      backdrop-filter: var(--cb-glass-blur);
+      -webkit-backdrop-filter: var(--cb-glass-blur);
+      border-bottom: var(--cb-border);
+      padding: 0 1.5rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .nav-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--r-sm);
+      background: var(--cb-purple-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 16px rgba(168, 85, 247, 0.25);
+    }
+
+    .nav-brand-text {
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .nav-link {
+      padding: 0.5rem 0.9rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--cb-text-secondary);
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      transition: all var(--duration-fast) ease;
+      border: none;
+      background: none;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--cb-text);
+      background: var(--cb-surface);
+    }
+
+    .nav-link.active {
+      color: #fff;
+      background: rgba(168, 85, 247, 0.18);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .page-container {
+      max-width: 1240px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+      flex: 1;
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+    }
+
+    .page-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin: 0 0 0.5rem 0;
+      background: linear-gradient(135deg, #ffffff 40%, rgba(255,255,255,0.6) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .page-subtitle {
+      font-size: 0.95rem;
+      color: var(--cb-text-secondary);
+      margin: 0;
+      max-width: 600px;
+      line-height: 1.5;
+    }
+
+    .sync-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--r-md);
+      padding: 0.85rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      backdrop-filter: blur(12px);
+    }
+
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--r-md);
+      padding: 0.85rem 1.2rem;
+    }
+
+    .filter-chips {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .filter-chip {
+      padding: 0.4rem 0.85rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border-radius: var(--r-pill);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--cb-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all var(--duration-fast) ease;
+    }
+
+    .filter-chip:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    .filter-chip.active {
+      background: var(--cb-purple-gradient);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 2px 10px rgba(168, 85, 247, 0.35);
+    }
+
+    .theater-select {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--r-sm);
+      color: #fff;
+      padding: 0.45rem 0.85rem;
+      font-size: 0.82rem;
+      font-family: inherit;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .theater-select option {
+      background: #11111a;
+      color: #fff;
+    }
+
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-box input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--r-sm);
+      color: #fff;
+      padding: 0.45rem 0.85rem 0.45rem 2rem;
+      font-size: 0.82rem;
+      outline: none;
+      width: 180px;
+      transition: width 0.2s ease, border-color 0.2s ease;
+    }
+
+    .search-box input:focus {
+      width: 240px;
+      border-color: var(--cb-purple);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.65rem;
+      font-size: 0.8rem;
+      color: var(--cb-text-muted);
+      pointer-events: none;
+    }
+
+    .movies-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .movie-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--r-lg);
+      padding: 1.4rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .movie-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(168, 85, 247, 0.4);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 24px rgba(168, 85, 247, 0.15);
+    }
+
+    .movie-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--cb-purple-gradient);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .movie-card:hover::before {
+      opacity: 1;
+    }
+
+    .movie-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0 0 0.25rem 0;
+      letter-spacing: -0.01em;
+    }
+
+    .movie-orig-title {
+      font-size: 0.85rem;
+      color: var(--cb-purple-light);
+      font-weight: 600;
+      margin-bottom: 0.65rem;
+    }
+
+    .badge-strip {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.85rem;
+    }
+
+    .synopsis-text {
+      font-size: 0.82rem;
+      color: var(--cb-text-secondary);
+      line-height: 1.5;
+      margin: 0 0 1rem 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .showtimes-box {
+      margin-bottom: 1.2rem;
+    }
+
+    .showtimes-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--cb-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.45rem;
+    }
+
+    .showtimes-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .showtime-pill {
+      font-size: 0.75rem;
+      padding: 0.3rem 0.6rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--r-sm);
+      color: rgba(255, 255, 255, 0.95);
+      font-weight: 600;
+    }
+
+    .concession-box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--r-md);
+      padding: 0.85rem 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .concession-header {
+      font-size: 0.75rem;
+      color: var(--cb-green);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .concession-tip {
+      font-size: 0.78rem;
+      color: rgba(255, 255, 255, 0.85);
+      line-height: 1.4;
+      margin-bottom: 0.65rem;
+    }
+
+    .site-footer {
+      background: var(--cb-bg-subtle);
+      border-top: var(--cb-border);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--cb-text-muted);
+      margin-top: auto;
+    }
+
+    @media (max-width: 768px) {
+      .navbar { padding: 0 1rem; }
+      .nav-links { gap: 0.15rem; }
+      .nav-link { padding: 0.4rem 0.6rem; font-size: 0.78rem; }
+      .page-container { padding: 1.25rem 1rem 3rem; }
+      .page-title { font-size: 1.75rem; }
+      .filter-bar { flex-direction: column; align-items: stretch; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand">
+      <div class="nav-logo">🍿</div>
+      <span class="nav-brand-text">CineBite</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">🏠 Home</a>
+      <a href="movies.html" class="nav-link active">🎬 Movies</a>
+      <a href="cinemas.html" class="nav-link">🏛️ Theaters</a>
+      <a href="menu.html" class="nav-link">🍿 Concessions</a>
+      <a href="optimizer.html" class="nav-link">✨ Optimizer</a>
+      <a href="deals.html" class="nav-link">⚡ Deals & VIP</a>
+    </div>
+
+    <div class="nav-right">
+      <div class="live-pill" style="display:inline-flex; align-items:center; gap:0.4rem; padding:0.35rem 0.75rem; background:rgba(255,255,255,0.04); border-radius:var(--r-pill); border:1px solid rgba(255,255,255,0.08);">
+        <span class="live-dot" style="width:7px; height:7px; background:#30d158; border-radius:50%; display:inline-block;"></span>
+        <span style="font-size:0.75rem; color:var(--cb-text-secondary);" id="nav-selected-theater">Colombo City Centre</span>
+      </div>
+      <a href="checkout.html" class="btn-primary" style="font-size:0.78rem; padding:0.4rem 0.85rem; text-decoration:none;">🛒 Cart (<span id="cart-count">0</span>)</a>
+    </div>
+  </nav>
+
+  <!-- Page Container -->
+  <main class="page-container">
+
+    <!-- Header & Hourly Sync Banner -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Now Showing in Theaters</h1>
+        <p class="page-subtitle">
+          Authentic theatrical lineups and real-time schedules across Scope Cinemas, EAP Savoy circuits, PVR Sri Lanka, and regional screens.
+        </p>
+      </div>
+
+      <div class="sync-card">
+        <div style="font-size:1.6rem;">⏱️</div>
+        <div>
+          <div style="display:flex; align-items:center; gap:0.4rem; margin-bottom:0.2rem;">
+            <span style="font-size:0.72rem; font-weight:700; background:rgba(48,209,88,0.18); color:#30d158; border:1px solid rgba(48,209,88,0.3); border-radius:10px; padding:0.1rem 0.5rem; text-transform:uppercase;">1-Hour Live Sync</span>
+            <span style="font-size:0.75rem; color:var(--cb-text-muted);" id="sync-source">Scope & EAP Feed</span>
+          </div>
+          <div style="font-size:0.8rem; color:var(--cb-text-secondary);">
+            Next hourly sync: <strong id="hourly-sync-timer" style="color:#30d158; font-family:monospace; font-size:0.88rem;">59m 45s</strong>
+          </div>
+        </div>
+        <button class="btn-secondary" style="font-size:0.75rem; padding:0.35rem 0.75rem; cursor:pointer;" onclick="triggerManualSync()" id="btn-manual-sync">
+          🔄 Refresh
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter & Search Bar -->
+    <div class="filter-bar">
+      <div class="filter-chips">
+        <button class="filter-chip active" id="chip-all" onclick="setLanguageFilter('all')">All Films (<span id="total-count">12</span>)</button>
+        <button class="filter-chip" id="chip-sinhala" onclick="setLanguageFilter('Sinhala')">🇱🇰 Sinhala</button>
+        <button class="filter-chip" id="chip-tamil" onclick="setLanguageFilter('Tamil')">🇮🇳 Tamil</button>
+        <button class="filter-chip" id="chip-english" onclick="setLanguageFilter('English')">🌐 English / Hollywood</button>
+        <button class="filter-chip" id="chip-imax" onclick="setLanguageFilter('IMAX')">🌟 IMAX 3D & Laser</button>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+        <select class="theater-select" id="theater-filter" onchange="onTheaterChange(this.value)">
+          <option value="">🏛️ All Registered Cinemas</option>
+        </select>
+
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="movie-search" placeholder="Search film or actor..." oninput="onSearchInput(this.value)">
+        </div>
+      </div>
+    </div>
+
+    <!-- Movies Grid -->
+    <div class="movies-grid" id="movies-container">
+      <!-- Dynamically populated -->
+    </div>
+
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <p>CineBite — Universal Cinema Concession & Theatrical Showtime Engine · Built for Sri Lankan Moviegoers</p>
+  </footer>
+
+  <script>
+    const client = new CinemaClient();
+    let movies = [];
+    let cinemas = [];
+    let selectedCinemaId = localStorage.getItem('cinebite_active_cinema_id') || '';
+    let currentFilter = 'all';
+    let searchQuery = '';
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      await loadCinemasList();
+      await fetchMovies();
+      initHourlySync();
+      updateCartCount();
+    });
+
+    async function loadCinemasList() {
+      try {
+        cinemas = await client.getCinemas();
+      } catch (e) {
+        cinemas = SRI_LANKAN_CINEMAS || [];
+      }
+
+      const select = document.getElementById('theater-filter');
+      select.innerHTML = '<option value="">🏛️ All Registered Cinemas (' + cinemas.length + ')</option>' +
+        cinemas.map(c => `<option value="${c.id}" ${c.id === selectedCinemaId ? 'selected' : ''}>${c.name} (${c.city})</option>`).join('');
+
+      updateNavTheaterName();
+    }
+
+    function updateNavTheaterName() {
+      const active = cinemas.find(c => c.id === selectedCinemaId);
+      const el = document.getElementById('nav-selected-theater');
+      if (el) el.textContent = active ? (active.name.split(' - ')[0]) : 'All Theaters';
+    }
+
+    async function fetchMovies(forceRefresh = false) {
+      try {
+        movies = await client.getMovies({ cinemaId: selectedCinemaId, forceRefresh });
+        renderMovies();
+      } catch (err) {
+        console.error('Failed to load movies:', err);
+      }
+    }
+
+    function onTheaterChange(val) {
+      selectedCinemaId = val;
+      localStorage.setItem('cinebite_active_cinema_id', val);
+      updateNavTheaterName();
+      fetchMovies();
+    }
+
+    function setLanguageFilter(lang) {
+      currentFilter = lang;
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      const activeChip = document.getElementById('chip-' + lang.toLowerCase());
+      if (activeChip) activeChip.classList.add('active');
+      renderMovies();
+    }
+
+    function onSearchInput(query) {
+      searchQuery = query.toLowerCase().trim();
+      renderMovies();
+    }
+
+    function renderMovies() {
+      const container = document.getElementById('movies-container');
+      const countEl = document.getElementById('total-count');
+      if (countEl) countEl.textContent = movies.length;
+
+      let list = [...movies];
+
+      // Filter by language / format
+      if (currentFilter === 'Sinhala') {
+        list = list.filter(m => m.language === 'Sinhala');
+      } else if (currentFilter === 'Tamil') {
+        list = list.filter(m => m.language === 'Tamil');
+      } else if (currentFilter === 'English') {
+        list = list.filter(m => m.language === 'English');
+      } else if (currentFilter === 'IMAX') {
+        list = list.filter(m => m.formats && m.formats.some(f => f.toLowerCase().includes('imax') || f.toLowerCase().includes('laser')));
+      }
+
+      // Filter by search query
+      if (searchQuery) {
+        list = list.filter(m => 
+          m.title.toLowerCase().includes(searchQuery) ||
+          (m.original_title && m.original_title.toLowerCase().includes(searchQuery)) ||
+          (m.director && m.director.toLowerCase().includes(searchQuery)) ||
+          (m.cast && m.cast.some(a => a.toLowerCase().includes(searchQuery))) ||
+          (m.genre && m.genre.toLowerCase().includes(searchQuery))
+        );
+      }
+
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column:1/-1; text-align:center; padding:3rem 1rem; background:rgba(255,255,255,0.02); border-radius:var(--r-md); border:1px dashed rgba(255,255,255,0.1);">
+            <div style="font-size:2rem; margin-bottom:0.5rem;">🎬</div>
+            <div style="font-size:1.1rem; font-weight:700; color:#fff; margin-bottom:0.25rem;">No Movie Showtimes Found</div>
+            <div style="font-size:0.85rem; color:var(--cb-text-secondary); margin-bottom:1rem;">Try clearing your search or switching to another cinema.</div>
+            <button class="btn-secondary" onclick="setLanguageFilter('all'); document.getElementById('movie-search').value=''; searchQuery=''; renderMovies();">Reset Filters</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = list.map(m => {
+        const langBadge = m.language === 'Sinhala' ? '🇱🇰 Sinhala' : (m.language === 'Tamil' ? '🇮🇳 Tamil' : '🌐 English');
+        const showtimesHtml = (m.showtimes || []).map(st => `
+          <span class="showtime-pill">🕒 ${st}</span>
+        `).join('');
+
+        const formatsHtml = (m.formats || []).map(f => `
+          <span class="badge ${f.includes('IMAX') ? 'badge-purple' : 'badge-blue'}" style="font-size:0.65rem;">${f}</span>
+        `).join(' ');
+
+        return `
+          <div class="movie-card">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.35rem; gap:0.5rem;">
+                <div>
+                  <h2 class="movie-title">${m.title}</h2>
+                  ${m.original_title && m.original_title !== m.title ? `<div class="movie-orig-title">${m.original_title}</div>` : ''}
+                </div>
+                <span class="badge badge-default" style="font-size:0.7rem; font-weight:700;">${m.rating || 'PG-13'}</span>
+              </div>
+
+              <div class="badge-strip">
+                <span class="badge badge-green" style="font-size:0.7rem;">${langBadge}</span>
+                <span style="font-size:0.75rem; color:var(--cb-text-muted);">⏱️ ${m.duration}</span>
+                <span style="font-size:0.75rem; color:var(--cb-text-muted);">🎭 ${m.genre}</span>
+              </div>
+
+              <div style="display:flex; gap:0.35rem; flex-wrap:wrap; margin-bottom:0.85rem;">
+                ${formatsHtml}
+              </div>
+
+              <p class="synopsis-text">${m.synopsis}</p>
+
+              <div class="showtimes-box">
+                <div class="showtimes-label">Today's Theatrical Screenings</div>
+                <div class="showtimes-list">${showtimesHtml}</div>
+              </div>
+            </div>
+
+            <div class="concession-box">
+              <div class="concession-header">
+                <span>🍿</span> Recommended Concession Pairing
+              </div>
+              <div class="concession-tip">
+                ${m.concession_tip || 'Pairs great with Fresh Caramel Popcorn and Milo Dinosaur Float'}
+              </div>
+              <div style="display:flex; gap:0.5rem;">
+                <a href="optimizer.html?movie=${encodeURIComponent(m.title)}&duration=${encodeURIComponent(m.duration)}" class="btn-primary" style="flex:1; font-size:0.75rem; padding:0.45rem 0.6rem; text-decoration:none; text-align:center;">
+                  ✨ Optimize Snacks
+                </a>
+                <a href="menu.html" class="btn-secondary" style="font-size:0.75rem; padding:0.45rem 0.75rem; text-decoration:none; text-align:center;">
+                  Browse Menu
+                </a>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function triggerManualSync() {
+      const btn = document.getElementById('btn-manual-sync');
+      const orig = btn.innerHTML;
+      btn.innerHTML = '⏳ Syncing...';
+      try {
+        await client.triggerMovieSync();
+        await fetchMovies(true);
+      } finally {
+        btn.innerHTML = orig;
+      }
+    }
+
+    function initHourlySync() {
+      client.startHourlyMovieSyncEngine((fresh) => {
+        movies = fresh;
+        renderMovies();
+      }, (remainingSec, formatted) => {
+        const timerEl = document.getElementById('hourly-sync-timer');
+        if (timerEl) timerEl.textContent = formatted;
+      });
+    }
+
+    function updateCartCount() {
+      try {
+        const raw = localStorage.getItem('cinebite_cart');
+        const items = raw ? JSON.parse(raw) : [];
+        const count = items.reduce((s, i) => s + (i.quantity || 1), 0);
+        const countEl = document.getElementById('cart-count');
+        if (countEl) countEl.textContent = count;
+      } catch (e) {}
+    }
+  </script>
+
+</body>
+</html>

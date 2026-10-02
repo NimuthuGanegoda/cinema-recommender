@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"cinema-recommender/internal/models"
@@ -501,6 +502,43 @@ func TestCinemaAdsEndpoint(t *testing.T) {
 
 	if !hasComboAd {
 		t.Fatal("expected at least one actionable combo/discount ad with target item and promo code")
+	}
+}
+
+func TestMultiPageWebEndpoints(t *testing.T) {
+	srv := setupTestServer()
+
+	endpoints := []struct {
+		path            string
+		expectedSnippet string
+	}{
+		{"/movies", "Now Showing"},
+		{"/cinemas", "Theaters & Regional Locations"},
+		{"/theaters", "Theaters & Regional Locations"},
+		{"/menu", "Live Concession Menu"},
+		{"/optimizer", "AI Concession Optimizer"},
+		{"/deals", "Active Deals & CinePass VIP"},
+		{"/checkout", "Concession Checkout"},
+	}
+
+	for _, ep := range endpoints {
+		t.Run("GET "+ep.path, func(t *testing.T) {
+			req := httptest.NewRequest(http.MethodGet, ep.path, nil)
+			w := httptest.NewRecorder()
+			srv.GetHandler().ServeHTTP(w, req)
+
+			if w.Code != http.StatusOK {
+				t.Fatalf("expected status 200 for %s, got %d", ep.path, w.Code)
+			}
+			ct := w.Header().Get("Content-Type")
+			if !strings.Contains(ct, "text/html") {
+				t.Fatalf("expected text/html Content-Type for %s, got %s", ep.path, ct)
+			}
+			body := w.Body.String()
+			if !strings.Contains(body, ep.expectedSnippet) {
+				t.Fatalf("expected %s body to contain '%s'", ep.path, ep.expectedSnippet)
+			}
+		})
 	}
 }
 

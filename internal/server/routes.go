@@ -19,6 +19,13 @@ func (s *Server) registerRoutes(mux *http.ServeMux) {
 			fileServer.ServeHTTP(w, r)
 		})
 	}
+	mux.HandleFunc("GET /movies", s.handleMoviesPage)
+	mux.HandleFunc("GET /cinemas", s.handleCinemasPage)
+	mux.HandleFunc("GET /theaters", s.handleCinemasPage)
+	mux.HandleFunc("GET /menu", s.handleMenuPage)
+	mux.HandleFunc("GET /optimizer", s.handleOptimizerPage)
+	mux.HandleFunc("GET /deals", s.handleDealsPage)
+	mux.HandleFunc("GET /checkout", s.handleCheckoutPage)
 	mux.HandleFunc("GET /mobile", s.handleMobile)
 	mux.HandleFunc("GET /mobile.html", s.handleMobile)
 	mux.HandleFunc("GET /manifest.json", s.handleManifest)

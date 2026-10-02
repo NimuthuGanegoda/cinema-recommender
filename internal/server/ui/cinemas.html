@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Theaters & Regional Locations · CineBite Sri Lanka</title>
+  <meta name="description" content="Explore verified Sri Lankan cinemas in Colombo, Kandy, Galle, Gampaha, Negombo, Kurunegala, Matara, and Jaffna with live food court telemetry.">
+  <link rel="icon" type="image/jpeg" href="app-icon.jpg">
+  <link rel="stylesheet" href="apple-design-system.css?v=2.2">
+  <script src="cinema-client.js?v=2.4"></script>
+
+  <style>
+    body {
+      background: var(--cb-bg);
+      color: var(--cb-text);
+      font-family: var(--font);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--cb-surface-glass);
+      backdrop-filter: var(--cb-glass-blur);
+      -webkit-backdrop-filter: var(--cb-glass-blur);
+      border-bottom: var(--cb-border);
+      padding: 0 1.5rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .nav-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--r-sm);
+      background: var(--cb-purple-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 16px rgba(168, 85, 247, 0.25);
+    }
+
+    .nav-brand-text {
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .nav-link {
+      padding: 0.5rem 0.9rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--cb-text-secondary);
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      transition: all var(--duration-fast) ease;
+      border: none;
+      background: none;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--cb-text);
+      background: var(--cb-surface);
+    }
+
+    .nav-link.active {
+      color: #fff;
+      background: rgba(168, 85, 247, 0.18);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .page-container {
+      max-width: 1240px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+      flex: 1;
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+    }
+
+    .page-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin: 0 0 0.5rem 0;
+      background: linear-gradient(135deg, #ffffff 40%, rgba(255,255,255,0.6) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .page-subtitle {
+      font-size: 0.95rem;
+      color: var(--cb-text-secondary);
+      margin: 0;
+      max-width: 650px;
+      line-height: 1.5;
+    }
+
+    .city-nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--r-md);
+      padding: 0.85rem 1.2rem;
+    }
+
+    .city-chips {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .city-chip {
+      padding: 0.4rem 0.85rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border-radius: var(--r-pill);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--cb-text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all var(--duration-fast) ease;
+    }
+
+    .city-chip:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    .city-chip.active {
+      background: var(--cb-purple-gradient);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 2px 10px rgba(168, 85, 247, 0.35);
+    }
+
+    .cinemas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.75rem;
+    }
+
+    .theater-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .theater-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(168, 85, 247, 0.4);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 24px rgba(168, 85, 247, 0.15);
+    }
+
+    .theater-visual {
+      height: 180px;
+      position: relative;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .theater-visual-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(6,6,11,0.2) 0%, rgba(6,6,11,0.92) 100%);
+    }
+
+    .theater-content {
+      padding: 1.25rem 1.4rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .theater-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0 0 0.35rem 0;
+      line-height: 1.3;
+    }
+
+    .theater-addr {
+      font-size: 0.8rem;
+      color: var(--cb-text-secondary);
+      margin: 0 0 0.75rem 0;
+      line-height: 1.4;
+    }
+
+    .foodcourt-box {
+      background: rgba(48, 209, 88, 0.08);
+      border: 1px solid rgba(48, 209, 88, 0.25);
+      border-radius: var(--r-sm);
+      padding: 0.65rem 0.85rem;
+      margin: 0.75rem 0 1rem;
+    }
+
+    .foodcourt-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #30d158;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .foodcourt-desc {
+      font-size: 0.76rem;
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.35;
+    }
+
+    .theater-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .site-footer {
+      background: var(--cb-bg-subtle);
+      border-top: var(--cb-border);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--cb-text-muted);
+      margin-top: auto;
+    }
+
+    @media (max-width: 768px) {
+      .navbar { padding: 0 1rem; }
+      .nav-links { gap: 0.15rem; }
+      .nav-link { padding: 0.4rem 0.6rem; font-size: 0.78rem; }
+      .page-container { padding: 1.25rem 1rem 3rem; }
+      .page-title { font-size: 1.75rem; }
+      .cinemas-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand">
+      <div class="nav-logo">🍿</div>
+      <span class="nav-brand-text">CineBite</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">🏠 Home</a>
+      <a href="movies.html" class="nav-link">🎬 Movies</a>
+      <a href="cinemas.html" class="nav-link active">🏛️ Theaters</a>
+      <a href="menu.html" class="nav-link">🍿 Concessions</a>
+      <a href="optimizer.html" class="nav-link">✨ Optimizer</a>
+      <a href="deals.html" class="nav-link">⚡ Deals & VIP</a>
+    </div>
+
+    <div class="nav-right">
+      <button class="btn-secondary" onclick="detectGPSLocation()" id="btn-gps" style="font-size:0.75rem; padding:0.4rem 0.8rem; cursor:pointer;">
+        📍 Find Near Me
+      </button>
+      <a href="checkout.html" class="btn-primary" style="font-size:0.78rem; padding:0.4rem 0.85rem; text-decoration:none;">🛒 Cart (<span id="cart-count">0</span>)</a>
+    </div>
+  </nav>
+
+  <!-- Page Container -->
+  <main class="page-container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Theaters & Regional Locations</h1>
+        <p class="page-subtitle">
+          Explore all 13 authentic Sri Lankan cinema screens with authentic photography, verified in-front food courts, screen technologies, and direct directions.
+        </p>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:var(--r-md); padding:0.85rem 1.2rem; display:flex; align-items:center; gap:0.75rem;">
+        <span style="font-size:1.5rem;">🏛️</span>
+        <div>
+          <div style="font-size:0.82rem; font-weight:700; color:#fff;" id="cinemas-total-stat">13 Theaters Verified</div>
+          <div style="font-size:0.74rem; color:var(--cb-text-muted);">Island-Wide Telemetry</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- City & Province Filter Bar -->
+    <div class="city-nav-bar">
+      <div class="city-chips">
+        <button class="city-chip active" id="chip-all" onclick="filterByCity('all')">All Regions (13)</button>
+        <button class="city-chip" id="chip-colombo" onclick="filterByCity('Colombo')">Colombo</button>
+        <button class="city-chip" id="chip-kandy" onclick="filterByCity('Kandy')">Kandy</button>
+        <button class="city-chip" id="chip-galle" onclick="filterByCity('Galle')">Galle</button>
+        <button class="city-chip" id="chip-gampaha" onclick="filterByCity('Gampaha')">Gampaha</button>
+        <button class="city-chip" id="chip-negombo" onclick="filterByCity('Negombo')">Negombo</button>
+        <button class="city-chip" id="chip-kurunegala" onclick="filterByCity('Kurunegala')">Kurunegala</button>
+        <button class="city-chip" id="chip-matara" onclick="filterByCity('Matara')">Matara</button>
+        <button class="city-chip" id="chip-jaffna" onclick="filterByCity('Jaffna')">Jaffna</button>
+      </div>
+
+      <div style="position:relative;">
+        <span style="position:absolute; left:0.65rem; top:50%; transform:translateY(-50%); font-size:0.8rem; color:var(--cb-text-muted);">🔍</span>
+        <input type="text" id="cinema-search" placeholder="Search cinema name..." oninput="onSearchCinemas(this.value)" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:var(--r-sm); color:#fff; padding:0.4rem 0.85rem 0.4rem 2rem; font-size:0.82rem; outline:none; width:180px;">
+      </div>
+    </div>
+
+    <!-- Theaters Grid -->
+    <div class="cinemas-grid" id="cinemas-container">
+      <!-- Dynamically populated -->
+    </div>
+
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <p>CineBite — Universal Cinema Concession & Theatrical Showtime Engine · Built for Sri Lankan Moviegoers</p>
+  </footer>
+
+  <script>
+    const client = new CinemaClient();
+    let cinemas = [];
+    let activeCity = 'all';
+    let searchQuery = '';
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      await loadCinemas();
+      updateCartCount();
+    });
+
+    async function loadCinemas() {
+      try {
+        cinemas = await client.getCinemas();
+      } catch (e) {
+        cinemas = SRI_LANKAN_CINEMAS || [];
+      }
+      document.getElementById('cinemas-total-stat').textContent = `${cinemas.length} Theaters Verified`;
+      renderCinemas();
+    }
+
+    function filterByCity(city) {
+      activeCity = city;
+      document.querySelectorAll('.city-chip').forEach(c => c.classList.remove('active'));
+      const activeChip = document.getElementById('chip-' + city.toLowerCase());
+      if (activeChip) activeChip.classList.add('active');
+      renderCinemas();
+    }
+
+    function onSearchCinemas(query) {
+      searchQuery = query.toLowerCase().trim();
+      renderCinemas();
+    }
+
+    function renderCinemas() {
+      const container = document.getElementById('cinemas-container');
+      let list = [...cinemas];
+
+      if (activeCity !== 'all') {
+        list = list.filter(c => c.city && c.city.toLowerCase() === activeCity.toLowerCase());
+      }
+
+      if (searchQuery) {
+        list = list.filter(c =>
+          c.name.toLowerCase().includes(searchQuery) ||
+          c.city.toLowerCase().includes(searchQuery) ||
+          (c.address && c.address.toLowerCase().includes(searchQuery)) ||
+          (c.chain && c.chain.toLowerCase().includes(searchQuery))
+        );
+      }
+
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column:1/-1; text-align:center; padding:3rem; background:rgba(255,255,255,0.02); border-radius:var(--r-md); border:1px dashed rgba(255,255,255,0.1);">
+            <div style="font-size:2rem; margin-bottom:0.5rem;">🏛️</div>
+            <div style="font-size:1.1rem; font-weight:700; color:#fff; margin-bottom:0.25rem;">No Theaters Found</div>
+            <div style="font-size:0.85rem; color:var(--cb-text-secondary); margin-bottom:1rem;">No cinemas match your selected filter.</div>
+            <button class="btn-secondary" onclick="filterByCity('all')">Show All Theaters</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = list.map(c => {
+        const cinemaImg = c.image || 'cinema-ccc.jpg';
+        const distBadge = (typeof c.distance_km === 'number' && c.distance_km < 9000)
+          ? `<span class="badge badge-blue" style="font-size:0.7rem; font-weight:700;">📍 ${c.distance_km.toFixed(1)} km away</span>`
+          : '';
+
+        const isCurrent = localStorage.getItem('cinebite_active_cinema_id') === c.id;
+
+        return `
+          <div class="theater-card" style="${isCurrent ? 'border-color:rgba(168,85,247,0.5);' : ''}">
+            <div>
+              <div class="theater-visual" style="background-image:url('${cinemaImg}');">
+                <div class="theater-visual-overlay"></div>
+                <div style="position:absolute; top:0.85rem; left:0.85rem; z-index:2;">
+                  <span class="badge badge-purple" style="font-size:0.7rem; backdrop-filter:blur(8px);">${c.chain || 'Circuit'}</span>
+                </div>
+                ${distBadge ? `<div style="position:absolute; top:0.85rem; right:0.85rem; z-index:2;">${distBadge}</div>` : ''}
+                <div style="position:absolute; bottom:0.75rem; left:0.85rem; right:0.85rem; z-index:2;">
+                  <span style="font-size:0.72rem; color:#fff; font-weight:700;">✨ ${c.technology || 'Digital 4K & Dolby Atmos'}</span>
+                </div>
+              </div>
+
+              <div class="theater-content">
+                <div>
+                  <h2 class="theater-name">${c.name}</h2>
+                  <p class="theater-addr">📍 ${c.address || c.city} · ${c.province || 'Sri Lanka'}</p>
+
+                  <div style="display:flex; gap:0.4rem; flex-wrap:wrap; margin-bottom:0.75rem;">
+                    <span class="badge badge-green">${c.screens || 2} Screens</span>
+                    <span class="badge badge-amber">🕒 ${c.food_hours || '10:00 AM - 11:30 PM'}</span>
+                    ${c.food_delivery_to_seat ? '<span class="badge badge-blue">🛋️ In-Seat Delivery</span>' : ''}
+                  </div>
+
+                  <div class="foodcourt-box">
+                    <div class="foodcourt-title">
+                      <span>🍔</span> Verified Food Court in Front
+                    </div>
+                    <div class="foodcourt-desc">
+                      <strong>${c.food_court_name || c.food_place_name || 'Concession Counter'}</strong>
+                      <div style="color:var(--cb-text-muted); font-size:0.7rem; margin-top:0.15rem;">${c.food_court_location || 'Main Theater Foyer'}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="theater-actions">
+                  <button class="btn-primary" style="flex:1; font-size:0.78rem; padding:0.45rem 0.6rem; cursor:pointer;" onclick="selectTheater('${c.id}')">
+                    ${isCurrent ? '✓ Active Theater' : 'Select Theater'}
+                  </button>
+                  <a href="movies.html" class="btn-secondary" style="font-size:0.78rem; padding:0.45rem 0.75rem; text-decoration:none;" onclick="localStorage.setItem('cinebite_active_cinema_id', '${c.id}')">
+                    🎬 Movies
+                  </a>
+                  <a href="menu.html" class="btn-secondary" style="font-size:0.78rem; padding:0.45rem 0.75rem; text-decoration:none;" onclick="localStorage.setItem('cinebite_active_cinema_id', '${c.id}')">
+                    🍿 Menu
+                  </a>
+                  ${c.map_url ? `<a href="${c.map_url}" target="_blank" class="btn-secondary" style="font-size:0.78rem; padding:0.45rem 0.6rem; text-decoration:none;" title="Open in Google Maps">🗺️</a>` : ''}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectTheater(id) {
+      localStorage.setItem('cinebite_active_cinema_id', id);
+      renderCinemas();
+    }
+
+    function detectGPSLocation() {
+      const btn = document.getElementById('btn-gps');
+      const orig = btn.textContent;
+      btn.textContent = '📡 Locating...';
+
+      if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser.');
+        btn.textContent = orig;
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const userLat = pos.coords.latitude;
+        const userLng = pos.coords.longitude;
+
+        cinemas.forEach(c => {
+          if (c.latitude && c.longitude) {
+            c.distance_km = calculateHaversineDistance(userLat, userLng, c.latitude, c.longitude);
+          } else {
+            c.distance_km = 9999;
+          }
+        });
+
+        cinemas.sort((a, b) => (a.distance_km || 9999) - (b.distance_km || 9999));
+        btn.textContent = '📍 Sorted by Distance';
+        renderCinemas();
+      }, (err) => {
+        btn.textContent = orig;
+        alert('Unable to access your location. Please pick your city above.');
+      }, { timeout: 8000 });
+    }
+
+    function updateCartCount() {
+      try {
+        const raw = localStorage.getItem('cinebite_cart');
+        const items = raw ? JSON.parse(raw) : [];
+        const count = items.reduce((s, i) => s + (i.quantity || 1), 0);
+        const countEl = document.getElementById('cart-count');
+        if (countEl) countEl.textContent = count;
+      } catch (e) {}
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Express Concession Checkout & Pickup Voucher · CineBite Sri Lanka</title>
+  <meta name="description" content="Review your cinema snacks, apply VIP member discounts, pay via LankaQR, FriMi, Genie, or Koko, and get an instant digital counter pickup voucher.">
+  <link rel="icon" type="image/jpeg" href="app-icon.jpg">
+  <link rel="stylesheet" href="apple-design-system.css?v=2.2">
+  <script src="cinema-client.js?v=2.4"></script>
+
+  <style>
+    body {
+      background: var(--cb-bg);
+      color: var(--cb-text);
+      font-family: var(--font);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--cb-surface-glass);
+      backdrop-filter: var(--cb-glass-blur);
+      -webkit-backdrop-filter: var(--cb-glass-blur);
+      border-bottom: var(--cb-border);
+      padding: 0 1.5rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .nav-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--r-sm);
+      background: var(--cb-purple-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 16px rgba(168, 85, 247, 0.25);
+    }
+
+    .nav-brand-text {
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .nav-link {
+      padding: 0.5rem 0.9rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--cb-text-secondary);
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      transition: all var(--duration-fast) ease;
+      border: none;
+      background: none;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--cb-text);
+      background: var(--cb-surface);
+    }
+
+    .nav-link.active {
+      color: #fff;
+      background: rgba(168, 85, 247, 0.18);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .page-container {
+      max-width: 1180px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+      flex: 1;
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+    }
+
+    .page-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin: 0 0 0.5rem 0;
+      background: linear-gradient(135deg, #ffffff 40%, rgba(255,255,255,0.6) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .page-subtitle {
+      font-size: 0.95rem;
+      color: var(--cb-text-secondary);
+      margin: 0;
+      max-width: 680px;
+      line-height: 1.5;
+    }
+
+    /* 2-Column Layout */
+    .checkout-layout {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--r-lg);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0 0 1rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Cart Items */
+    .cart-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      gap: 1rem;
+    }
+
+    .cart-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .item-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex: 1;
+    }
+
+    .item-thumb {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--r-sm);
+      background-size: cover;
+      background-position: center;
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      flex-shrink: 0;
+    }
+
+    .item-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #fff;
+      margin-bottom: 0.2rem;
+    }
+
+    .item-meta {
+      font-size: 0.76rem;
+      color: var(--cb-text-muted);
+    }
+
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--r-sm);
+      padding: 0.2rem 0.5rem;
+      gap: 0.5rem;
+    }
+
+    .qty-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      line-height: 1;
+    }
+
+    .qty-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .qty-number {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+      min-width: 18px;
+      text-align: center;
+    }
+
+    .item-price {
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: #fff;
+      min-width: 90px;
+      text-align: right;
+    }
+
+    .remove-btn {
+      background: none;
+      border: none;
+      color: var(--cb-text-muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      padding: 0.3rem;
+      border-radius: 4px;
+      transition: color 0.2s;
+    }
+
+    .remove-btn:hover {
+      color: #ff453a;
+    }
+
+    /* Fulfillment Selector */
+    .fulfillment-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .fulfillment-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--r-md);
+      padding: 1rem;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s ease;
+      color: inherit;
+    }
+
+    .fulfillment-btn.active {
+      background: rgba(168, 85, 247, 0.14);
+      border-color: var(--cb-purple);
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.2);
+    }
+
+    .fulfillment-btn-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #fff;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .fulfillment-btn-desc {
+      font-size: 0.75rem;
+      color: var(--cb-text-muted);
+      line-height: 1.35;
+    }
+
+    /* Form Inputs */
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--cb-text-secondary);
+      margin-bottom: 0.4rem;
+    }
+
+    .form-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--r-sm);
+      padding: 0.6rem 0.85rem;
+      color: #fff;
+      font-size: 0.85rem;
+      box-sizing: border-box;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      border-color: var(--cb-purple);
+    }
+
+    /* Payment Gateways */
+    .payment-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .payment-option {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--r-md);
+      padding: 0.85rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: all 0.2s ease;
+    }
+
+    .payment-option.active {
+      background: rgba(48, 209, 88, 0.12);
+      border-color: #30d158;
+      box-shadow: 0 0 16px rgba(48, 209, 88, 0.15);
+    }
+
+    .payment-radio {
+      accent-color: #30d158;
+      cursor: pointer;
+    }
+
+    .payment-label {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .payment-sub {
+      font-size: 0.72rem;
+      color: var(--cb-text-muted);
+    }
+
+    /* Summary Breakdown */
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--cb-text-secondary);
+      margin-bottom: 0.6rem;
+    }
+
+    .summary-row.discount {
+      color: #30d158;
+      font-weight: 600;
+    }
+
+    .summary-total {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 0.85rem;
+      margin-top: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .total-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .total-amount {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    /* Modal / Voucher Screen */
+    .voucher-card {
+      background: linear-gradient(135deg, #181528 0%, #0d0c16 100%);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      border-radius: var(--r-xl);
+      padding: 2rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 40px rgba(168, 85, 247, 0.25);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      display: none;
+    }
+
+    .token-badge {
+      display: inline-block;
+      background: var(--cb-purple-gradient);
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 900;
+      padding: 0.4rem 1.25rem;
+      border-radius: var(--r-pill);
+      letter-spacing: 0.04em;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4);
+    }
+
+    .qr-container {
+      background: #ffffff;
+      padding: 1.2rem;
+      border-radius: var(--r-lg);
+      display: inline-block;
+      margin: 1.25rem auto;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    }
+
+    .site-footer {
+      background: var(--cb-bg-subtle);
+      border-top: var(--cb-border);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--cb-text-muted);
+      margin-top: auto;
+    }
+
+    @media (max-width: 860px) {
+      .checkout-layout {
+        grid-template-columns: 1fr;
+      }
+      .payment-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand">
+      <div class="nav-logo">🍿</div>
+      <span class="nav-brand-text">CineBite</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">🏠 Home</a>
+      <a href="movies.html" class="nav-link">🎬 Movies</a>
+      <a href="cinemas.html" class="nav-link">🏛️ Theaters</a>
+      <a href="menu.html" class="nav-link">🍿 Concessions</a>
+      <a href="optimizer.html" class="nav-link">✨ Optimizer</a>
+      <a href="deals.html" class="nav-link">⚡ Deals & VIP</a>
+    </div>
+
+    <div class="nav-right">
+      <div class="live-pill" style="display:inline-flex; align-items:center; gap:0.4rem; padding:0.35rem 0.75rem; background:rgba(255,255,255,0.04); border-radius:var(--r-pill); border:1px solid rgba(255,255,255,0.08);">
+        <span class="live-dot" style="width:7px; height:7px; background:#30d158; border-radius:50%; display:inline-block;"></span>
+        <span style="font-size:0.75rem; color:var(--cb-text-secondary);" id="nav-selected-theater">Colombo City Centre</span>
+      </div>
+      <a href="checkout.html" class="btn-primary" style="font-size:0.78rem; padding:0.4rem 0.85rem; text-decoration:none;">🛒 Cart (<span id="cart-count">0</span>)</a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="page-container">
+
+    <!-- Header -->
+    <div class="page-header">
+      <h1 class="page-title">Concession Checkout & Express Voucher</h1>
+      <p class="page-subtitle">
+        Review your cinema basket, apply active CinePass member savings, pay securely via Sri Lankan digital payment channels, and generate your counter pickup voucher.
+      </p>
+    </div>
+
+    <!-- Active Voucher Display (Shown after order placement) -->
+    <div class="voucher-card" id="digital-voucher">
+      <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--cb-purple-light); font-weight:700; margin-bottom:0.4rem;">
+        Authentic Concession Pickup Token
+      </div>
+      <div class="token-badge" id="voucher-token-id">PICKUP TOKEN #42</div>
+
+      <div style="font-size:1.5rem; font-weight:800; color:#fff; margin-bottom:0.25rem;" id="voucher-theater-name">Scope Cinemas - Colombo City Centre</div>
+      <div style="font-size:0.85rem; color:var(--cb-text-secondary); margin-bottom:1rem;" id="voucher-counter-loc">Level 3 Concession Candy Bar • Fast-Lane Ready</div>
+
+      <!-- Scannable QR -->
+      <div class="qr-container">
+        <svg id="voucher-qr-svg" width="160" height="160" viewBox="0 0 160 160">
+          <!-- Stylized High-Tech QR Matrix -->
+          <rect width="160" height="160" fill="#ffffff"/>
+          <!-- Position Marks Top Left -->
+          <rect x="15" y="15" width="40" height="40" fill="#11111a" rx="4"/>
+          <rect x="23" y="23" width="24" height="24" fill="#ffffff" rx="2"/>
+          <rect x="29" y="29" width="12" height="12" fill="#7928ca"/>
+          <!-- Position Marks Top Right -->
+          <rect x="105" y="15" width="40" height="40" fill="#11111a" rx="4"/>
+          <rect x="113" y="23" width="24" height="24" fill="#ffffff" rx="2"/>
+          <rect x="119" y="29" width="12" height="12" fill="#7928ca"/>
+          <!-- Position Marks Bottom Left -->
+          <rect x="15" y="105" width="40" height="40" fill="#11111a" rx="4"/>
+          <rect x="23" y="113" width="24" height="24" fill="#ffffff" rx="2"/>
+          <rect x="29" y="119" width="12" height="12" fill="#7928ca"/>
+          <!-- Grid Data Pixels -->
+          <rect x="65" y="20" width="8" height="8" fill="#111"/>
+          <rect x="80" y="20" width="8" height="8" fill="#111"/>
+          <rect x="65" y="35" width="8" height="8" fill="#7928ca"/>
+          <rect x="80" y="45" width="8" height="8" fill="#111"/>
+          <rect x="65" y="60" width="8" height="8" fill="#111"/>
+          <rect x="20" y="65" width="8" height="8" fill="#111"/>
+          <rect x="35" y="75" width="8" height="8" fill="#111"/>
+          <rect x="50" y="65" width="8" height="8" fill="#7928ca"/>
+          <rect x="65" y="75" width="8" height="8" fill="#111"/>
+          <rect x="80" y="65" width="8" height="8" fill="#7928ca"/>
+          <rect x="95" y="65" width="8" height="8" fill="#111"/>
+          <rect x="110" y="75" width="8" height="8" fill="#111"/>
+          <rect x="125" y="65" width="8" height="8" fill="#111"/>
+          <rect x="140" y="75" width="8" height="8" fill="#111"/>
+          <rect x="20" y="90" width="8" height="8" fill="#111"/>
+          <rect x="65" y="90" width="8" height="8" fill="#111"/>
+          <rect x="80" y="90" width="8" height="8" fill="#111"/>
+          <rect x="125" y="90" width="8" height="8" fill="#7928ca"/>
+          <rect x="65" y="105" width="8" height="8" fill="#111"/>
+          <rect x="80" y="115" width="8" height="8" fill="#111"/>
+          <rect x="95" y="105" width="8" height="8" fill="#7928ca"/>
+          <rect x="110" y="115" width="8" height="8" fill="#111"/>
+          <rect x="125" y="105" width="8" height="8" fill="#111"/>
+          <rect x="140" y="125" width="8" height="8" fill="#111"/>
+          <rect x="65" y="135" width="8" height="8" fill="#7928ca"/>
+          <rect x="80" y="130" width="8" height="8" fill="#111"/>
+          <rect x="100" y="135" width="8" height="8" fill="#111"/>
+          <rect x="120" y="135" width="8" height="8" fill="#111"/>
+        </svg>
+      </div>
+
+      <div style="display:flex; justify-content:center; gap:2rem; margin:1rem 0; font-size:0.85rem; color:var(--cb-text-secondary); flex-wrap:wrap;">
+        <div>Order Serial: <strong style="color:#fff; font-family:monospace;" id="voucher-serial">CB-LK-2026-9184</strong></div>
+        <div>Fulfillment: <strong style="color:#30d158;" id="voucher-mode">Fast-Lane Counter Pickup</strong></div>
+        <div>Status: <strong style="color:#30d158;">Preparing Fresh 🍿</strong></div>
+      </div>
+
+      <div style="max-width:540px; margin:0 auto 1.5rem; text-align:left; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:var(--r-md); padding:1rem;" id="voucher-items-summary">
+        <!-- Rendered items in voucher -->
+      </div>
+
+      <div style="display:flex; justify-content:center; gap:1rem; flex-wrap:wrap;">
+        <button class="btn-primary" onclick="window.print()" style="font-size:0.85rem; padding:0.6rem 1.25rem; cursor:pointer;">
+          🖨️ Print / Save Voucher
+        </button>
+        <button class="btn-secondary" onclick="resetOrder()" style="font-size:0.85rem; padding:0.6rem 1.25rem; cursor:pointer;">
+          🍿 Order More Snacks
+        </button>
+      </div>
+    </div>
+
+    <!-- Interactive Checkout Layout -->
+    <div class="checkout-layout" id="checkout-container">
+
+      <!-- Left Column: Basket & Fulfillment -->
+      <div>
+
+        <!-- Cinema Venue Card -->
+        <div class="card">
+          <div class="card-title">
+            <span>🏛️</span> Cinema Venue & Counter
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+            <div>
+              <div style="font-size:1.1rem; font-weight:700; color:#fff;" id="venue-name">Scope Cinemas - Colombo City Centre</div>
+              <div style="font-size:0.8rem; color:var(--cb-text-secondary); margin-top:0.2rem;" id="venue-address">Level 3, Colombo City Centre, 137 Sir James Pieris Mawatha, Colombo 02</div>
+            </div>
+            <a href="cinemas.html" class="btn-secondary" style="font-size:0.76rem; padding:0.35rem 0.75rem; text-decoration:none;">
+              Change Theater
+            </a>
+          </div>
+        </div>
+
+        <!-- Fulfillment Mode -->
+        <div class="card">
+          <div class="card-title">
+            <span>🚀</span> Concession Fulfillment Mode
+          </div>
+
+          <div class="fulfillment-options">
+            <button class="fulfillment-btn active" id="f-pickup" onclick="setFulfillmentMode('pickup')">
+              <div class="fulfillment-btn-title">
+                <span>🎟️</span> Express Counter Pickup
+              </div>
+              <div class="fulfillment-btn-desc">
+                Skip the candy bar queue. Present your digital QR token at the fast-lane counter.
+              </div>
+            </button>
+
+            <button class="fulfillment-btn" id="f-seat" onclick="setFulfillmentMode('seat')">
+              <div class="fulfillment-btn-title">
+                <span>🛋️</span> VIP In-Seat Delivery
+              </div>
+              <div class="fulfillment-btn-desc">
+                Delivered quietly to your auditorium seat during trailers or intermission.
+              </div>
+            </button>
+          </div>
+
+          <!-- In-Seat Details (Optional) -->
+          <div id="seat-details-row" style="display:none; grid-template-columns:1fr 1fr; gap:0.75rem; margin-top:0.75rem; padding-top:0.75rem; border-top:1px solid rgba(255,255,255,0.08);">
+            <div class="form-group" style="margin:0;">
+              <label class="form-label" for="hall-input">Auditorium / Screen #</label>
+              <input type="text" id="hall-input" class="form-input" placeholder="e.g. Screen 1 (IMAX)">
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label class="form-label" for="seat-input">Seat Number(s)</label>
+              <input type="text" id="seat-input" class="form-input" placeholder="e.g. Row F, Seats 12-13">
+            </div>
+          </div>
+        </div>
+
+        <!-- Cart Items Card -->
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <div class="card-title" style="margin:0;">
+              <span>🍿</span> Selected Concessions (<span id="cart-item-count-label">0</span>)
+            </div>
+            <button onclick="clearCart()" style="background:none; border:none; color:var(--cb-text-muted); font-size:0.78rem; cursor:pointer; text-decoration:underline;">
+              Clear All
+            </button>
+          </div>
+
+          <!-- Items Container -->
+          <div id="cart-items-list">
+            <!-- Dynamically populated or empty state -->
+          </div>
+        </div>
+
+        <!-- Customer Contact Form -->
+        <div class="card">
+          <div class="card-title">
+            <span>👤</span> Moviegoer Contact Details
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+            <div class="form-group">
+              <label class="form-label" for="cust-name">Full Name</label>
+              <input type="text" id="cust-name" class="form-input" placeholder="e.g. Nimuthu Ganegoda">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="cust-phone">Mobile (SMS Voucher Token)</label>
+              <input type="tel" id="cust-phone" class="form-input" placeholder="e.g. 077 123 4567">
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Discounts, Summary & Payment -->
+      <div>
+
+        <!-- VIP Tier & Promo Code -->
+        <div class="card">
+          <div class="card-title">
+            <span>👑</span> Privilege Pass & Promo Codes
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">CinePass VIP Member Tier</label>
+            <select id="vip-tier-select" class="form-input" onchange="onTierChange(this.value)">
+              <option value="Standard">Standard Tier (10% Concession Off)</option>
+              <option value="Student">Student Concession Pass (15% Off)</option>
+              <option value="Silver">Silver VIP (20% Off)</option>
+              <option value="Gold">Gold VIP (25% Off)</option>
+              <option value="Platinum" selected>Platinum VIP (35% Off)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="promo-input">Promotional Coupon</label>
+            <div style="display:flex; gap:0.5rem;">
+              <input type="text" id="promo-input" class="form-input" placeholder="e.g. CINE-COMBO30" style="text-transform:uppercase;">
+              <button class="btn-secondary" onclick="applyPromoCode()" style="padding:0.6rem 1rem; font-size:0.8rem; cursor:pointer;">
+                Apply
+              </button>
+            </div>
+            <div id="promo-status" style="font-size:0.75rem; margin-top:0.35rem; display:none;"></div>
+          </div>
+
+          <div style="font-size:0.74rem; color:var(--cb-text-muted); line-height:1.4;">
+            Available test coupons: <strong style="color:var(--cb-purple-light); cursor:pointer;" onclick="quickPromo('CINE-COMBO30')">CINE-COMBO30</strong> (30% off combos), <strong style="color:var(--cb-purple-light); cursor:pointer;" onclick="quickPromo('SL-MILO20')">SL-MILO20</strong> (20% off), <strong style="color:var(--cb-purple-light); cursor:pointer;" onclick="quickPromo('LANKA-FAMILY15')">LANKA-FAMILY15</strong> (15% off).
+          </div>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="card">
+          <div class="card-title">
+            <span>💳</span> Authentic Sri Lankan Payment Channels
+          </div>
+
+          <div class="payment-grid">
+            <label class="payment-option active" onclick="selectPayment('lankaqr', this)">
+              <input type="radio" name="payment" class="payment-radio" checked>
+              <div>
+                <div class="payment-label">🇱🇰 LankaQR</div>
+                <div class="payment-sub">National QR Standard</div>
+              </div>
+            </label>
+
+            <label class="payment-option" onclick="selectPayment('frimi', this)">
+              <input type="radio" name="payment" class="payment-radio">
+              <div>
+                <div class="payment-label">💳 FriMi</div>
+                <div class="payment-sub">Nations Trust Bank</div>
+              </div>
+            </label>
+
+            <label class="payment-option" onclick="selectPayment('genie', this)">
+              <input type="radio" name="payment" class="payment-radio">
+              <div>
+                <div class="payment-label">📱 Genie</div>
+                <div class="payment-sub">Dialog Axiata FinTech</div>
+              </div>
+            </label>
+
+            <label class="payment-option" onclick="selectPayment('koko', this)">
+              <input type="radio" name="payment" class="payment-radio">
+              <div>
+                <div class="payment-label">⚡ Koko Pay</div>
+                <div class="payment-sub">3x Interest-Free Installments</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Price Breakdown & Checkout Action -->
+        <div class="card" style="border-color:rgba(168,85,247,0.3); background:rgba(255,255,255,0.04);">
+          <div class="card-title">
+            <span>🧾</span> Concession Order Summary
+          </div>
+
+          <div class="summary-row">
+            <span>Counter Items Subtotal:</span>
+            <span id="sum-subtotal">LKR 0</span>
+          </div>
+
+          <div class="summary-row discount">
+            <span id="sum-discount-label">CinePass VIP Member Discount:</span>
+            <span id="sum-discount">− LKR 0</span>
+          </div>
+
+          <div class="summary-row">
+            <span>Service & Prep Surcharge:</span>
+            <span style="color:#30d158; font-weight:600;">FREE</span>
+          </div>
+
+          <div class="summary-total">
+            <span class="total-title">Total Payable:</span>
+            <span class="total-amount" id="sum-total">LKR 0</span>
+          </div>
+
+          <button id="btn-place-order" class="btn-primary" style="width:100%; padding:0.9rem; font-size:1rem; font-weight:800; cursor:pointer; margin-top:1.25rem;" onclick="processOrder()">
+            🎟️ Place Order & Generate Voucher
+          </button>
+
+          <div style="font-size:0.72rem; color:var(--cb-text-muted); text-align:center; margin-top:0.75rem;">
+            🔒 End-to-end encrypted checkout • Instant QR Token Delivery
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div style="max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1.5rem;">
+      <div style="display:flex; align-items:center; gap:0.6rem;">
+        <span style="font-size:1.4rem;">🍿</span>
+        <span style="font-weight:800; color:#fff; font-size:1.1rem;">CineBite Sri Lanka</span>
+      </div>
+      <div style="display:flex; gap:1.5rem; flex-wrap:wrap;">
+        <a href="index.html" style="color:var(--cb-text-secondary); text-decoration:none;">Home</a>
+        <a href="movies.html" style="color:var(--cb-text-secondary); text-decoration:none;">Movies</a>
+        <a href="cinemas.html" style="color:var(--cb-text-secondary); text-decoration:none;">Theaters</a>
+        <a href="menu.html" style="color:var(--cb-text-secondary); text-decoration:none;">Concessions</a>
+        <a href="optimizer.html" style="color:var(--cb-text-secondary); text-decoration:none;">AI Optimizer</a>
+        <a href="deals.html" style="color:var(--cb-text-secondary); text-decoration:none;">Deals & VIP</a>
+        <a href="checkout.html" style="color:#fff; text-decoration:none; font-weight:700;">Checkout</a>
+      </div>
+      <div>
+        © 2026 CineBite Sri Lanka. All cinema concession trademarks belong to their respective circuits.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const client = new CinemaClient();
+    let cart = [];
+    let activeCinemaId = localStorage.getItem('cinebite_active_cinema_id') || 'CMB-CCC';
+    let vipTier = localStorage.getItem('cinebite_privilege_tier') || 'Platinum';
+    let fulfillmentMode = localStorage.getItem('cinebite_fulfillment') || 'pickup';
+    let appliedPromo = null;
+    let promoDiscountPct = 0;
+
+    const TIER_DISCOUNTS = {
+      'Standard': 0.10,
+      'Student': 0.15,
+      'Silver': 0.20,
+      'Gold': 0.25,
+      'Platinum': 0.35
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initCinemaVenue();
+      loadCart();
+      initVipTier();
+      initFulfillment();
+    });
+
+    function initCinemaVenue() {
+      const cinema = (SRI_LANKAN_CINEMAS || []).find(c => c.id === activeCinemaId) || {
+        name: "Scope Cinemas - Colombo City Centre",
+        address: "Level 3, Colombo City Centre, Colombo 02"
+      };
+
+      const nameEl = document.getElementById('venue-name');
+      const addrEl = document.getElementById('venue-address');
+      const navEl = document.getElementById('nav-selected-theater');
+
+      if (nameEl) nameEl.textContent = cinema.name;
+      if (addrEl) addrEl.textContent = cinema.address;
+      if (navEl) navEl.textContent = cinema.name.split('-')[0].trim();
+    }
+
+    function loadCart() {
+      try {
+        const raw = localStorage.getItem('cinebite_cart');
+        cart = raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        cart = [];
+      }
+      renderCart();
+    }
+
+    function saveCart() {
+      localStorage.setItem('cinebite_cart', JSON.stringify(cart));
+      renderCart();
+    }
+
+    function renderCart() {
+      const listEl = document.getElementById('cart-items-list');
+      const cartCountEl = document.getElementById('cart-count');
+      const countLabel = document.getElementById('cart-item-count-label');
+      const placeBtn = document.getElementById('btn-place-order');
+
+      const totalItems = cart.reduce((s, i) => s + (i.quantity || 1), 0);
+      if (cartCountEl) cartCountEl.textContent = totalItems;
+      if (countLabel) countLabel.textContent = totalItems;
+
+      if (!listEl) return;
+
+      if (cart.length === 0) {
+        listEl.innerHTML = `
+          <div style="text-align:center; padding:3rem 1.5rem; background:rgba(255,255,255,0.02); border-radius:var(--r-md); border:1px dashed rgba(255,255,255,0.1);">
+            <div style="font-size:3rem; margin-bottom:0.75rem;">🍿</div>
+            <div style="font-size:1.15rem; font-weight:800; color:#fff; margin-bottom:0.35rem;">Your Concession Basket is Empty</div>
+            <p style="font-size:0.85rem; color:var(--cb-text-secondary); margin-bottom:1.5rem; max-width:400px; margin-left:auto; margin-right:auto;">
+              Add hot caramel popcorn, chilled Milo drinks, or let our AI find the best snack bundle for your budget.
+            </p>
+            <div style="display:flex; justify-content:center; gap:0.75rem; flex-wrap:wrap;">
+              <a href="menu.html" class="btn-primary" style="text-decoration:none; font-size:0.85rem; padding:0.6rem 1.25rem;">Browse Concessions</a>
+              <a href="optimizer.html" class="btn-secondary" style="text-decoration:none; font-size:0.85rem; padding:0.6rem 1.25rem;">Run AI Optimizer</a>
+            </div>
+          </div>
+        `;
+        if (placeBtn) {
+          placeBtn.disabled = true;
+          placeBtn.style.opacity = '0.5';
+          placeBtn.style.cursor = 'not-allowed';
+        }
+        updateTotals();
+        return;
+      }
+
+      if (placeBtn) {
+        placeBtn.disabled = false;
+        placeBtn.style.opacity = '1';
+        placeBtn.style.cursor = 'pointer';
+      }
+
+      listEl.innerHTML = cart.map(item => {
+        const qty = item.quantity || 1;
+        const price = item.price || 1200;
+        const lineTotal = price * qty;
+        const emoji = item.category === 'Popcorn' ? '🍿' : (item.category === 'Beverage' ? '🥤' : '🍱');
+
+        return `
+          <div class="cart-item">
+            <div class="item-info">
+              <div class="item-thumb" style="${item.image ? `background-image:url('${item.image}')` : ''}">
+                ${!item.image ? emoji : ''}
+              </div>
+              <div>
+                <div class="item-name">${item.name}</div>
+                <div class="item-meta">${item.size || item.category || 'Standard Concession'} · LKR ${price.toLocaleString()} each</div>
+              </div>
+            </div>
+
+            <div class="qty-controls">
+              <button class="qty-btn" onclick="updateQty('${item.id}', -1)">−</button>
+              <span class="qty-number">${qty}</span>
+              <button class="qty-btn" onclick="updateQty('${item.id}', 1)">+</button>
+            </div>
+
+            <div class="item-price">
+              LKR ${lineTotal.toLocaleString()}
+            </div>
+
+            <button class="remove-btn" onclick="removeItem('${item.id}')" title="Remove item">
+              🗑️
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      updateTotals();
+    }
+
+    function updateQty(id, delta) {
+      const idx = cart.findIndex(x => x.id === id);
+      if (idx === -1) return;
+      cart[idx].quantity = (cart[idx].quantity || 1) + delta;
+      if (cart[idx].quantity <= 0) {
+        cart.splice(idx, 1);
+      }
+      saveCart();
+    }
+
+    function removeItem(id) {
+      cart = cart.filter(x => x.id !== id);
+      saveCart();
+    }
+
+    function clearCart() {
+      if (confirm('Clear all concession items from your basket?')) {
+        cart = [];
+        saveCart();
+      }
+    }
+
+    function initVipTier() {
+      const select = document.getElementById('vip-tier-select');
+      if (select) {
+        select.value = vipTier;
+      }
+    }
+
+    function onTierChange(val) {
+      vipTier = val;
+      localStorage.setItem('cinebite_privilege_tier', val);
+      updateTotals();
+    }
+
+    function initFulfillment() {
+      setFulfillmentMode(fulfillmentMode);
+    }
+
+    function setFulfillmentMode(mode) {
+      fulfillmentMode = mode;
+      localStorage.setItem('cinebite_fulfillment', mode);
+
+      const pBtn = document.getElementById('f-pickup');
+      const sBtn = document.getElementById('f-seat');
+      const seatRow = document.getElementById('seat-details-row');
+
+      if (pBtn) pBtn.classList.toggle('active', mode === 'pickup');
+      if (sBtn) sBtn.classList.toggle('active', mode === 'seat');
+      if (seatRow) seatRow.style.display = mode === 'seat' ? 'grid' : 'none';
+    }
+
+    function selectPayment(gateway, el) {
+      document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('active'));
+      el.classList.add('active');
+      const radio = el.querySelector('input[type="radio"]');
+      if (radio) radio.checked = true;
+    }
+
+    function quickPromo(code) {
+      const input = document.getElementById('promo-input');
+      if (input) {
+        input.value = code;
+        applyPromoCode();
+      }
+    }
+
+    function applyPromoCode() {
+      const input = document.getElementById('promo-input');
+      const statusEl = document.getElementById('promo-status');
+      if (!input || !statusEl) return;
+
+      const code = input.value.trim().toUpperCase();
+      statusEl.style.display = 'block';
+
+      if (code === 'CINE-COMBO30') {
+        appliedPromo = 'CINE-COMBO30';
+        promoDiscountPct = 0.30;
+        statusEl.style.color = '#30d158';
+        statusEl.textContent = '✅ CINE-COMBO30 applied! 30% discount unlocked.';
+      } else if (code === 'SL-MILO20') {
+        appliedPromo = 'SL-MILO20';
+        promoDiscountPct = 0.20;
+        statusEl.style.color = '#30d158';
+        statusEl.textContent = '✅ SL-MILO20 applied! 20% discount unlocked.';
+      } else if (code === 'LANKA-FAMILY15') {
+        appliedPromo = 'LANKA-FAMILY15';
+        promoDiscountPct = 0.15;
+        statusEl.style.color = '#30d158';
+        statusEl.textContent = '✅ LANKA-FAMILY15 applied! 15% discount unlocked.';
+      } else if (!code) {
+        appliedPromo = null;
+        promoDiscountPct = 0;
+        statusEl.style.display = 'none';
+      } else {
+        appliedPromo = null;
+        promoDiscountPct = 0;
+        statusEl.style.color = '#ff453a';
+        statusEl.textContent = '❌ Invalid or expired coupon code.';
+      }
+
+      updateTotals();
+    }
+
+    function updateTotals() {
+      const subtotal = cart.reduce((s, i) => s + ((i.price || 1200) * (i.quantity || 1)), 0);
+      const tierRate = TIER_DISCOUNTS[vipTier] || 0.10;
+      const effectiveRate = Math.max(tierRate, promoDiscountPct);
+
+      const discount = Math.round(subtotal * effectiveRate);
+      const finalTotal = Math.max(0, subtotal - discount);
+
+      const subEl = document.getElementById('sum-subtotal');
+      const discEl = document.getElementById('sum-discount');
+      const discLabelEl = document.getElementById('sum-discount-label');
+      const totEl = document.getElementById('sum-total');
+
+      if (subEl) subEl.textContent = `LKR ${subtotal.toLocaleString()}`;
+      if (discEl) discEl.textContent = `− LKR ${discount.toLocaleString()}`;
+      if (discLabelEl) {
+        if (promoDiscountPct > tierRate) {
+          discLabelEl.textContent = `Promo Code (${appliedPromo}):`;
+        } else {
+          discLabelEl.textContent = `CinePass VIP (${vipTier} - ${Math.round(tierRate * 100)}%):`;
+        }
+      }
+      if (totEl) totEl.textContent = `LKR ${finalTotal.toLocaleString()}`;
+    }
+
+    function processOrder() {
+      if (cart.length === 0) {
+        alert('Please add concession items to your basket before checking out.');
+        return;
+      }
+
+      const name = document.getElementById('cust-name').value.trim() || 'Valued Moviegoer';
+      const cinema = (SRI_LANKAN_CINEMAS || []).find(c => c.id === activeCinemaId) || {
+        name: "Scope Cinemas - Colombo City Centre"
+      };
+
+      const randToken = Math.floor(10 + Math.random() * 90);
+      const randSerial = 'CB-LK-' + Math.floor(10000 + Math.random() * 90000);
+
+      document.getElementById('voucher-token-id').textContent = `TOKEN #${randToken}`;
+      document.getElementById('voucher-theater-name').textContent = cinema.name;
+      document.getElementById('voucher-serial').textContent = randSerial;
+      document.getElementById('voucher-mode').textContent = fulfillmentMode === 'pickup' 
+        ? 'Express Fast-Lane Counter Pickup' 
+        : 'VIP In-Seat Cinema Delivery';
+
+      const itemsSummary = document.getElementById('voucher-items-summary');
+      if (itemsSummary) {
+        itemsSummary.innerHTML = `
+          <div style="font-size:0.75rem; color:var(--cb-text-muted); text-transform:uppercase; font-weight:700; margin-bottom:0.5rem;">Voucher Concession Manifest:</div>
+          ${cart.map(it => `
+            <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:#fff; margin-bottom:0.25rem;">
+              <span>${it.quantity}x ${it.name} (${it.size || it.category})</span>
+              <span>LKR ${(it.price * it.quantity).toLocaleString()}</span>
+            </div>
+          `).join('')}
+          <div style="border-top:1px solid rgba(255,255,255,0.1); margin-top:0.5rem; padding-top:0.5rem; display:flex; justify-content:space-between; font-weight:800; color:#30d158;">
+            <span>Manifest Total:</span>
+            <span>${document.getElementById('sum-total').textContent}</span>
+          </div>
+        `;
+      }
+
+      // Hide checkout layout, show voucher
+      document.getElementById('checkout-container').style.display = 'none';
+      document.getElementById('digital-voucher').style.display = 'block';
+
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Clear cart
+      localStorage.removeItem('cinebite_cart');
+      cart = [];
+      const cartCountEl = document.getElementById('cart-count');
+      if (cartCountEl) cartCountEl.textContent = '0';
+    }
+
+    function resetOrder() {
+      document.getElementById('checkout-container').style.display = 'grid';
+      document.getElementById('digital-voucher').style.display = 'none';
+      renderCart();
+    }
+  </script>
+
+</body>
+</html>
