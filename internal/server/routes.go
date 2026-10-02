@@ -35,6 +35,12 @@ func (s *Server) registerRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/v1/cinemas/{id}/concessions", s.handleGetConcessions)
 	mux.HandleFunc("GET /api/v1/cinemas/{id}/concessions/live", s.handleGetLiveConcessions)
 	mux.HandleFunc("GET /api/v1/cinemas/{id}/ads", s.handleGetCinemaAds)
+	mux.HandleFunc("GET /api/v1/cinemas/{id}/movies", s.handleGetCinemaMovies)
+
+	// Live Movies & 1-Hour Automated Sync Engine
+	mux.HandleFunc("GET /api/v1/movies", s.handleListMovies)
+	mux.HandleFunc("GET /api/v1/movies/status", s.handleMovieSyncStatus)
+	mux.HandleFunc("POST /api/v1/movies/sync", s.handleTriggerMovieSync)
 
 	// Scope Privilege Concession Promotions & Authentic Sri Lankan Payment Gateways
 	mux.HandleFunc("GET /api/v1/promotions", s.handleListPromotions)

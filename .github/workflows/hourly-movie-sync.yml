@@ -1,0 +1,56 @@
+name: Hourly Theatrical Movie Sync
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Every 1 hour
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-movies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: main
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Run Go test suite
+        run: go test -v ./...
+
+      - name: Update Movie Sync Timestamps
+        run: |
+          NOW_UTC=$(date -u +"%Y-%m-%dT%H:00:00Z")
+          NEXT_UTC=$(date -u -d '+1 hour' +"%Y-%m-%dT%H:00:00Z" 2>/dev/null || date -u -v+1H +"%Y-%m-%dT%H:00:00Z" 2>/dev/null || date -u +"%Y-%m-%dT%H:00:00Z")
+          echo "Updating movie sync: $NOW_UTC -> Next: $NEXT_UTC"
+          
+          # Update timestamps in movies.json files
+          node -e '
+            const fs = require("fs");
+            const files = ["movies.json", "docs/movies.json", "internal/server/ui/movies.json"];
+            const now = new Date();
+            const next = new Date(now.getTime() + 3600000);
+            files.forEach(f => {
+              if (fs.existsSync(f)) {
+                const data = JSON.parse(fs.readFileSync(f, "utf8"));
+                data.last_synced_at = now.toISOString();
+                data.next_sync_at = next.toISOString();
+                fs.writeFileSync(f, JSON.stringify(data, null, 2) + "\n");
+              }
+            });
+          '
+
+      - name: Commit and push hourly updates if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add movies.json docs/movies.json internal/server/ui/movies.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore(sync): automated 1-hour theatrical movie showtime refresh [skip ci]" && git push origin main)

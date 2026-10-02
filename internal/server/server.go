@@ -26,11 +26,12 @@ type Config struct {
 
 // Server encapsulates the HTTP multiplexer, middlewares, and services.
 type Server struct {
-	cfg        Config
-	scraper    *scraper.RegionalScraper
-	recEngine  *recommender.Engine
-	paymentSvc *payment.Service
-	httpServer *http.Server
+	cfg         Config
+	scraper     *scraper.RegionalScraper
+	recEngine   *recommender.Engine
+	paymentSvc  *payment.Service
+	movieEngine *scraper.MovieSyncEngine
+	httpServer  *http.Server
 }
 
 // NewServer initializes a new Server instance with configured timeouts, routing, and middlewares.
@@ -49,10 +50,11 @@ func NewServer(cfg Config, sc *scraper.RegionalScraper, recEngine *recommender.E
 	}
 
 	s := &Server{
-		cfg:        cfg,
-		scraper:    sc,
-		recEngine:  recEngine,
-		paymentSvc: payment.NewService(recEngine),
+		cfg:         cfg,
+		scraper:     sc,
+		recEngine:   recEngine,
+		paymentSvc:  payment.NewService(recEngine),
+		movieEngine: scraper.NewMovieSyncEngine(),
 	}
 
 	mux := http.NewServeMux()
@@ -71,13 +73,15 @@ func NewServer(cfg Config, sc *scraper.RegionalScraper, recEngine *recommender.E
 	return s
 }
 
-// Start begins listening on the configured TCP address.
+// Start begins listening on the configured TCP address and launches the 1-hour background movie sync.
 func (s *Server) Start() error {
+	s.movieEngine.Start(context.Background())
 	return s.httpServer.ListenAndServe()
 }
 
-// Shutdown gracefully shuts down the HTTP server.
+// Shutdown gracefully shuts down the HTTP server and stops background sync engines.
 func (s *Server) Shutdown(ctx context.Context) error {
+	s.movieEngine.Stop()
 	return s.httpServer.Shutdown(ctx)
 }
 

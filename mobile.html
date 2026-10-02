@@ -416,7 +416,7 @@
       <!-- Now Showing Movie Marquee -->
       <div style="background:rgba(255,255,255,0.05); border-radius:var(--radius-sm); padding:0.4rem 0.65rem; font-size:0.7rem; color:rgba(255,255,255,0.85); display:flex; align-items:center; gap:0.4rem; margin-bottom:0.35rem;">
         <span>🎬</span>
-        <marquee scrollamount="3" style="flex:1;">NOW SHOWING: Avatar: Fire & Ash (3D IMAX) • Deadpool & Wolverine • Dune: Part Two • Sinhabahu</marquee>
+        <marquee id="m-movie-marquee" scrollamount="3" style="flex:1;">NOW SHOWING: Ahasa Tharam (Sinhala) • Avengers Endgame (IMAX 3D) • Sigma (Tamil) • Ayu (Sinhala)</marquee>
       </div>
 
       <!-- In-Front Food Court Badge -->
@@ -433,6 +433,24 @@
         <div style="font-size:0.66rem; color:var(--apple-purple); font-weight:600; margin-top:0.2rem;">
           🍿 Cinema food and drinks only
         </div>
+      </div>
+    </div>
+
+    <!-- 1-Hour Auto-Updating Movies Scroller -->
+    <div style="margin-bottom:1.1rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.45rem;">
+        <div style="font-size:0.85rem; font-weight:700; display:flex; align-items:center; gap:0.35rem;">
+          <span>🎬</span>
+          <span>Now Showing</span>
+          <span style="font-size:0.62rem; background:rgba(48,209,88,0.15); color:var(--apple-green); border:1px solid rgba(48,209,88,0.3); border-radius:10px; padding:0.1rem 0.4rem; font-weight:700;">1h Sync</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:0.35rem;">
+          <span style="font-size:0.66rem; color:var(--apple-text-secondary); font-family:monospace;" id="m-movie-sync-countdown">59m 45s</span>
+          <button style="background:rgba(255,255,255,0.08); border:none; border-radius:4px; color:#fff; font-size:0.65rem; padding:0.2rem 0.4rem; cursor:pointer;" onclick="mTriggerMovieSync()" title="Refresh now">🔄</button>
+        </div>
+      </div>
+      <div id="m-movies-scroller" style="display:flex; gap:0.65rem; overflow-x:auto; padding-bottom:0.4rem; scrollbar-width:none;">
+        <!-- Dynamically rendered mobile movie cards -->
       </div>
     </div>
 
@@ -813,6 +831,7 @@
     window.addEventListener('DOMContentLoaded', async () => {
       await loadMobileCinemas();
       startMobileTicker();
+      initMobileHourlyMovieSync();
     });
 
     async function loadMobileCinemas() {
@@ -892,8 +911,99 @@
 
       await Promise.all([
         loadMobileConcessions(cinema.id),
-        loadMobileAds(cinema.id)
+        loadMobileAds(cinema.id),
+        loadMobileMovies(cinema.id)
       ]);
+    }
+
+    /* ── Mobile Live Movies & 1-Hour Sync ───────────── */
+    let mMovies = [];
+
+    async function loadMobileMovies(cinemaId, forceRefresh = false) {
+      try {
+        const targetId = cinemaId || (mCinema ? mCinema.id : '');
+        mMovies = await client.getMovies({ cinemaId: targetId, forceRefresh });
+        renderMobileMovies();
+        renderMobileMarquee();
+      } catch (err) {
+        console.error('Failed to load mobile movies:', err);
+      }
+    }
+
+    function renderMobileMarquee() {
+      const marquee = document.getElementById('m-movie-marquee');
+      if (!marquee) return;
+      if (!mMovies || mMovies.length === 0) {
+        marquee.textContent = "NOW SHOWING: Updating theatrical schedules...";
+        return;
+      }
+      const text = mMovies.slice(0, 5).map(m => {
+        const show = (m.showtimes && m.showtimes.length > 0) ? m.showtimes[0] : 'Today';
+        return `${m.title} (${m.language} • ${m.formats ? m.formats[0] : 'Digital'} • ${show})`;
+      }).join(' • ');
+      marquee.textContent = "NOW SHOWING: " + text;
+    }
+
+    function renderMobileMovies() {
+      const scroller = document.getElementById('m-movies-scroller');
+      if (!scroller) return;
+
+      if (!mMovies || mMovies.length === 0) {
+        scroller.innerHTML = `<div style="font-size:0.75rem; color:var(--apple-text-secondary); padding:0.5rem;">Schedules syncing...</div>`;
+        return;
+      }
+
+      scroller.innerHTML = mMovies.map(m => {
+        const langBadge = m.language === 'Sinhala' ? '🇱🇰 Sinhala' : (m.language === 'Tamil' ? '🇮🇳 Tamil' : '🌐 English');
+        const formatBadge = m.formats && m.formats.length > 0 ? m.formats[0] : '2D';
+        const showtimesStr = (m.showtimes || []).slice(0, 3).join(' • ');
+
+        return `
+          <div style="min-width:210px; max-width:220px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:var(--radius-md); padding:0.75rem; flex-shrink:0; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="font-size:0.85rem; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${m.title}</div>
+              ${m.original_title && m.original_title !== m.title ? `<div style="font-size:0.7rem; color:var(--apple-purple); font-weight:600;">${m.original_title}</div>` : ''}
+              <div style="display:flex; gap:0.3rem; margin:0.35rem 0; flex-wrap:wrap;">
+                <span class="apple-badge green" style="font-size:0.6rem;">${langBadge}</span>
+                <span class="apple-badge purple" style="font-size:0.6rem;">${formatBadge}</span>
+                <span style="font-size:0.62rem; color:var(--apple-text-secondary);">${m.duration}</span>
+              </div>
+              <div style="font-size:0.68rem; color:rgba(255,255,255,0.7); line-height:1.3; margin-bottom:0.4rem; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">
+                ${m.synopsis}
+              </div>
+              <div style="font-size:0.65rem; color:var(--apple-text-secondary); font-weight:600; margin-bottom:0.4rem;">
+                🕒 ${showtimesStr}
+              </div>
+            </div>
+            <div style="background:rgba(255,255,255,0.03); border-radius:4px; padding:0.35rem 0.45rem; margin-top:0.3rem;">
+              <div style="font-size:0.62rem; color:var(--apple-green); font-weight:700;">🍿 Recommended:</div>
+              <div style="font-size:0.65rem; color:rgba(255,255,255,0.85); line-height:1.2;">${m.concession_tip ? m.concession_tip.split('(')[0] : 'Caramel Popcorn & Milo'}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function mTriggerMovieSync() {
+      try {
+        await client.triggerMovieSync();
+        await loadMobileMovies(mCinema ? mCinema.id : '', true);
+        showMobileToast('🎬 Movies refreshed (1-Hour Live Sync)');
+      } catch (err) {
+        showMobileToast('Movies up-to-date');
+      }
+    }
+
+    function initMobileHourlyMovieSync() {
+      client.startHourlyMovieSyncEngine((freshMovies) => {
+        mMovies = freshMovies;
+        renderMobileMovies();
+        renderMobileMarquee();
+        showMobileToast('🔄 1-Hour Sync: Movie schedules refreshed');
+      }, (remainingSec, formatted) => {
+        const countdownEl = document.getElementById('m-movie-sync-countdown');
+        if (countdownEl) countdownEl.textContent = formatted;
+      });
     }
 
     async function loadMobileConcessions(cinemaId) {
