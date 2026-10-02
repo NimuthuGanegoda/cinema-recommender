@@ -19,7 +19,8 @@ function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
   return Math.round(R * c * 10) / 10;
 }
 
-// ── 2. Sri Lankanconst SRI_LANKAN_CINEMAS = [
+// ── 2. Sri Lankan Cinema Registry ──────────────────────────────────────────
+const SRI_LANKAN_CINEMAS = [
   {
     id: "CMB-CCC",
     name: "Scope Cinemas Multiplex - Colombo City Centre",
