@@ -576,7 +576,10 @@
       </div>
 
       <div style="display:flex; justify-content:center; gap:1rem; flex-wrap:wrap;">
-        <button class="btn-primary" onclick="window.print()" style="font-size:0.85rem; padding:0.6rem 1.25rem; cursor:pointer;">
+        <button class="btn-primary" onclick="copyVoucherToken()" style="font-size:0.85rem; padding:0.6rem 1.25rem; cursor:pointer;">
+          📋 Copy Token & Serial
+        </button>
+        <button class="btn-secondary" onclick="window.print()" style="font-size:0.85rem; padding:0.6rem 1.25rem; cursor:pointer;">
           🖨️ Print / Save Voucher
         </button>
         <button class="btn-secondary" onclick="resetOrder()" style="font-size:0.85rem; padding:0.6rem 1.25rem; cursor:pointer;">
@@ -729,7 +732,7 @@
               <input type="radio" name="payment" class="payment-radio" checked>
               <div>
                 <div class="payment-label">🇱🇰 LankaQR</div>
-                <div class="payment-sub">National QR Standard</div>
+                <div class="payment-sub">National QR (5% Instant Rebate)</div>
               </div>
             </label>
 
@@ -737,7 +740,7 @@
               <input type="radio" name="payment" class="payment-radio">
               <div>
                 <div class="payment-label">💳 FriMi</div>
-                <div class="payment-sub">Nations Trust Bank</div>
+                <div class="payment-sub">Nations Trust Bank (10% Cashback)</div>
               </div>
             </label>
 
@@ -745,7 +748,7 @@
               <input type="radio" name="payment" class="payment-radio">
               <div>
                 <div class="payment-label">📱 Genie</div>
-                <div class="payment-sub">Dialog Axiata FinTech</div>
+                <div class="payment-sub">Dialog FinTech (8% Rebate)</div>
               </div>
             </label>
 
@@ -756,6 +759,26 @@
                 <div class="payment-sub">3x Interest-Free Installments</div>
               </div>
             </label>
+
+            <label class="payment-option" onclick="selectPayment('card', this)">
+              <input type="radio" name="payment" class="payment-radio">
+              <div>
+                <div class="payment-label">💳 Bank Cards</div>
+                <div class="payment-sub">Visa / Mastercard / LankaPay</div>
+              </div>
+            </label>
+
+            <label class="payment-option" onclick="selectPayment('cash', this)">
+              <input type="radio" name="payment" class="payment-radio">
+              <div>
+                <div class="payment-label">💵 Counter Cash</div>
+                <div class="payment-sub">Pay in LKR at Candy Bar</div>
+              </div>
+            </label>
+          </div>
+
+          <div id="payment-guide-box" style="margin-top:1rem; padding:0.85rem 1rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:var(--r-sm); font-size:0.8rem; color:rgba(255,255,255,0.85); line-height:1.45;">
+            <!-- Dynamically populated -->
           </div>
         </div>
 
@@ -840,10 +863,25 @@
     };
 
     document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlCinema = urlParams.get('cinema');
+      const urlPromo = urlParams.get('promo');
+
+      if (urlCinema) {
+        activeCinemaId = urlCinema;
+        localStorage.setItem('cinebite_active_cinema_id', urlCinema);
+      }
+
       initCinemaVenue();
       loadCart();
       initVipTier();
       initFulfillment();
+
+      if (urlPromo) {
+        quickPromo(urlPromo);
+      } else {
+        updatePaymentGuide(0);
+      }
     });
 
     function initCinemaVenue() {
@@ -1007,11 +1045,61 @@
       if (seatRow) seatRow.style.display = mode === 'seat' ? 'grid' : 'none';
     }
 
+    let selectedPaymentGateway = 'lankaqr';
+    let currentFinalTotal = 0;
+    let lastVoucherSerial = '';
+    let lastVoucherToken = '';
+
     function selectPayment(gateway, el) {
+      selectedPaymentGateway = gateway;
       document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('active'));
       el.classList.add('active');
       const radio = el.querySelector('input[type="radio"]');
       if (radio) radio.checked = true;
+      updatePaymentGuide(currentFinalTotal);
+    }
+
+    function updatePaymentGuide(finalTotal) {
+      const guide = document.getElementById('payment-guide-box');
+      if (!guide) return;
+      const cinema = (SRI_LANKAN_CINEMAS || []).find(c => c.id === activeCinemaId) || {};
+      const counterName = cinema.food_court_name || cinema.food_place_name || 'Concession Counter #1';
+
+      if (selectedPaymentGateway === 'lankaqr') {
+        const rebate = Math.round(finalTotal * 0.05);
+        guide.innerHTML = `
+          <div style="font-weight:700; color:#30d158; margin-bottom:0.25rem;">🇱🇰 LankaQR EMV National Standard (5% Rebate)</div>
+          <div>Scan dynamic EMV QR code with Q+, FriMi, WePay, SOLO, or SmartPay. You save an additional <strong>LKR ${rebate.toLocaleString()}</strong> instant rebate!</div>
+        `;
+      } else if (selectedPaymentGateway === 'frimi') {
+        const cb = Math.round(finalTotal * 0.10);
+        guide.innerHTML = `
+          <div style="font-weight:700; color:var(--cb-purple-light); margin-bottom:0.25rem;">💳 FriMi by Nations Trust Bank (10% Cashback)</div>
+          <div>Instant in-app cashback of <strong>LKR ${cb.toLocaleString()}</strong> credited back to your FriMi account immediately upon scan confirmation.</div>
+        `;
+      } else if (selectedPaymentGateway === 'genie') {
+        const reb = Math.round(finalTotal * 0.08);
+        guide.innerHTML = `
+          <div style="font-weight:700; color:#0a84ff; margin-bottom:0.25rem;">📱 Genie by Dialog Axiata (8% Rebate + Star Points)</div>
+          <div>One-tap wallet debit saving <strong>LKR ${reb.toLocaleString()}</strong> plus Star Points points credit for Dialog subscribers.</div>
+        `;
+      } else if (selectedPaymentGateway === 'koko') {
+        const installment = Math.round(finalTotal / 3);
+        guide.innerHTML = `
+          <div style="font-weight:700; color:#ffd60a; margin-bottom:0.25rem;">⚡ Koko 3x Split Pay (0% Interest)</div>
+          <div>Split your concession total into 3 monthly payments of <strong>LKR ${installment.toLocaleString()} / month</strong>. First installment charged today.</div>
+        `;
+      } else if (selectedPaymentGateway === 'card') {
+        guide.innerHTML = `
+          <div style="font-weight:700; color:#fff; margin-bottom:0.25rem;">💳 Visa / MasterCard / LankaPay Bank Cards</div>
+          <div>Direct 3D-Secure encrypted processing supported for Commercial Bank, Sampath Bank, HNB, BOC, and all local card issuers.</div>
+        `;
+      } else if (selectedPaymentGateway === 'cash') {
+        guide.innerHTML = `
+          <div style="font-weight:700; color:#fff; margin-bottom:0.25rem;">💵 Cash at Counter</div>
+          <div>Pay <strong>LKR ${finalTotal.toLocaleString()}</strong> in cash directly at <strong>${counterName}</strong> when claiming your pickup token.</div>
+        `;
+      }
     }
 
     function quickPromo(code) {
@@ -1045,6 +1133,21 @@
         promoDiscountPct = 0.15;
         statusEl.style.color = '#30d158';
         statusEl.textContent = '✅ LANKA-FAMILY15 applied! 15% discount unlocked.';
+      } else if (code === 'CINE-CINEMA25') {
+        appliedPromo = 'CINE-CINEMA25';
+        promoDiscountPct = 0.25;
+        statusEl.style.color = '#30d158';
+        statusEl.textContent = '✅ CINE-CINEMA25 applied! 25% discount unlocked.';
+      } else if (code === 'CINE-STUDENT') {
+        appliedPromo = 'CINE-STUDENT';
+        promoDiscountPct = 0.15;
+        statusEl.style.color = '#30d158';
+        statusEl.textContent = '✅ CINE-STUDENT applied! 15% discount unlocked.';
+      } else if (code === 'CINE-PLATINUM') {
+        appliedPromo = 'CINE-PLATINUM';
+        promoDiscountPct = 0.35;
+        statusEl.style.color = '#30d158';
+        statusEl.textContent = '✅ CINE-PLATINUM applied! 35% discount unlocked.';
       } else if (!code) {
         appliedPromo = null;
         promoDiscountPct = 0;
@@ -1066,6 +1169,7 @@
 
       const discount = Math.round(subtotal * effectiveRate);
       const finalTotal = Math.max(0, subtotal - discount);
+      currentFinalTotal = finalTotal;
 
       const subEl = document.getElementById('sum-subtotal');
       const discEl = document.getElementById('sum-discount');
@@ -1082,6 +1186,8 @@
         }
       }
       if (totEl) totEl.textContent = `LKR ${finalTotal.toLocaleString()}`;
+
+      updatePaymentGuide(finalTotal);
     }
 
     function processOrder() {
@@ -1092,15 +1198,20 @@
 
       const name = document.getElementById('cust-name').value.trim() || 'Valued Moviegoer';
       const cinema = (SRI_LANKAN_CINEMAS || []).find(c => c.id === activeCinemaId) || {
-        name: "Scope Cinemas - Colombo City Centre"
+        name: "Scope Cinemas - Colombo City Centre",
+        food_court_location: "Level 3 Concession Candy Bar"
       };
 
       const randToken = Math.floor(10 + Math.random() * 90);
       const randSerial = 'CB-LK-' + Math.floor(10000 + Math.random() * 90000);
+      lastVoucherToken = `TOKEN #${randToken}`;
+      lastVoucherSerial = randSerial;
 
-      document.getElementById('voucher-token-id').textContent = `TOKEN #${randToken}`;
+      document.getElementById('voucher-token-id').textContent = lastVoucherToken;
       document.getElementById('voucher-theater-name').textContent = cinema.name;
       document.getElementById('voucher-serial').textContent = randSerial;
+      const counterLoc = cinema.food_court_location || 'Level 3 Concession Candy Bar';
+      document.getElementById('voucher-counter-loc').textContent = `${counterLoc} • Fast-Lane Ready`;
       document.getElementById('voucher-mode').textContent = fulfillmentMode === 'pickup' 
         ? 'Express Fast-Lane Counter Pickup' 
         : 'VIP In-Seat Cinema Delivery';
@@ -1111,7 +1222,7 @@
           <div style="font-size:0.75rem; color:var(--cb-text-muted); text-transform:uppercase; font-weight:700; margin-bottom:0.5rem;">Voucher Concession Manifest:</div>
           ${cart.map(it => `
             <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:#fff; margin-bottom:0.25rem;">
-              <span>${it.quantity}x ${it.name} (${it.size || it.category})</span>
+              <span>${it.quantity}x ${it.name} (${it.size || it.category || 'Standard'})</span>
               <span>LKR ${(it.price * it.quantity).toLocaleString()}</span>
             </div>
           `).join('')}
@@ -1134,6 +1245,50 @@
       cart = [];
       const cartCountEl = document.getElementById('cart-count');
       if (cartCountEl) cartCountEl.textContent = '0';
+      showCheckoutToast(`🎉 Order placed! Token: ${lastVoucherToken}`);
+    }
+
+    function copyVoucherToken() {
+      const serial = lastVoucherSerial || document.getElementById('voucher-serial').textContent;
+      const token = lastVoucherToken || document.getElementById('voucher-token-id').textContent;
+      const text = `${token} | Serial: ${serial}`;
+      navigator.clipboard.writeText(text).then(() => {
+        showCheckoutToast('📋 Copied voucher details: ' + text);
+      }).catch(() => {
+        showCheckoutToast(text);
+      });
+    }
+
+    function showCheckoutToast(msg) {
+      let toast = document.getElementById('checkout-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'checkout-toast';
+        toast.style.cssText = `
+          position: fixed;
+          bottom: 24px;
+          right: 24px;
+          background: rgba(18, 18, 28, 0.95);
+          color: #fff;
+          border: 1px solid rgba(48, 209, 88, 0.5);
+          box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+          padding: 0.85rem 1.35rem;
+          border-radius: var(--r-md);
+          font-size: 0.88rem;
+          font-weight: 600;
+          z-index: 9999;
+          transition: opacity 0.3s ease, transform 0.3s ease;
+        `;
+        document.body.appendChild(toast);
+      }
+      toast.textContent = msg;
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateY(0)';
+      clearTimeout(window.__checkoutToastTimer);
+      window.__checkoutToastTimer = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+      }, 3500);
     }
 
     function resetOrder() {

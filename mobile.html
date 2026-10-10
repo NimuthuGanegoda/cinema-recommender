@@ -821,6 +821,7 @@
     const client = new CinemaClient();
     let mCinemas = [];
     let mCurrentCinema = null;
+    let mCinema = null;
     let mMenu = [];
     let mCategory = 'ALL';
     let mCart = [];
@@ -829,6 +830,7 @@
     let mSeconds = 8;
 
     window.addEventListener('DOMContentLoaded', async () => {
+      loadMobileCartFromStorage();
       await loadMobileCinemas();
       startMobileTicker();
       initMobileHourlyMovieSync();
@@ -881,6 +883,7 @@
 
     async function selectMobileCinema(cinema) {
       mCurrentCinema = cinema;
+      mCinema = cinema;
       document.getElementById('m-display-name').textContent = cinema.name;
       document.getElementById('m-display-chain').textContent = cinema.chain || 'Independent Circuit';
       document.getElementById('m-display-location').textContent = `${cinema.address || cinema.city} • ${cinema.screens} Screens`;
@@ -921,7 +924,7 @@
 
     async function loadMobileMovies(cinemaId, forceRefresh = false) {
       try {
-        const targetId = cinemaId || (mCinema ? mCinema.id : '');
+        const targetId = cinemaId || (mCurrentCinema ? mCurrentCinema.id : (mCinema ? mCinema.id : ''));
         mMovies = await client.getMovies({ cinemaId: targetId, forceRefresh });
         renderMobileMovies();
         renderMobileMarquee();
@@ -975,9 +978,14 @@
                 🕒 ${showtimesStr}
               </div>
             </div>
-            <div style="background:rgba(255,255,255,0.03); border-radius:4px; padding:0.35rem 0.45rem; margin-top:0.3rem;">
-              <div style="font-size:0.62rem; color:var(--apple-green); font-weight:700;">🍿 Recommended:</div>
-              <div style="font-size:0.65rem; color:rgba(255,255,255,0.85); line-height:1.2;">${m.concession_tip ? m.concession_tip.split('(')[0] : 'Caramel Popcorn & Milo'}</div>
+            <div>
+              <div style="background:rgba(255,255,255,0.03); border-radius:4px; padding:0.35rem 0.45rem; margin-top:0.3rem;">
+                <div style="font-size:0.62rem; color:var(--apple-green); font-weight:700;">🍿 Recommended:</div>
+                <div style="font-size:0.65rem; color:rgba(255,255,255,0.85); line-height:1.2;">${m.concession_tip ? m.concession_tip.split('(')[0] : 'Caramel Popcorn & Milo'}</div>
+              </div>
+              <button class="apple-btn-secondary" style="margin-top:0.4rem; padding:0.35rem 0.5rem; font-size:0.68rem; width:100%; border-radius:6px; cursor:pointer;" onclick="quickOptimizeMovieMobile('${encodeURIComponent(m.title)}', '${encodeURIComponent(m.duration || '')}')">
+                ✨ Optimize Snacks
+              </button>
             </div>
           </div>
         `;
@@ -987,7 +995,7 @@
     async function mTriggerMovieSync() {
       try {
         await client.triggerMovieSync();
-        await loadMobileMovies(mCinema ? mCinema.id : '', true);
+        await loadMobileMovies(mCurrentCinema ? mCurrentCinema.id : (mCinema ? mCinema.id : ''), true);
         showMobileToast('🎬 Movies refreshed (1-Hour Live Sync)');
       } catch (err) {
         showMobileToast('Movies up-to-date');
@@ -1241,7 +1249,8 @@
     function addMobileCart(item) {
       const p = (typeof item.price_lkr === 'number') ? item.price_lkr : (typeof item.price === 'number' ? item.price : 0);
       const orig = (typeof item.base_price_lkr === 'number') ? item.base_price_lkr : (typeof item.original_price === 'number' ? item.original_price : p);
-      mCart.push({ ...item, price: p, original_price: orig });
+      mCart.push({ ...item, price: p, original_price: orig, quantity: 1, cinema_id: mCurrentCinema ? mCurrentCinema.id : 'CMB-CCC' });
+      saveMobileCart();
       updateMobileCartUI();
       showMobileToast(`Added ${item.name} to tray`);
     }
@@ -1403,7 +1412,62 @@
 
     function removeMobileCart(idx) {
       mCart.splice(idx, 1);
+      saveMobileCart();
       updateMobileCartUI();
+    }
+
+    function saveMobileCart() {
+      try {
+        localStorage.setItem('cinebite_cart', JSON.stringify(mCart));
+      } catch (e) {}
+    }
+
+    function loadMobileCartFromStorage() {
+      try {
+        const raw = localStorage.getItem('cinebite_cart');
+        if (raw) {
+          mCart = JSON.parse(raw);
+          updateMobileCartUI();
+        }
+      } catch (e) {
+        mCart = [];
+      }
+    }
+
+    let lastMobileBundleItems = [];
+
+    function applyOptimizedBundleMobile() {
+      if (!lastMobileBundleItems || lastMobileBundleItems.length === 0) {
+        showMobileToast('No items in bundle to add');
+        return;
+      }
+      lastMobileBundleItems.forEach(it => {
+        const p = (typeof it.price_lkr === 'number') ? it.price_lkr : (typeof it.price === 'number' ? it.price : 1200);
+        const orig = (typeof it.base_price_lkr === 'number') ? it.base_price_lkr : (typeof it.original_price === 'number' ? it.original_price : p);
+        mCart.push({
+          ...it,
+          price: p,
+          original_price: orig,
+          quantity: 1,
+          cinema_id: mCurrentCinema ? mCurrentCinema.id : 'CMB-CCC'
+        });
+      });
+      saveMobileCart();
+      updateMobileCartUI();
+      switchToTab('tray');
+      showMobileToast(`🎟️ Added ${lastMobileBundleItems.length} items to your tray!`);
+    }
+
+    function quickOptimizeMovieMobile(encodedTitle, encodedDuration) {
+      const title = decodeURIComponent(encodedTitle);
+      const duration = decodeURIComponent(encodedDuration);
+      if (duration && duration.includes('3h')) {
+        setMobileBudget(4200);
+        mParty = 2;
+      }
+      switchToTab('optimize');
+      showMobileToast(`🎬 Optimizing snacks for ${title}`);
+      handleMobileOptimize();
     }
 
     function switchToTab(tabName) {
@@ -1450,11 +1514,16 @@
       try {
         const result = await client.recommendBundle({
           cinemaId: mCurrentCinema.id,
-          budget,
+          budget: budget,
+          budgetLKR: budget,
+          budget_lkr: budget,
           partySize: mParty,
           privilegeTier: mTier,
           promoCode: promo
         });
+
+        const items = result.items || result.selected_items || [];
+        lastMobileBundleItems = items;
 
         const resBox = document.getElementById('m-opt-result');
         resBox.style.display = 'block';
@@ -1464,7 +1533,7 @@
             <div style="font-size:1.05rem; font-weight:700; margin-bottom:0.6rem;">Applied: ${result.applied_promo || 'Best Value Saver'}</div>
             
             <div style="display:flex; flex-direction:column; gap:0.4rem; margin-bottom:0.85rem;">
-              ${result.items.map(item => {
+              ${items.length === 0 ? '<div style="font-size:0.78rem; color:var(--apple-text-secondary);">No items match this budget.</div>' : items.map(item => {
                 const p = (typeof item.price_lkr === 'number') ? item.price_lkr : (typeof item.price === 'number' ? item.price : 0);
                 return `
                 <div style="display:flex; justify-content:space-between; font-size:0.8rem; background:rgba(255,255,255,0.04); padding:0.4rem 0.6rem; border-radius:6px;">
@@ -1476,12 +1545,12 @@
 
             <div style="border-top:1px solid rgba(255,255,255,0.1); padding-top:0.6rem; margin-bottom:0.85rem;">
               <div style="font-size:1.15rem; font-weight:800; color:var(--apple-green);">
-                LKR ${(result.final_total || 0).toFixed(0)} 
-                <span style="font-size:0.75rem;">(Saved LKR ${(result.discount_amount || 0).toFixed(0)})</span>
+                LKR ${(result.final_total || result.final_total_lkr || 0).toFixed(0)} 
+                <span style="font-size:0.75rem;">(Saved LKR ${(result.discount_amount || result.discount_amount_lkr || 0).toFixed(0)})</span>
               </div>
             </div>
 
-            <button class="apple-btn-green apple-btn-primary" style="width:100%; padding:0.65rem; font-size:0.85rem;" onclick='applyOptimizedBundleMobile(${JSON.stringify(result.items).replace(/'/g, "&#39;")})'>
+            <button class="apple-btn-green apple-btn-primary" style="width:100%; padding:0.65rem; font-size:0.85rem;" onclick='applyOptimizedBundleMobile()'>
               🎟️ Use in CinePass
             </button>
           </div>

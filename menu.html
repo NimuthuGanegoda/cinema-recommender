@@ -428,8 +428,31 @@
     let countdown = 8;
 
     window.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlCinema = urlParams.get('cinema');
+      const urlCat = urlParams.get('cat');
+      const urlSearch = urlParams.get('search');
+
+      if (urlCinema) {
+        activeCinemaId = urlCinema;
+        localStorage.setItem('cinebite_active_cinema_id', urlCinema);
+      }
+      if (urlCat) {
+        currentCategory = urlCat;
+      }
+      if (urlSearch) {
+        searchQuery = urlSearch.toLowerCase().trim();
+        const searchInput = document.getElementById('menu-search');
+        if (searchInput) searchInput.value = urlSearch;
+      }
+
       loadCartFromStorage();
       await loadCinemas();
+      if (currentCategory !== 'ALL') {
+        document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+        const activeChip = document.getElementById('cat-' + currentCategory.toLowerCase());
+        if (activeChip) activeChip.classList.add('active');
+      }
       await loadConcessions();
       startTicker();
     });

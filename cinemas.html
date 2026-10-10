@@ -483,11 +483,14 @@
                   <button class="btn-primary" style="flex:1; font-size:0.78rem; padding:0.45rem 0.6rem; cursor:pointer;" onclick="selectTheater('${c.id}')">
                     ${isCurrent ? '✓ Active Theater' : 'Select Theater'}
                   </button>
-                  <a href="movies.html" class="btn-secondary" style="font-size:0.78rem; padding:0.45rem 0.75rem; text-decoration:none;" onclick="localStorage.setItem('cinebite_active_cinema_id', '${c.id}')">
+                  <a href="movies.html?cinema=${encodeURIComponent(c.id)}" class="btn-secondary" style="font-size:0.78rem; padding:0.45rem 0.65rem; text-decoration:none;" onclick="localStorage.setItem('cinebite_active_cinema_id', '${c.id}')">
                     🎬 Movies
                   </a>
-                  <a href="menu.html" class="btn-secondary" style="font-size:0.78rem; padding:0.45rem 0.75rem; text-decoration:none;" onclick="localStorage.setItem('cinebite_active_cinema_id', '${c.id}')">
+                  <a href="menu.html?cinema=${encodeURIComponent(c.id)}" class="btn-secondary" style="font-size:0.78rem; padding:0.45rem 0.65rem; text-decoration:none;" onclick="localStorage.setItem('cinebite_active_cinema_id', '${c.id}')">
                     🍿 Menu
+                  </a>
+                  <a href="optimizer.html?cinema=${encodeURIComponent(c.id)}" class="btn-secondary" style="font-size:0.78rem; padding:0.45rem 0.65rem; text-decoration:none;" onclick="localStorage.setItem('cinebite_active_cinema_id', '${c.id}')">
+                    ✨ Optimize
                   </a>
                   ${c.map_url ? `<a href="${c.map_url}" target="_blank" class="btn-secondary" style="font-size:0.78rem; padding:0.45rem 0.6rem; text-decoration:none;" title="Open in Google Maps">🗺️</a>` : ''}
                 </div>

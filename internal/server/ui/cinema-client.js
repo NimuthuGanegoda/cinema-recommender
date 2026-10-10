@@ -19,7 +19,29 @@ function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
   return Math.round(R * c * 10) / 10;
 }
 
-// ── 2. Sri Lankan Cinema Registry ──────────────────────────────────────────
+// ── 2. Sri Lankan Cinema Registry & Alias Resolution ───────────────────────
+const CINEMA_ID_ALIASES = {
+  "CMB-PVR": ["CMB-PVR", "CMB-OGF"],
+  "CMB-OGF": ["CMB-PVR", "CMB-OGF"],
+  "KND-KCC": ["KND-KCC", "KDY-KCC"],
+  "KDY-KCC": ["KND-KCC", "KDY-KCC"],
+  "GMP-REG": ["GMP-REG", "GMP-RGL"],
+  "GMP-RGL": ["GMP-REG", "GMP-RGL"],
+  "KRN-MLD": ["KRN-MLD", "KRN-IMP"],
+  "KRN-IMP": ["KRN-MLD", "KRN-IMP"],
+  "NGB-RDO": ["NGB-RDO", "NGB-AQU"],
+  "NGB-AQU": ["NGB-RDO", "NGB-AQU"],
+  "JFN-RJA": ["JFN-RJA", "JFN-CGS"],
+  "JFN-CGS": ["JFN-RJA", "JFN-CGS"]
+};
+
+function matchCinemaId(movieCinemaIds, targetId) {
+  if (!movieCinemaIds || !targetId) return false;
+  const upper = String(targetId).toUpperCase().trim();
+  const allowed = CINEMA_ID_ALIASES[upper] || [upper];
+  return movieCinemaIds.some(cid => allowed.includes(String(cid).toUpperCase().trim()));
+}
+
 const SRI_LANKAN_CINEMAS = [
   {
     id: "CMB-CCC",
@@ -765,19 +787,36 @@ class CinemaClient {
   }
 
   // 4. Recommendation & Cart Optimizer (Client-side Knapsack Heuristic)
-  async recommendBundle({ cinemaId, budget, partySize = 2, privilegeTier = 'Standard', promoCode = '' }) {
+  async recommendBundle({ cinemaId, budget, budgetLKR, budget_lkr, partySize = 2, privilegeTier = 'Standard', promoCode = '' }) {
+    const rawBudget = (typeof budget === 'number' && budget > 0) ? budget : ((typeof budgetLKR === 'number' && budgetLKR > 0) ? budgetLKR : ((typeof budget_lkr === 'number' && budget_lkr > 0) ? budget_lkr : 0));
     try {
-      return await this._post('/api/v1/recommend', {
+      const res = await this._post('/api/v1/recommend', {
         cinema_id: cinemaId,
-        budget_lkr: budget,
+        budget_lkr: rawBudget,
         party_size: partySize,
         privilege_tier: privilegeTier,
         promo_code: promoCode,
       });
+      const selected = res.selected_items || res.items || [];
+      const orig = (res.original_total_lkr !== undefined) ? res.original_total_lkr : (res.original_total !== undefined ? res.original_total : 0);
+      const disc = (res.discount_amount_lkr !== undefined) ? res.discount_amount_lkr : (res.discount_amount !== undefined ? res.discount_amount : 0);
+      const fin = (res.final_total_lkr !== undefined) ? res.final_total_lkr : (res.final_total !== undefined ? res.final_total : (orig - disc));
+      return {
+        ...res,
+        items: selected,
+        selected_items: selected,
+        original_total: orig,
+        original_total_lkr: orig,
+        discount_amount: disc,
+        discount_amount_lkr: disc,
+        final_total: fin,
+        final_total_lkr: fin,
+        savings_lkr: disc
+      };
     } catch (err) {
       // Run algorithmic knapsack bundle optimization client-side
       const menu = CONCESSION_CATALOG.default;
-      const budgetLimit = budget > 0 ? budget : partySize * 1500;
+      const budgetLimit = rawBudget > 0 ? rawBudget : partySize * 1500;
 
       const combos = menu.filter(i => i.category === 'Combo');
       const popcorns = menu.filter(i => i.category === 'Popcorn');
@@ -867,9 +906,14 @@ class CinemaClient {
         privilege_tier: privilegeTier,
         applied_promo: appliedPromo,
         original_total: subtotal,
+        original_total_lkr: subtotal,
         final_total: finalTotal,
+        final_total_lkr: finalTotal,
         discount_amount: discountAmount,
+        discount_amount_lkr: discountAmount,
+        savings_lkr: discountAmount,
         items: selected,
+        selected_items: selected,
         upsell_advice: `Add LKR ${Math.round(budgetLimit * 0.15 + 200)} more to upgrade drinks to Jumbo Caramel Popcorn!`
       };
     }
@@ -877,12 +921,28 @@ class CinemaClient {
 
   async evaluateCart({ cinemaId, items, privilegeTier = 'Standard', promoCode = '' }) {
     try {
-      return await this._post('/api/v1/cart/evaluate', {
+      const res = await this._post('/api/v1/cart/evaluate', {
         cinema_id: cinemaId,
         items,
         privilege_tier: privilegeTier,
         promo_code: promoCode,
       });
+      const selected = res.selected_items || res.items || items || [];
+      const orig = (res.original_total_lkr !== undefined) ? res.original_total_lkr : (res.original_total !== undefined ? res.original_total : 0);
+      const disc = (res.discount_amount_lkr !== undefined) ? res.discount_amount_lkr : (res.discount_amount !== undefined ? res.discount_amount : 0);
+      const fin = (res.final_total_lkr !== undefined) ? res.final_total_lkr : (res.final_total !== undefined ? res.final_total : (orig - disc));
+      return {
+        ...res,
+        items: selected,
+        selected_items: selected,
+        original_total: orig,
+        original_total_lkr: orig,
+        discount_amount: disc,
+        discount_amount_lkr: disc,
+        final_total: fin,
+        final_total_lkr: fin,
+        savings_lkr: disc
+      };
     } catch (err) {
       const subtotal = items.reduce((s, i) => s + (i.price || 0), 0);
       let rate = 0.10;
@@ -894,9 +954,14 @@ class CinemaClient {
       return {
         cinema_id: cinemaId,
         items,
+        selected_items: items,
         original_total: subtotal,
+        original_total_lkr: subtotal,
         discount_amount: discount,
+        discount_amount_lkr: discount,
+        savings_lkr: discount,
         final_total: subtotal - discount,
+        final_total_lkr: subtotal - discount,
         applied_promo: promoCode || `${privilegeTier} Privilege Club`,
         privilege_tier: privilegeTier
       };
@@ -948,8 +1013,7 @@ class CinemaClient {
         if (cached && cachedTime && (Date.now() - parseInt(cachedTime, 10) < 3600000)) {
           let list = JSON.parse(cached);
           if (cinemaId) {
-            const cid = cinemaId.toUpperCase();
-            list = list.filter(m => m.cinema_ids && m.cinema_ids.some(c => c.toUpperCase() === cid));
+            list = list.filter(m => matchCinemaId(m.cinema_ids, cinemaId));
           }
           if (language) {
             list = list.filter(m => m.language && m.language.toLowerCase() === language.toLowerCase());
@@ -975,8 +1039,7 @@ class CinemaClient {
             localStorage.setItem('cinebite_movies_synced_at', Date.now().toString());
             let list = data.movies;
             if (cinemaId) {
-              const cid = cinemaId.toUpperCase();
-              list = list.filter(m => m.cinema_ids && m.cinema_ids.some(c => c.toUpperCase() === cid));
+              list = list.filter(m => matchCinemaId(m.cinema_ids, cinemaId));
             }
             if (language) {
               list = list.filter(m => m.language && m.language.toLowerCase() === language.toLowerCase());
@@ -989,8 +1052,7 @@ class CinemaClient {
       // Final fallback to embedded dataset
       let list = [...SRI_LANKAN_MOVIES];
       if (cinemaId) {
-        const cid = cinemaId.toUpperCase();
-        list = list.filter(m => m.cinema_ids && m.cinema_ids.some(c => c.toUpperCase() === cid));
+        list = list.filter(m => matchCinemaId(m.cinema_ids, cinemaId));
       }
       if (language) {
         list = list.filter(m => m.language && m.language.toLowerCase() === language.toLowerCase());

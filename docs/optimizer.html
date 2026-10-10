@@ -299,6 +299,21 @@
       </p>
     </div>
 
+    <!-- Active Movie Context Banner (Shown when arriving from movies.html) -->
+    <div id="movie-context-banner" style="display:none; margin-bottom:1.5rem; background:linear-gradient(135deg, rgba(168,85,247,0.18), rgba(99,102,241,0.15)); border:1px solid rgba(168,85,247,0.4); border-radius:var(--r-md); padding:1rem 1.4rem; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+      <div style="display:flex; align-items:center; gap:0.75rem;">
+        <span style="font-size:1.8rem;">🎬</span>
+        <div>
+          <div style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--cb-purple-light); font-weight:700;">Optimizing Snacks For Screening</div>
+          <div style="font-size:1.15rem; font-weight:800; color:#fff;" id="movie-banner-title">Movie Title</div>
+          <div style="font-size:0.78rem; color:var(--cb-text-secondary); margin-top:2px;" id="movie-banner-meta">2h 15m • Concession pairing active</div>
+        </div>
+      </div>
+      <button onclick="clearMovieContext()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); color:var(--cb-text-secondary); padding:0.4rem 0.8rem; border-radius:var(--r-sm); font-size:0.75rem; cursor:pointer;">
+        ✕ Clear Movie
+      </button>
+    </div>
+
     <!-- 2-Column Optimizer Workspace -->
     <div class="optimizer-layout">
 
@@ -413,19 +428,74 @@
 
     function checkURLPresets() {
       const params = new URLSearchParams(window.location.search);
+      const cinema = params.get('cinema');
       const movie = params.get('movie');
       const duration = params.get('duration');
+      const promo = params.get('promo');
+      const tier = params.get('tier');
+      const budget = params.get('budget');
+      const party = params.get('party');
+
+      if (cinema) {
+        activeCinemaId = cinema;
+        localStorage.setItem('cinebite_active_cinema_id', cinema);
+        const sel = document.getElementById('opt-cinema');
+        if (sel) sel.value = cinema;
+      }
+
+      if (promo) {
+        setPromo(promo);
+      }
+
+      if (tier) {
+        const tierBtns = document.querySelectorAll('#seg-tier .segment-btn');
+        const matchBtn = Array.from(tierBtns).find(b => b.textContent.trim().toLowerCase() === tier.toLowerCase());
+        if (matchBtn) setTier(tier, matchBtn);
+      }
+
+      if (budget) {
+        setBudget(parseFloat(budget));
+      }
+
+      if (party) {
+        const pSize = parseInt(party, 10);
+        const partyBtns = document.querySelectorAll('#seg-party .segment-btn');
+        const idx = pSize === 1 ? 0 : (pSize === 2 ? 1 : (pSize <= 4 ? 2 : 3));
+        if (partyBtns[idx]) setParty(pSize, partyBtns[idx]);
+      }
+
       if (movie) {
+        const banner = document.getElementById('movie-context-banner');
+        const titleEl = document.getElementById('movie-banner-title');
+        const metaEl = document.getElementById('movie-banner-meta');
+        if (banner && titleEl) {
+          banner.style.display = 'flex';
+          titleEl.textContent = decodeURIComponent(movie);
+          if (metaEl) {
+            metaEl.textContent = `${duration ? decodeURIComponent(duration) + ' • ' : ''}Theatrical concession pairing active`;
+          }
+        }
         if (duration && duration.includes('3h')) {
           setBudget(4200);
-          setParty(2, document.querySelectorAll('#seg-party .segment-btn')[1]);
+          const pBtns = document.querySelectorAll('#seg-party .segment-btn');
+          if (pBtns[1]) setParty(2, pBtns[1]);
         }
       }
+    }
+
+    function clearMovieContext() {
+      const banner = document.getElementById('movie-context-banner');
+      if (banner) banner.style.display = 'none';
+      const url = new URL(window.location.href);
+      url.searchParams.delete('movie');
+      url.searchParams.delete('duration');
+      window.history.replaceState({}, '', url.toString());
     }
 
     function onCinemaChange(val) {
       activeCinemaId = val;
       localStorage.setItem('cinebite_active_cinema_id', val);
+      runOptimizer();
     }
 
     function setBudget(val) {
@@ -450,7 +520,6 @@
 
     async function runOptimizer() {
       const btn = document.getElementById('btn-run-opt');
-      const resultsBox = document.getElementById('results-box');
       btn.textContent = '⏳ Optimizing Value...';
 
       const budget = parseFloat(document.getElementById('opt-budget').value) || 2500;
@@ -459,7 +528,9 @@
       try {
         const result = await client.recommendBundle({
           cinemaId: activeCinemaId,
+          budget: budget,
           budgetLKR: budget,
+          budget_lkr: budget,
           partySize: partySize,
           privilegeTier: privilegeTier,
           promoCode: promo
@@ -476,10 +547,10 @@
 
     function renderResults(res) {
       const box = document.getElementById('results-box');
-      const items = res.selected_items || [];
-      const origTotal = res.original_total || 0;
-      const discount = res.discount_amount || 0;
-      const finalTotal = res.final_total || 0;
+      const items = res.selected_items || res.items || [];
+      const origTotal = res.original_total_lkr !== undefined ? res.original_total_lkr : (res.original_total || 0);
+      const discount = res.discount_amount_lkr !== undefined ? res.discount_amount_lkr : (res.discount_amount || 0);
+      const finalTotal = res.final_total_lkr !== undefined ? res.final_total_lkr : (res.final_total || (origTotal - discount));
       const savingsPct = origTotal > 0 ? Math.round((discount / origTotal) * 100) : 0;
 
       box.innerHTML = `
@@ -487,7 +558,7 @@
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
             <div>
               <div style="font-size:1.25rem; font-weight:800; color:#fff;">🍿 Optimal Concession Bundle</div>
-              <div style="font-size:0.8rem; color:var(--cb-text-muted);">Recommended for ${partySize} Moviegoers</div>
+              <div style="font-size:0.8rem; color:var(--cb-text-muted);">Recommended for ${partySize} Moviegoers at ${res.cinema_name || 'Selected Cinema'}</div>
             </div>
             <span class="badge badge-green" style="font-size:0.82rem; font-weight:700;">
               ⚡ Save ${savingsPct}%
@@ -496,7 +567,7 @@
 
           <!-- Items List -->
           <div style="margin-bottom:1.5rem;">
-            ${items.map(it => `
+            ${items.length === 0 ? '<div style="color:var(--cb-text-muted); padding:1rem; text-align:center;">No concessions fit this exact budget. Try increasing budget slightly.</div>' : items.map(it => `
               <div class="bundle-item">
                 <div style="display:flex; align-items:center; gap:0.75rem;">
                   <span style="font-size:1.4rem;">${it.category === 'Popcorn' ? '🍿' : (it.category === 'Beverage' ? '🥤' : '🍱')}</span>
@@ -506,7 +577,7 @@
                   </div>
                 </div>
                 <div style="text-align:right;">
-                  <div style="font-size:0.95rem; font-weight:800; color:#fff;">LKR ${Math.round(it.price).toLocaleString()}</div>
+                  <div style="font-size:0.95rem; font-weight:800; color:#fff;">LKR ${Math.round(it.price || it.price_lkr || 0).toLocaleString()}</div>
                   <div style="font-size:0.7rem; color:#30d158; font-weight:600;">Verified In-Stock</div>
                 </div>
               </div>
@@ -530,39 +601,83 @@
           </div>
 
           <div style="background:rgba(168,85,247,0.12); border:1px solid rgba(168,85,247,0.3); border-radius:var(--r-sm); padding:0.75rem 1rem; font-size:0.8rem; color:rgba(255,255,255,0.9); margin-bottom:1.5rem; line-height:1.4;">
-            💡 ${res.message || 'Optimized for maximum value satisfaction within your concession budget.'}
+            💡 ${res.message || res.upsell_advice || 'Optimized for maximum value satisfaction within your concession budget.'}
             ${res.next_tier_upsell ? `<div style="margin-top:0.35rem; color:var(--cb-purple-light); font-weight:600;">${res.next_tier_upsell}</div>` : ''}
           </div>
 
           <div style="display:flex; gap:0.75rem;">
-            <button class="btn-primary" style="flex:1; font-size:0.88rem; padding:0.75rem; cursor:pointer;" onclick="addBundleToCart()">
+            <button class="btn-primary" style="flex:1; font-size:0.88rem; padding:0.75rem; cursor:pointer;" onclick="addBundleToCart(false)">
               🛒 Add Bundle to Cart
             </button>
-            <a href="checkout.html" class="btn-secondary" style="font-size:0.88rem; padding:0.75rem 1.25rem; text-decoration:none; display:flex; align-items:center;" onclick="addBundleToCart()">
+            <button class="btn-secondary" style="font-size:0.88rem; padding:0.75rem 1.25rem; cursor:pointer; display:flex; align-items:center;" onclick="addBundleToCart(true)">
               Instant Checkout →
-            </a>
+            </button>
           </div>
         </div>
       `;
     }
 
-    function addBundleToCart() {
-      if (!lastResult || !lastResult.selected_items) return;
+    function addBundleToCart(redirect = false) {
+      const items = lastResult ? (lastResult.selected_items || lastResult.items || []) : [];
+      if (items.length === 0) {
+        alert('No bundle items available to add.');
+        return;
+      }
       const raw = localStorage.getItem('cinebite_cart');
       let cart = raw ? JSON.parse(raw) : [];
 
-      lastResult.selected_items.forEach(it => {
+      items.forEach(it => {
         const existing = cart.find(x => x.id === it.id);
         if (existing) {
           existing.quantity = (existing.quantity || 1) + 1;
         } else {
-          cart.push({ ...it, quantity: 1, cinema_id: activeCinemaId });
+          cart.push({ ...it, price: it.price || it.price_lkr || 1200, quantity: 1, cinema_id: activeCinemaId });
         }
       });
 
       localStorage.setItem('cinebite_cart', JSON.stringify(cart));
       updateCartCount();
-      alert('🍿 Optimized concession bundle added to your cart!');
+
+      if (redirect) {
+        window.location.href = 'checkout.html';
+      } else {
+        showToast(`🍿 ${items.length} items added to your concession cart!`);
+      }
+    }
+
+    function showToast(msg) {
+      let toast = document.getElementById('opt-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'opt-toast';
+        toast.style.cssText = `
+          position: fixed;
+          bottom: 24px;
+          right: 24px;
+          background: rgba(18, 18, 28, 0.95);
+          color: #fff;
+          border: 1px solid rgba(48, 209, 88, 0.5);
+          box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+          padding: 0.85rem 1.35rem;
+          border-radius: var(--r-md);
+          font-size: 0.88rem;
+          font-weight: 600;
+          z-index: 9999;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          transition: opacity 0.3s ease, transform 0.3s ease;
+        `;
+        document.body.appendChild(toast);
+      }
+      toast.textContent = msg;
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateY(0)';
+      clearTimeout(window.__optToastTimer);
+      window.__optToastTimer = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+      }, 3500);
     }
 
     function updateCartCount() {

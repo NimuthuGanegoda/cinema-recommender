@@ -25,6 +25,17 @@ func TestMovieSyncEngine_Basics(t *testing.T) {
 		t.Errorf("expected movies for KCC Kandy, got 0")
 	}
 
+	// Test alias cinema filter
+	kndMovies := engine.GetMoviesByCinema("KND-KCC")
+	if len(kndMovies) == 0 {
+		t.Errorf("expected movies for KND-KCC alias, got 0")
+	}
+
+	pvrMovies := engine.GetMoviesByCinema("CMB-PVR")
+	if len(pvrMovies) == 0 {
+		t.Errorf("expected movies for CMB-PVR alias, got 0")
+	}
+
 	// Test language filter
 	sinhalaMovies := engine.GetMoviesByLanguage("Sinhala")
 	if len(sinhalaMovies) == 0 {

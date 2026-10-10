@@ -1,9 +1,19 @@
-const CACHE_NAME = 'cinemasnack-v2';
+const CACHE_NAME = 'cinemasnack-v3';
 const STATIC_ASSETS = [
   './',
+  './index.html',
+  './movies.html',
+  './cinemas.html',
+  './menu.html',
+  './optimizer.html',
+  './deals.html',
+  './checkout.html',
   './mobile.html',
-  './app-icon.jpg',
-  './manifest.json'
+  './apple-design-system.css',
+  './cinema-client.js',
+  './movies.json',
+  './manifest.json',
+  './app-icon.jpg'
 ];
 
 self.addEventListener('install', (event) => {

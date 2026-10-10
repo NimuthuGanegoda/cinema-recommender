@@ -113,17 +113,45 @@ func (e *MovieSyncEngine) GetAllMovies() []models.Movie {
 	return result
 }
 
-// GetMoviesByCinema filters movies playing at a specific cinema ID.
+var cinemaAliases = map[string][]string{
+	"CMB-PVR": {"CMB-PVR", "CMB-OGF"},
+	"CMB-OGF": {"CMB-PVR", "CMB-OGF"},
+	"KND-KCC": {"KND-KCC", "KDY-KCC"},
+	"KDY-KCC": {"KND-KCC", "KDY-KCC"},
+	"GMP-REG": {"GMP-REG", "GMP-RGL"},
+	"GMP-RGL": {"GMP-REG", "GMP-RGL"},
+	"KRN-MLD": {"KRN-MLD", "KRN-IMP"},
+	"KRN-IMP": {"KRN-MLD", "KRN-IMP"},
+	"NGB-RDO": {"NGB-RDO", "NGB-AQU"},
+	"NGB-AQU": {"NGB-RDO", "NGB-AQU"},
+	"JFN-RJA": {"JFN-RJA", "JFN-CGS"},
+	"JFN-CGS": {"JFN-RJA", "JFN-CGS"},
+}
+
+// GetMoviesByCinema filters movies playing at a specific cinema ID, resolving cinema aliases.
 func (e *MovieSyncEngine) GetMoviesByCinema(cinemaID string) []models.Movie {
 	e.mu.RLock()
 	defer e.mu.RUnlock()
 
 	var matches []models.Movie
-	upperID := strings.ToUpper(cinemaID)
+	upperID := strings.ToUpper(strings.TrimSpace(cinemaID))
+	aliases, ok := cinemaAliases[upperID]
+	if !ok {
+		aliases = []string{upperID}
+	}
+
 	for _, m := range e.movies {
+		matched := false
 		for _, cid := range m.CinemaIDs {
-			if strings.EqualFold(cid, upperID) {
-				matches = append(matches, m)
+			upperCid := strings.ToUpper(cid)
+			for _, target := range aliases {
+				if upperCid == target {
+					matches = append(matches, m)
+					matched = true
+					break
+				}
+			}
+			if matched {
 				break
 			}
 		}

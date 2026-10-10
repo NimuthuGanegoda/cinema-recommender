@@ -489,7 +489,29 @@
     let searchQuery = '';
 
     window.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlCinema = urlParams.get('cinema');
+      const urlLang = urlParams.get('lang');
+      const urlSearch = urlParams.get('search');
+      if (urlCinema) {
+        selectedCinemaId = urlCinema;
+        localStorage.setItem('cinebite_active_cinema_id', urlCinema);
+      }
+      if (urlLang) {
+        currentFilter = urlLang;
+      }
+      if (urlSearch) {
+        searchQuery = urlSearch.toLowerCase().trim();
+        const searchInput = document.getElementById('movie-search');
+        if (searchInput) searchInput.value = urlSearch;
+      }
+
       await loadCinemasList();
+      if (currentFilter !== 'all') {
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        const activeChip = document.getElementById('chip-' + currentFilter.toLowerCase());
+        if (activeChip) activeChip.classList.add('active');
+      }
       await fetchMovies();
       initHourlySync();
       updateCartCount();
@@ -544,6 +566,19 @@
       renderMovies();
     }
 
+    function resetAllFilters() {
+      selectedCinemaId = '';
+      const select = document.getElementById('theater-filter');
+      if (select) select.value = '';
+      const search = document.getElementById('movie-search');
+      if (search) search.value = '';
+      searchQuery = '';
+      setLanguageFilter('all');
+      localStorage.removeItem('cinebite_active_cinema_id');
+      updateNavTheaterName();
+      fetchMovies();
+    }
+
     function renderMovies() {
       const container = document.getElementById('movies-container');
       const countEl = document.getElementById('total-count');
@@ -579,7 +614,7 @@
             <div style="font-size:2rem; margin-bottom:0.5rem;">🎬</div>
             <div style="font-size:1.1rem; font-weight:700; color:#fff; margin-bottom:0.25rem;">No Movie Showtimes Found</div>
             <div style="font-size:0.85rem; color:var(--cb-text-secondary); margin-bottom:1rem;">Try clearing your search or switching to another cinema.</div>
-            <button class="btn-secondary" onclick="setLanguageFilter('all'); document.getElementById('movie-search').value=''; searchQuery=''; renderMovies();">Reset Filters</button>
+            <button class="btn-secondary" onclick="resetAllFilters()">Reset All Filters</button>
           </div>
         `;
         return;
@@ -594,6 +629,9 @@
         const formatsHtml = (m.formats || []).map(f => `
           <span class="badge ${f.includes('IMAX') ? 'badge-purple' : 'badge-blue'}" style="font-size:0.65rem;">${f}</span>
         `).join(' ');
+
+        const optCinemaParam = selectedCinemaId ? `&cinema=${encodeURIComponent(selectedCinemaId)}` : '';
+        const menuCinemaParam = selectedCinemaId ? `?cinema=${encodeURIComponent(selectedCinemaId)}` : '';
 
         return `
           <div class="movie-card">
@@ -632,10 +670,10 @@
                 ${m.concession_tip || 'Pairs great with Fresh Caramel Popcorn and Milo Dinosaur Float'}
               </div>
               <div style="display:flex; gap:0.5rem;">
-                <a href="optimizer.html?movie=${encodeURIComponent(m.title)}&duration=${encodeURIComponent(m.duration)}" class="btn-primary" style="flex:1; font-size:0.75rem; padding:0.45rem 0.6rem; text-decoration:none; text-align:center;">
+                <a href="optimizer.html?movie=${encodeURIComponent(m.title)}&duration=${encodeURIComponent(m.duration)}${optCinemaParam}" class="btn-primary" style="flex:1; font-size:0.75rem; padding:0.45rem 0.6rem; text-decoration:none; text-align:center;">
                   ✨ Optimize Snacks
                 </a>
-                <a href="menu.html" class="btn-secondary" style="font-size:0.75rem; padding:0.45rem 0.75rem; text-decoration:none; text-align:center;">
+                <a href="menu.html${menuCinemaParam}" class="btn-secondary" style="font-size:0.75rem; padding:0.45rem 0.75rem; text-decoration:none; text-align:center;">
                   Browse Menu
                 </a>
               </div>
