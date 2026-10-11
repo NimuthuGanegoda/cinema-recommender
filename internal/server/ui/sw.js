@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cinemasnack-v3';
+const CACHE_NAME = 'cinebite-v4';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -13,7 +13,13 @@ const STATIC_ASSETS = [
   './cinema-client.js',
   './movies.json',
   './manifest.json',
-  './app-icon.jpg'
+  './app-icon.jpg',
+  './popcorn.jpg',
+  './beverage.jpg',
+  './combo.jpg',
+  './hotdog.jpg',
+  './nachos.jpg',
+  './rolls.jpg'
 ];
 
 self.addEventListener('install', (event) => {

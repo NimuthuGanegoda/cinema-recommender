@@ -5,7 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CineBite • Smart Cinema Snack Deals Across Sri Lanka</title>
   <meta name="description" content="Find the best cinema concession deals, live prices, and optimized snack combos across all Sri Lankan cinemas. Save with CinePass VIP discounts.">
+  <meta name="theme-color" content="#06060b">
   <meta name="application-name" content="CineBite">
+  <meta property="og:title" content="CineBite • Universal Sri Lanka Cinema Concession & Snack Recommender">
+  <meta property="og:description" content="Find the best cinema concession deals, live prices, and optimized snack combos across all Sri Lankan cinemas. Save with CinePass VIP discounts.">
+  <meta property="og:image" content="app-icon.jpg">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CineBite • Universal Sri Lanka Cinema Concession & Snack Recommender">
+  <meta name="twitter:description" content="Find the best cinema concession deals, live prices, and optimized snack combos across all Sri Lankan cinemas.">
+  <meta name="twitter:image" content="app-icon.jpg">
   <link rel="icon" type="image/jpeg" href="app-icon.jpg">
   <link rel="apple-touch-icon" href="app-icon.jpg">
   <link rel="manifest" href="manifest.json">
@@ -897,6 +906,7 @@
       </div>
       <a href="checkout.html" class="btn-primary" style="font-size:0.78rem; padding:0.4rem 0.85rem; text-decoration:none;" id="nav-cart-btn">🛒 Cart (<span id="cart-count">0</span>)</a>
       <span class="badge badge-purple" id="nav-tier-badge" style="cursor:pointer;" onclick="openVoucherModal()" title="View CinePass Wallet Voucher">🎟️ VIP</span>
+      <a href="mobile.html" class="btn-secondary" style="font-size:0.78rem; padding:0.4rem 0.75rem; text-decoration:none;" title="Open Mobile PWA Web App">📱 App</a>
     </div>
   </nav>
 
@@ -1506,7 +1516,10 @@
       allCinemasMaster = [...cinemas];
       document.getElementById('cinemas-count').textContent = cinemas.length;
       renderCinemaCards();
-      if (cinemas.length > 0) selectCinema(cinemas[0]);
+
+      const savedCinemaId = localStorage.getItem('cinebite_active_cinema_id');
+      const initial = (savedCinemaId && cinemas.find(c => c.id === savedCinemaId)) || (cinemas.length > 0 ? cinemas[0] : null);
+      if (initial) selectCinema(initial);
     }
 
 
@@ -1556,6 +1569,7 @@
     /* ── Select Cinema ─────────────────────────────── */
     async function selectCinema(cinema) {
       activeCinema = cinema;
+      localStorage.setItem('cinebite_active_cinema_id', cinema.id);
       renderCinemaCards();
 
       const cinemaImg = cinema.image || (cinema.name.toLowerCase().includes('imax') ? 'cinema-imax.jpg' : (cinema.screens >= 4 ? 'cinema-multiplex.jpg' : 'cinema-heritage.jpg'));
@@ -2041,6 +2055,7 @@
     }
 
     function renderResult(res) {
+      lastRecommendedBundle = res;
       const container = document.getElementById('recommendation-result');
       const upsellBox = document.getElementById('upsell-box');
 
@@ -2080,7 +2095,7 @@
                 <span style="font-size:0.82rem;font-weight:600;">(Saved LKR ${(res.discount_amount || 0).toFixed(0)})</span>
               </div>
             </div>
-            <button class="btn-primary btn-green" onclick='openVoucherWithResult(${JSON.stringify(res).replace(/'/g, "&#39;")})'>
+            <button class="btn-primary btn-green" onclick="openVoucherWithResult()">
               🎟️ Get Digital Pass
             </button>
           </div>
@@ -2091,9 +2106,12 @@
 
 
     /* ── Voucher Modal ─────────────────────────────── */
-    function openVoucherWithResult(res) {
-      cart = res.items;
-      openVoucherModal(res);
+    let lastRecommendedBundle = null;
+
+    function openVoucherWithResult(res = null) {
+      const data = res || lastRecommendedBundle;
+      if (data && data.items) cart = [...data.items];
+      openVoucherModal(data);
     }
 
     let currentPaymentMethod = 'lankaqr';

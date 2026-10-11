@@ -944,13 +944,31 @@ class CinemaClient {
         savings_lkr: disc
       };
     } catch (err) {
-      const subtotal = items.reduce((s, i) => s + (i.price || 0), 0);
+      const subtotal = (items || []).reduce((s, i) => s + ((i.price || 0) * (i.quantity || 1)), 0);
       let rate = 0.10;
-      if (privilegeTier === 'Silver') rate = 0.15;
-      else if (privilegeTier === 'Gold') rate = 0.20;
-      else if (privilegeTier === 'Platinum') rate = 0.25;
+      if (privilegeTier === 'Student') rate = 0.15;
+      else if (privilegeTier === 'Silver') rate = 0.20;
+      else if (privilegeTier === 'Gold') rate = 0.25;
+      else if (privilegeTier === 'Platinum') rate = 0.35;
+
+      const code = (promoCode || '').toUpperCase().trim();
+      let appliedPromo = promoCode || `${privilegeTier} Privilege Club`;
+      if (code === 'CINE-COMBO30') {
+        rate = Math.max(rate, 0.30);
+        appliedPromo = 'CINE-COMBO30 (30% Combo Flash)';
+      } else if (code === 'CINE-CINEMA25') {
+        rate = Math.max(rate, 0.25);
+        appliedPromo = 'CINE-CINEMA25 (25% VIP Beverage)';
+      } else if (code === 'CINE-STUDENT') {
+        rate = Math.max(rate, 0.15);
+        appliedPromo = 'CINE-STUDENT (15% Student Discount)';
+      } else if (code === 'CINE-PLATINUM') {
+        rate = Math.max(rate, 0.35);
+        appliedPromo = 'CINE-PLATINUM (35% VIP Feast)';
+      }
 
       const discount = Math.round(subtotal * rate);
+      const finalTotal = Math.max(0, subtotal - discount);
       return {
         cinema_id: cinemaId,
         items,
@@ -960,9 +978,9 @@ class CinemaClient {
         discount_amount: discount,
         discount_amount_lkr: discount,
         savings_lkr: discount,
-        final_total: subtotal - discount,
-        final_total_lkr: subtotal - discount,
-        applied_promo: promoCode || `${privilegeTier} Privilege Club`,
+        final_total: finalTotal,
+        final_total_lkr: finalTotal,
+        applied_promo: appliedPromo,
         privilege_tier: privilegeTier
       };
     }
@@ -981,17 +999,33 @@ class CinemaClient {
         customer_name: customerName,
       });
     } catch (err) {
-      const subtotal = items.reduce((s, i) => s + (i.price || 0), 0);
-      const discount = Math.round(subtotal * 0.15);
-      const finalTotal = subtotal - discount;
+      const subtotal = (items || []).reduce((s, i) => s + ((i.price || 0) * (i.quantity || 1)), 0);
+      let rate = 0.10;
+      if (privilegeTier === 'Student') rate = 0.15;
+      else if (privilegeTier === 'Silver') rate = 0.20;
+      else if (privilegeTier === 'Gold') rate = 0.25;
+      else if (privilegeTier === 'Platinum') rate = 0.35;
+
+      const code = (promoCode || '').toUpperCase().trim();
+      if (code === 'CINE-COMBO30') rate = Math.max(rate, 0.30);
+      else if (code === 'CINE-CINEMA25') rate = Math.max(rate, 0.25);
+      else if (code === 'CINE-STUDENT') rate = Math.max(rate, 0.15);
+      else if (code === 'CINE-PLATINUM') rate = Math.max(rate, 0.35);
+
+      const discount = Math.round(subtotal * rate);
+      const finalTotal = Math.max(0, subtotal - discount);
       const serial = `CB-${cinemaId || 'PASS'}-${Math.floor(10000 + Math.random() * 90000)}-2026`;
 
       return {
         status: "confirmed",
         transaction_id: "TXN-" + Math.floor(100000 + Math.random() * 900000),
+        order_id: serial,
         voucher_code: serial,
         pickup_counter: "Concession Express Counter 1",
         estimated_ready: "5-8 minutes",
+        subtotal_lkr: subtotal,
+        discount_lkr: discount,
+        final_total_lkr: finalTotal,
         lanka_qr_payload: `00020101021226580009LK.CBSL.QR0112${Math.floor(100000000000 + Math.random() * 900000000000)}520458145303144540${finalTotal.toFixed(2)}5802LK5910CINEBITE6007COLOMBO6304ABCD`,
         message: "Order placed successfully! Present digital pass at cinema concession counter."
       };
@@ -1136,6 +1170,17 @@ class CinemaClient {
   }
 }
 
-// Export singleton instance for global browser scripts
-window.CinemaClient = CinemaClient;
-window.cinemaAPI = new CinemaClient();
+// Export singleton instance for global browser scripts and Node environments
+if (typeof window !== 'undefined') {
+  window.CinemaClient = CinemaClient;
+  window.cinemaAPI = new CinemaClient();
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    CinemaClient,
+    cinemaAPI: new CinemaClient(),
+    calculateHaversineDistance,
+    matchCinemaId,
+    SRI_LANKAN_CINEMAS
+  };
+}

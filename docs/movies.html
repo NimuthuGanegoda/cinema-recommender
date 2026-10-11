@@ -5,7 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Now Showing & Showtimes · CineBite Sri Lanka</title>
   <meta name="description" content="Discover movies currently playing across Sri Lankan cinemas. Real-time showtimes, IMAX 3D, Dolby Atmos, and 1-hour automated schedule updates.">
+  <meta name="theme-color" content="#06060b">
+  <meta property="og:title" content="Now Showing in Theaters · CineBite Sri Lanka">
+  <meta property="og:description" content="Real-time theatrical showtimes across Colombo, Kandy, Galle, and outstation screens with automated 1-hour schedule refresh.">
+  <meta property="og:image" content="app-icon.jpg">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Now Showing in Theaters · CineBite Sri Lanka">
+  <meta name="twitter:description" content="Real-time theatrical showtimes and cinema concession pairings across Sri Lanka.">
+  <meta name="twitter:image" content="app-icon.jpg">
   <link rel="icon" type="image/jpeg" href="app-icon.jpg">
+  <link rel="apple-touch-icon" href="app-icon.jpg">
+  <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="apple-design-system.css?v=2.2">
   <script src="cinema-client.js?v=2.4"></script>
 
@@ -414,6 +425,7 @@
         <span style="font-size:0.75rem; color:var(--cb-text-secondary);" id="nav-selected-theater">Colombo City Centre</span>
       </div>
       <a href="checkout.html" class="btn-primary" style="font-size:0.78rem; padding:0.4rem 0.85rem; text-decoration:none;">🛒 Cart (<span id="cart-count">0</span>)</a>
+      <a href="mobile.html" class="btn-secondary" style="font-size:0.78rem; padding:0.4rem 0.75rem; text-decoration:none;" title="Open Mobile PWA Web App">📱 App</a>
     </div>
   </nav>
 
@@ -477,7 +489,25 @@
 
   <!-- Site Footer -->
   <footer class="site-footer">
-    <p>CineBite — Universal Cinema Concession & Theatrical Showtime Engine · Built for Sri Lankan Moviegoers</p>
+    <div class="site-footer-inner">
+      <div style="display:flex; align-items:center; gap:0.6rem;">
+        <span style="font-size:1.4rem;">🍿</span>
+        <span style="font-weight:800; color:#fff; font-size:1.1rem;">CineBite Sri Lanka</span>
+      </div>
+      <div style="display:flex; gap:1.5rem; flex-wrap:wrap; justify-content:center;">
+        <a href="index.html">Home</a>
+        <a href="movies.html" style="color:#fff; font-weight:700;">Movies</a>
+        <a href="cinemas.html">Theaters</a>
+        <a href="menu.html">Concessions</a>
+        <a href="optimizer.html">AI Optimizer</a>
+        <a href="deals.html">Deals & VIP</a>
+        <a href="checkout.html">Checkout</a>
+        <a href="mobile.html">📱 Mobile App</a>
+      </div>
+      <div>
+        © 2026 CineBite Sri Lanka. All cinema concession trademarks belong to their respective circuits.
+      </div>
+    </div>
   </footer>
 
   <script>

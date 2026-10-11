@@ -1,12 +1,12 @@
 {
-  "name": "Scope Cinemas - Concession & Candy Bar Pass",
-  "short_name": "ScopeCinemas",
-  "description": "Scope Cinemas & Regional Outstation Concession Recommender, GPS Cinema Detection, and Candy Bar Savings Pass.",
+  "name": "CineBite Sri Lanka · Cinema Concession Pass",
+  "short_name": "CineBite",
+  "description": "Universal Sri Lanka Cinema Concession & Candy Bar Pass, Showtime Knapsack Bundle Optimizer, and LankaQR Fast-Lane Token.",
   "start_url": "mobile.html",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#07070a",
-  "theme_color": "#d4af37",
+  "background_color": "#06060b",
+  "theme_color": "#a855f7",
   "icons": [
     {
       "src": "app-icon.jpg",
