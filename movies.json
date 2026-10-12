@@ -3,8 +3,8 @@
   "sync_interval": "1h",
   "sync_interval_seconds": 3600,
   "source": "Scope Cinemas Sri Lanka & EAP Films Real-Time Telemetry Feed",
-  "last_synced_at": "2026-10-12T08:57:02.645Z",
-  "next_sync_at": "2026-10-12T09:57:02.645Z",
+  "last_synced_at": "2026-10-12T18:54:27.348Z",
+  "next_sync_at": "2026-10-12T19:54:27.348Z",
   "total_movies": 12,
   "total_cinemas_covered": 13,
   "movies": [
