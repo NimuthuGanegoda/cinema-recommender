@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"embed"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -11,9 +10,6 @@ import (
 	"cinema-recommender/pkg/recommender"
 	"cinema-recommender/pkg/scraper"
 )
-
-//go:embed ui/*
-var uiAssets embed.FS
 
 // Config contains server runtime configurations.
 type Config struct {
@@ -72,8 +68,13 @@ func NewServer(cfg Config, sc *scraper.RegionalScraper, recEngine *recommender.E
 
 // Start begins listening on the configured TCP address and launches the 1-hour background movie sync.
 func (s *Server) Start() error {
-	s.movieEngine.Start(context.Background())
+	s.StartBackgroundTasks()
 	return s.httpServer.ListenAndServe()
+}
+
+// StartBackgroundTasks refreshes example movie listings in either runtime.
+func (s *Server) StartBackgroundTasks() {
+	s.movieEngine.Start(context.Background())
 }
 
 // Shutdown gracefully shuts down the HTTP server and stops background sync engines.

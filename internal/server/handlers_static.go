@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"net/http"
 	"time"
 )
@@ -12,15 +13,7 @@ func (s *Server) handleRoot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	content, err := uiAssets.ReadFile("ui/index.html")
-	if err != nil {
-		http.Error(w, "Web UI asset not found", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write(content)
+	s.serveHTMLPage(w, "index.html")
 }
 
 func (s *Server) serveHTMLPage(w http.ResponseWriter, pageFile string) {
@@ -30,6 +23,7 @@ func (s *Server) serveHTMLPage(w http.ResponseWriter, pageFile string) {
 		return
 	}
 
+	content = bytes.Replace(content, []byte("</head>"), []byte(`<meta name="cinebite-runtime" content="server"></head>`), 1)
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(content)

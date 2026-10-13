@@ -3,6 +3,7 @@ package server
 import (
 	"io/fs"
 	"net/http"
+	"strings"
 )
 
 // registerRoutes sets up all RESTful endpoints and web UI routing.
@@ -15,6 +16,13 @@ func (s *Server) registerRoutes(mux *http.ServeMux) {
 			if r.URL.Path == "/" {
 				s.handleRoot(w, r)
 				return
+			}
+			if strings.HasSuffix(r.URL.Path, ".html") {
+				page := strings.TrimPrefix(r.URL.Path, "/")
+				if _, err := uiAssets.ReadFile("ui/" + page); err == nil {
+					s.serveHTMLPage(w, page)
+					return
+				}
 			}
 			fileServer.ServeHTTP(w, r)
 		})

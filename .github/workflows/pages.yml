@@ -1,4 +1,4 @@
-name: Deploy UI to GitHub Pages
+name: Build Go browser app and deploy to GitHub Pages
 
 on:
   push:
@@ -24,13 +24,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Test Go application
+        run: go test ./...
+
+      - name: Build browser Go engine
+        run: ./scripts/build-browser.sh
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload only the UI directory
+          # The Go engine is a browser asset; no server process is needed
           path: './internal/server/ui'
 
       - name: Deploy to GitHub Pages

@@ -26,10 +26,16 @@ function calculateHaversineDistance(lat1,lon1,lat2,lon2) {
 class CinemaClient {
  constructor(baseUrl=''){this.baseUrl=baseUrl;this.apiRequired=true;this.nextMovieSync=Date.now()+3600000;}
  async request(path,body){
-  const response=await fetch(this.baseUrl+path,{method:body===undefined?'GET':'POST',headers:body===undefined?{}:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body),cache:'no-store'});
-  const result=await response.json().catch(()=>null);
-  if(!response.ok)throw new Error(result?.error||'The local Go server could not complete this request.');
-  return result;
+  const method=body===undefined?'GET':'POST';
+  if(document.querySelector('meta[name="cinebite-runtime"]')?.content==='server'){
+    const response=await fetch(this.baseUrl+path,{method,headers:body===undefined?{}:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body),cache:'no-store'});
+    const result=await response.json().catch(()=>null);
+    if(!response.ok)throw new Error(result?.error||'Could not complete this request.');
+    return result;
+  }
+  const response=await window.CineBiteBrowser.request(method,path,body);
+  if(response.status<200||response.status>=300)throw new Error(response.body?.error||'Could not complete this request.');
+  return response.body;
  }
  async getCinemas({lat=0,lng=0,city=''}={}){const q=new URLSearchParams();if(city)q.set('city',city);if(lat||lng){q.set('lat',lat);q.set('lng',lng);}return this.request('/api/v1/cinemas'+(q.size?'?'+q:''));}
  async getCinema(id){return this.request('/api/v1/cinemas/'+encodeURIComponent(id));}

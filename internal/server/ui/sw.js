@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cinebite-v9-dark-mobile';
+const CACHE_NAME = 'cinebite-v10-browser-go';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -14,6 +14,10 @@ const STATIC_ASSETS = [
   './cinema-environment.js',
   './photo-credits.html',
   './cinema-client.js',
+  './cinema-browser.js',
+  './cinema-worker.js',
+  './wasm_exec.js',
+  './cinebite.wasm',
   './movies.json',
   './manifest.json',
   './app-icon.jpg',
@@ -61,6 +65,6 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
+    fetch(event.request).catch(() => caches.match(event.request, {ignoreSearch:true}))
   );
 });

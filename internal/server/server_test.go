@@ -474,3 +474,16 @@ func TestMultiPageWebEndpoints(t *testing.T) {
 		})
 	}
 }
+
+func TestNativePagesSelectServerRuntime(t *testing.T) {
+	srv := setupTestServer()
+	for _, path := range []string{"/", "/cinemas.html", "/movies.html", "/optimizer", "/food-plan.html"} {
+		t.Run(path, func(t *testing.T) {
+			response := httptest.NewRecorder()
+			srv.GetHandler().ServeHTTP(response, httptest.NewRequest(http.MethodGet, path, nil))
+			if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `<meta name="cinebite-runtime" content="server">`) {
+				t.Fatalf("page %s must select the native Go API", path)
+			}
+		})
+	}
+}

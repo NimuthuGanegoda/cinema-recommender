@@ -18,7 +18,7 @@
   <link rel="apple-touch-icon" href="app-icon.jpg">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="apple-design-system.css?v=2.2">
-  <script src="cinema-client.js?v=3.0"></script>
+  <script src="cinema-browser.js?v=1"></script><script src="cinema-client.js?v=4.0"></script>
 
   <style>
     body {
@@ -620,7 +620,7 @@
             <button class="btn-primary" style="flex:1; font-size:0.88rem; padding:0.75rem; cursor:pointer;" onclick="addBundleToCart(false)">
               🛒 Add snacks to food plan
             </button>
-            <button class="btn-secondary" style="font-size:0.88rem; padding:0.75rem 1.25rem; cursor:pointer; display:flex; align-items:center;" onclick="addBundleToCart(true)">
+            <button class="btn-secondary" style="font-size:0.88rem; padding:0.75rem 1.25rem; cursor:pointer; display:flex; align-items:center;" onclick="window.location.href='food-plan.html'">
               Review Food Plan →
             </button>
           </div>

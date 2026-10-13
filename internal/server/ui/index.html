@@ -19,7 +19,7 @@
   <link rel="apple-touch-icon" href="app-icon.jpg">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="apple-design-system.css?v=2.2">
-  <script src="cinema-client.js?v=3.0"></script>
+  <script src="cinema-browser.js?v=1"></script><script src="cinema-client.js?v=4.0"></script>
 
   <style>
     /* ================================================================
@@ -1267,7 +1267,7 @@
       try {
         cinemas = await client.getCinemas();
       } catch (err) {
-        if (client.apiRequired) { showNotification(err.message || "Please check the local Go server.", "warning"); return; }
+        if (client.apiRequired) { showNotification(err.message || "Please reload the cinema guide.", "warning"); return; }
         console.warn('API unavailable — fallback to catalog:', err);
       }
       if (!cinemas || cinemas.length === 0) {
@@ -1393,7 +1393,7 @@
         renderMovies();
         renderMovieMarquee(targetId);
       } catch (err) {
-        if (client.apiRequired) { showNotification(err.message || "Please check the local Go server.", "warning"); return; }
+        if (client.apiRequired) { showNotification(err.message || "Please reload the cinema guide.", "warning"); return; }
         console.error('Error loading movies:', err);
       }
     }
@@ -1541,7 +1541,7 @@
         await loadMovies(activeCinema ? activeCinema.id : '', true);
         showNotification('🎬 Movie schedules refreshed! 1-hour auto-sync countdown reset.', 'success');
       } catch (err) {
-        if (client.apiRequired) { showNotification(err.message || "Please check the local Go server.", "warning"); return; }
+        if (client.apiRequired) { showNotification(err.message || "Please reload the cinema guide.", "warning"); return; }
         showNotification('Movies updated to latest schedule.', 'info');
       } finally {
         btn.innerHTML = origText;
@@ -1603,7 +1603,7 @@
           };
         });
       } catch (err) {
-        if (client.apiRequired) { showNotification(err.message || "Please check the local Go server.", "warning"); return; }
+        if (client.apiRequired) { showNotification(err.message || "Please reload the cinema guide.", "warning"); return; }
         console.warn('Menu fallback to authentic catalog:', err);
       }
       if (!menu || menu.length === 0) {
@@ -1642,7 +1642,7 @@
         const ads = await client.getCinemaAds(cinemaId);
         renderDeals(ads);
       } catch (err) {
-        if (client.apiRequired) { showNotification(err.message || "Please check the local Go server.", "warning"); return; }
+        if (client.apiRequired) { showNotification(err.message || "Please reload the cinema guide.", "warning"); return; }
         renderDeals([
           { promo_code:"CINE-COMBO30", title:"Combo Flash Deal", subtitle:"Save 30% on any couple or family combo this weekend", discount_text:"30% OFF", is_flash_ad:true, badge_text:"FLASH DEAL" },
           { promo_code:"CINE-CINEMA25", title:"CinePass Silver+ Perk", subtitle:"Unlock 25% on all fountain beverages with Silver tier or above", discount_text:"25% OFF", badge_text:"VIP PERK" },
@@ -1817,7 +1817,7 @@
         });
         renderResult(result);
       } catch (err) {
-        if (client.apiRequired) { showNotification(err.message || "Please check the local Go server.", "warning"); return; }
+        if (client.apiRequired) { showNotification(err.message || "Please reload the cinema guide.", "warning"); return; }
         console.error('Optimize error:', err);
         showNotification('Calculated best bundle for your budget.', 'info');
       } finally {
@@ -2212,7 +2212,7 @@
             showNotification(`📍 Nearest Theater: ${nearest.name}${distStr}`, 'success');
           }
         } catch (err) {
-        if (client.apiRequired) { showNotification(err.message || "Please check the local Go server.", "warning"); return; }
+        if (client.apiRequired) { showNotification(err.message || "Please reload the cinema guide.", "warning"); return; }
           console.error('GPS calculation error:', err);
           showNotification('Location detected! Select your cinema.', 'info');
         } finally {
