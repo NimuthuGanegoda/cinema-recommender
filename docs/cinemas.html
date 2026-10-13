@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Theaters & Regional Locations · CineBite Sri Lanka</title>
-  <meta name="description" content="Explore verified Sri Lankan cinemas in Colombo, Kandy, Galle, Gampaha, Negombo, Kurunegala, Matara, and Jaffna with live food court telemetry.">
+  <title>Find a Cinema · CineBite Sri Lanka</title>
+  <meta name="description" content="Explore Sri Lankan cinemas in Colombo, Kandy, Galle, Gampaha, Negombo, Kurunegala, Matara, and Jaffna with food options.">
   <meta name="theme-color" content="#06060b">
   <meta property="og:title" content="Theaters & Cinema Directory · CineBite Sri Lanka">
-  <meta property="og:description" content="Explore verified Sri Lankan cinemas in Colombo, Kandy, Galle, Gampaha, Negombo, Kurunegala, Matara, and Jaffna.">
+  <meta property="og:description" content="Explore Sri Lankan cinemas in Colombo, Kandy, Galle, Gampaha, Negombo, Kurunegala, Matara, and Jaffna.">
   <meta property="og:image" content="app-icon.jpg">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Theaters & Cinema Directory · CineBite Sri Lanka">
-  <meta name="twitter:description" content="Explore verified Sri Lankan cinemas and verified snack counters.">
+  <meta name="twitter:description" content="Explore Sri Lankan cinemas and snack options.">
   <meta name="twitter:image" content="app-icon.jpg">
   <link rel="icon" type="image/jpeg" href="app-icon.jpg">
   <link rel="apple-touch-icon" href="app-icon.jpg">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="apple-design-system.css?v=2.2">
-  <script src="cinema-client.js?v=2.4"></script>
+  <script src="cinema-client.js?v=3.0"></script>
 
   <style>
     body {
@@ -303,33 +303,11 @@
       .cinemas-grid { grid-template-columns: 1fr; }
     }
   </style>
-</head>
+<link rel="stylesheet" href="cinema-polish.css?v=5"><script src="cinema-environment.js?v=2"></script></head>
 <body>
 
   <!-- Navigation Bar -->
-  <nav class="navbar">
-    <a href="index.html" class="nav-brand">
-      <div class="nav-logo">🍿</div>
-      <span class="nav-brand-text">CineBite</span>
-    </a>
-
-    <div class="nav-links">
-      <a href="index.html" class="nav-link">🏠 Home</a>
-      <a href="movies.html" class="nav-link">🎬 Movies</a>
-      <a href="cinemas.html" class="nav-link active">🏛️ Theaters</a>
-      <a href="menu.html" class="nav-link">🍿 Concessions</a>
-      <a href="optimizer.html" class="nav-link">✨ Optimizer</a>
-      <a href="deals.html" class="nav-link">⚡ Deals & VIP</a>
-    </div>
-
-    <div class="nav-right">
-      <button class="btn-secondary" onclick="detectGPSLocation()" id="btn-gps" style="font-size:0.75rem; padding:0.4rem 0.8rem; cursor:pointer;">
-        📍 Find Near Me
-      </button>
-      <a href="checkout.html" class="btn-primary" style="font-size:0.78rem; padding:0.4rem 0.85rem; text-decoration:none;">🛒 Cart (<span id="cart-count">0</span>)</a>
-      <a href="mobile.html" class="btn-secondary" style="font-size:0.78rem; padding:0.4rem 0.75rem; text-decoration:none;" title="Open Mobile PWA Web App">📱 App</a>
-    </div>
-  </nav>
+  <nav class="navbar" aria-label="Main navigation"><a href="index.html" class="nav-brand"><span class="nav-logo" aria-hidden="true">🍿</span><span class="nav-brand-text">CineBite</span></a><div class="nav-links"><a href="index.html" class="nav-link">Home</a><a href="movies.html" class="nav-link">Movies</a><a href="cinemas.html" class="nav-link active" aria-current="page">Cinemas</a><a href="menu.html" class="nav-link">Food menu</a><a href="optimizer.html" class="nav-link">Snack planner</a><a href="deals.html" class="nav-link">Food deals</a></div><div class="nav-right"><a href="food-plan.html" class="nav-plan">Food plan <span aria-label="Selected items">(<span id="cart-count">0</span>)</span></a></div><span id="nav-live-cinema" hidden></span><span id="nav-tier-badge" hidden></span></nav>
 
   <!-- Page Container -->
   <main class="page-container">
@@ -337,16 +315,16 @@
     <!-- Page Header -->
     <div class="page-header">
       <div>
-        <h1 class="page-title">Theaters & Regional Locations</h1>
+        <h1 class="page-title">Find a Cinema</h1>
         <p class="page-subtitle">
-          Explore all 13 authentic Sri Lankan cinema screens with authentic photography, verified in-front food courts, screen technologies, and direct directions.
+          Find cinemas across Sri Lanka. Compare locations, screen types, and nearby food options before you go.
         </p>
       </div>
 
       <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:var(--r-md); padding:0.85rem 1.2rem; display:flex; align-items:center; gap:0.75rem;">
         <span style="font-size:1.5rem;">🏛️</span>
         <div>
-          <div style="font-size:0.82rem; font-weight:700; color:#fff;" id="cinemas-total-stat">13 Theaters Verified</div>
+          <div style="font-size:0.82rem; font-weight:700; color:#fff;" id="cinemas-total-stat">13 Cinemas listed</div>
           <div style="font-size:0.74rem; color:var(--cb-text-muted);">Island-Wide Telemetry</div>
         </div>
       </div>
@@ -391,10 +369,10 @@
         <a href="movies.html">Movies</a>
         <a href="cinemas.html" style="color:#fff; font-weight:700;">Theaters</a>
         <a href="menu.html">Concessions</a>
-        <a href="optimizer.html">AI Optimizer</a>
-        <a href="deals.html">Deals & VIP</a>
-        <a href="checkout.html">Checkout</a>
-        <a href="mobile.html">📱 Mobile App</a>
+        <a href="optimizer.html">Snack Planner</a>
+        <a href="deals.html">Food Deals</a>
+        <a href="food-plan.html">Food Plan</a>
+        
       </div>
       <div>
         © 2026 CineBite Sri Lanka. All cinema concession trademarks belong to their respective circuits.
@@ -419,7 +397,7 @@
       } catch (e) {
         cinemas = SRI_LANKAN_CINEMAS || [];
       }
-      document.getElementById('cinemas-total-stat').textContent = `${cinemas.length} Theaters Verified`;
+      document.getElementById('cinemas-total-stat').textContent = `${cinemas.length} Cinemas listed`;
       renderCinemas();
     }
 
@@ -476,7 +454,7 @@
         return `
           <div class="theater-card" style="${isCurrent ? 'border-color:rgba(168,85,247,0.5);' : ''}">
             <div>
-              <div class="theater-visual" style="background-image:url('${cinemaImg}');">
+              <div class="theater-visual" style=""><img class="card-photo" src="${cinemaImg}" alt="" loading="lazy" decoding="async" width="640" height="400">
                 <div class="theater-visual-overlay"></div>
                 <div style="position:absolute; top:0.85rem; left:0.85rem; z-index:2;">
                   <span class="badge badge-purple" style="font-size:0.7rem; backdrop-filter:blur(8px);">${c.chain || 'Circuit'}</span>
@@ -500,7 +478,7 @@
 
                   <div class="foodcourt-box">
                     <div class="foodcourt-title">
-                      <span>🍔</span> Verified Food Court in Front
+                      <span>🍔</span> Nearby food court
                     </div>
                     <div class="foodcourt-desc">
                       <strong>${c.food_court_name || c.food_place_name || 'Concession Counter'}</strong>
@@ -579,5 +557,6 @@
     }
   </script>
 
+<div class="sample-note">Local preview · Cinema and movie listings are sample data; food prices and offers are estimates. Food photos are illustrative. <a href="photo-credits.html">Photo credits</a></div>
 </body>
 </html>

@@ -6,7 +6,6 @@
 
 ## 🏛️ Executive Summary
 
-The **Cinema Food & Beverage Recommendation Engine** is an intelligent, high-throughput microservice and interactive Progressive Web Application (PWA). It provides real-time pricing telemetry, heuristic knapsack bundle optimization, and authentic Sri Lankan digital payment processing for moviegoers across regional theater circuits in Sri Lanka (strictly targeting circuits outside Colombo metropolitan limits).
 
 ---
 
@@ -31,19 +30,14 @@ The **Cinema Food & Beverage Recommendation Engine** is an intelligent, high-thr
                ┌─────────────┘               │               └─────────────┐
                ▼                             ▼                             ▼
      ┌───────────────────┐         ┌───────────────────┐         ┌───────────────────┐
-     │  Cinema Handlers  │         │  Recommender Mux  │         │ Checkout Handlers │
      │ (Geo & Registry)  │         │(Cart & Heuristic) │         │ (Sri Lankan Pay)  │
      └─────────┬─────────┘         └─────────┬─────────┘         └─────────┬─────────┘
                │                             │                             │
                ▼                             ▼                             ▼
      ┌───────────────────┐         ┌───────────────────┐         ┌───────────────────┐
-     │   `pkg/scraper`   │         │ `pkg/recommender` │         │   `pkg/payment`   │
      │                   │         │                   │         │                   │
-     │ ├── scraper.go    │         │ ├── recommender.go│         │ ├── payment.go    │
      │ ├── registry.go   │         │ ├── optimizer.go  │         │ ├── methods.go    │
-     │ ├── geo.go        │         │ ├── cart.go       │         │ ├── lankaqr.go    │
      │ ├── pricing.go    │         │ ├── upsell.go     │         │ ├── bnpl.go       │
-     │ ├── feed_parser.go│         │ └── promotions.go │         │ └── checkout.go   │
      │ └── ads.go        │         └───────────────────┘         └───────────────────┘
      └───────────────────┘                   │
                                              ▼
@@ -54,7 +48,6 @@ The **Cinema Food & Beverage Recommendation Engine** is an intelligent, high-thr
                                    │ ├── concession.go │
                                    │ ├── promotion.go  │
                                    │ ├── recommend.go  │
-                                   │ ├── payment.go    │
                                    │ ├── ad.go         │
                                    │ └── errors.go     │
                                    └───────────────────┘
@@ -73,7 +66,6 @@ Every Go source file in this repository strictly adheres to the **Single Respons
 | [`concession.go`](file:///e:/Github/cinema-recommender/internal/models/concession.go) | Concession food/beverage catalog items, categories, price trends, and discount breakdowns. |
 | [`promotion.go`](file:///e:/Github/cinema-recommender/internal/models/promotion.go) | Scope Privilege Club loyalty tiers, promotion rules, and savings calculations. |
 | [`recommendation.go`](file:///e:/Github/cinema-recommender/internal/models/recommendation.go) | Recommendation request/result DTOs and cart evaluation payloads. |
-| [`payment.go`](file:///e:/Github/cinema-recommender/internal/models/payment.go) | Authentic Sri Lankan payment methods, gateway schemas, and checkout transaction results. |
 | [`ad.go`](file:///e:/Github/cinema-recommender/internal/models/ad.go) | Cinema lobby screen promotional advertisements and combo deal models. |
 | [`errors.go`](file:///e:/Github/cinema-recommender/internal/models/errors.go) | Sentinel domain errors (`ErrColomboExcluded`, `ErrCinemaNotFound`, `ErrEmptyCart`, etc.). |
 | [`models.go`](file:///e:/Github/cinema-recommender/internal/models/models.go) | Package documentation and architectural index. |
@@ -97,14 +89,8 @@ Every Go source file in this repository strictly adheres to the **Single Respons
 | [`upsell.go`](file:///e:/Github/cinema-recommender/pkg/recommender/upsell.go) | Threshold-gap intelligence advising users how to reach the next discount milestone. |
 | [`promotions.go`](file:///e:/Github/cinema-recommender/pkg/recommender/promotions.go) | Scope Privilege Club campaign specifications (`SCOPE-PLATINUM`, `SCOPE-COMBO30`, etc.). |
 
-### 4. `pkg/payment` (Authentic Sri Lankan Payment Gateway)
 | File | Responsibility |
 | :--- | :--- |
-| [`payment.go`](file:///e:/Github/cinema-recommender/pkg/payment/payment.go) | Payment service coordinator and method catalog retrieval. |
-| [`methods.go`](file:///e:/Github/cinema-recommender/pkg/payment/methods.go) | Sri Lankan payment channels specifications (LankaQR, FriMi, Genie, eZ Cash, mCash, Koko, Mintpay). |
-| [`lankaqr.go`](file:///e:/Github/cinema-recommender/pkg/payment/lankaqr.go) | Central Bank of Sri Lanka (CBSL) EMVCo standard dynamic LankaQR payload generator. |
-| [`bnpl.go`](file:///e:/Github/cinema-recommender/pkg/payment/bnpl.go) | Buy Now Pay Later (Koko & Mintpay) 3-month interest-free split payment calculator. |
-| [`checkout.go`](file:///e:/Github/cinema-recommender/pkg/payment/checkout.go) | Transaction orchestration and in-person candy bar counter voucher issuance. |
 
 ### 5. `internal/server` (HTTP REST Delivery & Middleware)
 | File | Responsibility |
@@ -115,7 +101,6 @@ Every Go source file in this repository strictly adheres to the **Single Respons
 | [`handlers_cinema.go`](file:///e:/Github/cinema-recommender/internal/server/handlers_cinema.go) | Cinema listing and geolocation lookup endpoints. |
 | [`handlers_concession.go`](file:///e:/Github/cinema-recommender/internal/server/handlers_concession.go) | Concessions, live dynamic rate feeds, and lobby screen ads endpoints. |
 | [`handlers_recommend.go`](file:///e:/Github/cinema-recommender/internal/server/handlers_recommend.go) | AI knapsack recommendation and cart evaluation endpoints. |
-| [`handlers_checkout.go`](file:///e:/Github/cinema-recommender/internal/server/handlers_checkout.go) | Sri Lankan gateway payment methods and checkout endpoints. |
 | [`handlers_static.go`](file:///e:/Github/cinema-recommender/internal/server/handlers_static.go) | Web UI, Mobile PWA, manifest, service worker, and health check endpoints. |
 
 ---
@@ -138,11 +123,8 @@ Distance between coordinates $(\phi_1, \lambda_1)$ and $(\phi_2, \lambda_2)$ is 
 $$d = 2R \cdot \arcsin\left(\sqrt{\sin^2\left(\frac{\Delta \phi}{2}\right) + \cos(\phi_1)\cos(\phi_2)\sin^2\left(\frac{\Delta \lambda}{2}\right)}\right)$$
 where $R = 6371.0\text{ km}$.
 
-### 3. CBSL LankaQR Dynamic EMV Specification
-Dynamic QR codes generated by [`lankaqr.go`](file:///e:/Github/cinema-recommender/pkg/payment/lankaqr.go) adhere to EMVCo Tag-Length-Value (TLV) standards mandated by the Central Bank of Sri Lanka:
 - `Tag 00`: Format Indicator (`01`)
 - `Tag 01`: Point of Initiation (`12` = Dynamic QR)
-- `Tag 26`: National Merchant Account ID (`com.lankaqr`)
 - `Tag 52`: Merchant Category Code (`7832` = Motion Picture Theaters)
 - `Tag 53`: Transaction Currency (`144` = Sri Lankan Rupee LKR)
 - `Tag 54`: Transaction Amount

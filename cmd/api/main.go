@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -102,10 +103,10 @@ func runCLIRecommendation(
 
 	// Run optimization
 	req := models.RecommendationRequest{
-		CinemaID:    targetCinema.ID,
-		City:        targetCinema.City,
-		BudgetLKR:   budget,
-		PartySize:   partySize,
+		CinemaID:      targetCinema.ID,
+		City:          targetCinema.City,
+		BudgetLKR:     budget,
+		PartySize:     partySize,
 		PrivilegeTier: models.PrivilegeTier(tierName),
 		RedopayTier:   models.RedopayTier(tierName),
 		PromoCode:     promoCode,
@@ -127,7 +128,7 @@ func runCLIRecommendation(
 	fmt.Println("--------------------------------------------------------------------------------")
 	fmt.Printf("   Original Menu Subtotal:        LKR %8.2f\n", result.OriginalTotal)
 	fmt.Printf("   Scope Privilege Pass Savings: -LKR %8.2f (%s)\n", result.DiscountAmount, result.AppliedPromo)
-	fmt.Printf("   👉 Net Counter Payable (Cash/LankaQR): LKR %8.2f\n", result.FinalTotal)
+	fmt.Printf("   👉 Estimated Food Cost: LKR %8.2f\n", result.FinalTotal)
 	fmt.Println("--------------------------------------------------------------------------------")
 	fmt.Printf("   💡 %s\n", result.Message)
 	if result.NextTierUpsell != "" {
@@ -142,14 +143,14 @@ func runCLIRecommendation(
 
 func displayCinemas(sc *scraper.RegionalScraper) {
 	cinemas := sc.GetRegisteredCinemas()
-	fmt.Printf("\n🏛️  Registered Out-of-Colombo Regional Theaters (%d total):\n", len(cinemas))
+	fmt.Printf("\n🏛️  Registered Sri Lankan Cinemas (%d total):\n", len(cinemas))
 	fmt.Printf("%-10s | %-32s | %-14s | %-22s\n", "ID", "Cinema Name", "City", "Province")
 	fmt.Println("--------------------------------------------------------------------------------")
 	for _, c := range cinemas {
 		fmt.Printf("%-10s | %-32s | %-14s | %-22s\n", c.ID, c.Name, c.City, c.Province)
 	}
 	fmt.Println("--------------------------------------------------------------------------------")
-	fmt.Println("ℹ️  Colombo metropolitan theaters are deliberately excluded as per system scope.")
+	fmt.Println("ℹ️  Cinema and food catalog data are local examples for the assignment.")
 }
 
 func displayPromotions(recEngine *recommender.Engine) {
@@ -177,16 +178,20 @@ func runHTTPServer(port string, sc *scraper.RegionalScraper, recEngine *recommen
 	stopChan := make(chan os.Signal, 1)
 	signal.Notify(stopChan, os.Interrupt, syscall.SIGTERM)
 
+	baseURL := "http://" + port
+	if strings.HasPrefix(port, ":") {
+		baseURL = "http://localhost" + port
+	}
 	go func() {
-		fmt.Printf("\n🌐 HTTP REST API & Web UI running at http://localhost%s\n", port)
+		fmt.Printf("\n🌐 Go application running at %s\n", baseURL)
 		fmt.Println("   Endpoints:")
-		fmt.Println("   - Dashboard UI:       GET  http://localhost" + port + "/")
-		fmt.Println("   - Health Check:       GET  http://localhost" + port + "/api/v1/health")
-		fmt.Println("   - List Cinemas:       GET  http://localhost" + port + "/api/v1/cinemas")
-		fmt.Println("   - Scrape Concessions: GET  http://localhost" + port + "/api/v1/cinemas/{id}/concessions")
-		fmt.Println("   - Privilege Promos:   GET  http://localhost" + port + "/api/v1/promotions/privilege")
-		fmt.Println("   - AI Recommendation:  POST http://localhost" + port + "/api/v1/recommend")
-		fmt.Println("   - Cart Evaluation:    POST http://localhost" + port + "/api/v1/cart/evaluate")
+		fmt.Println("   - Dashboard UI:       GET  " + baseURL + "/")
+		fmt.Println("   - Health Check:       GET  " + baseURL + "/api/v1/health")
+		fmt.Println("   - List Cinemas:       GET  " + baseURL + "/api/v1/cinemas")
+		fmt.Println("   - Scrape Concessions: GET  " + baseURL + "/api/v1/cinemas/{id}/concessions")
+		fmt.Println("   - Privilege Promos:   GET  " + baseURL + "/api/v1/promotions/privilege")
+		fmt.Println("   - Snack Recommendation:  POST " + baseURL + "/api/v1/recommend")
+		fmt.Println("   - Cart Evaluation:    POST " + baseURL + "/api/v1/cart/evaluate")
 		fmt.Println("\n(Press Ctrl+C to gracefully shutdown)")
 
 		if err := srv.Start(); err != nil && err != http.ErrServerClosed {

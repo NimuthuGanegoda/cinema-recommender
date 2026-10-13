@@ -25,7 +25,7 @@ func (s *Server) registerRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /menu", s.handleMenuPage)
 	mux.HandleFunc("GET /optimizer", s.handleOptimizerPage)
 	mux.HandleFunc("GET /deals", s.handleDealsPage)
-	mux.HandleFunc("GET /checkout", s.handleCheckoutPage)
+	mux.HandleFunc("GET /food-plan", s.handleFoodPlanPage)
 	mux.HandleFunc("GET /mobile", s.handleMobile)
 	mux.HandleFunc("GET /mobile.html", s.handleMobile)
 	mux.HandleFunc("GET /manifest.json", s.handleManifest)
@@ -49,15 +49,13 @@ func (s *Server) registerRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/v1/movies/status", s.handleMovieSyncStatus)
 	mux.HandleFunc("POST /api/v1/movies/sync", s.handleTriggerMovieSync)
 
-	// Scope Privilege Concession Promotions & Authentic Sri Lankan Payment Gateways
+	// Scope Privilege Concession Promotions
 	mux.HandleFunc("GET /api/v1/promotions", s.handleListPromotions)
 	mux.HandleFunc("GET /api/v1/promotions/privilege", s.handleListPromotions)
 	mux.HandleFunc("GET /api/v1/promotions/scope", s.handleListPromotions)
 	mux.HandleFunc("GET /api/v1/promotions/redopay", s.handleListPromotions)
-	mux.HandleFunc("GET /api/v1/payment-methods", s.handleListPaymentMethods)
 
-	// Optimization, Evaluation & Checkout
+	// Food Optimization and Basket Evaluation
 	mux.HandleFunc("POST /api/v1/recommend", s.handleRecommend)
 	mux.HandleFunc("POST /api/v1/cart/evaluate", s.handleEvaluateCart)
-	mux.HandleFunc("POST /api/v1/checkout", s.handleCheckout)
 }

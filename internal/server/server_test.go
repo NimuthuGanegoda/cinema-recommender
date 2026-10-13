@@ -57,50 +57,23 @@ func TestRootEndpointServesUI(t *testing.T) {
 	}
 }
 
-func TestMobileBrowserDetectionAndRedirect(t *testing.T) {
+func TestResponsiveRootForAllDevices(t *testing.T) {
 	srv := setupTestServer()
-
-	// 1. Mobile browser visiting / should redirect (302) to /mobile
-	reqMobile := httptest.NewRequest(http.MethodGet, "/", nil)
-	reqMobile.Header.Set("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1")
-	wMobile := httptest.NewRecorder()
-	srv.GetHandler().ServeHTTP(wMobile, reqMobile)
-
-	if wMobile.Code != http.StatusFound {
-		t.Fatalf("expected mobile user-agent to redirect with status 302, got %d", wMobile.Code)
-	}
-	if loc := wMobile.Header().Get("Location"); loc != "/mobile" {
-		t.Fatalf("expected redirect to /mobile, got %s", loc)
-	}
-
-	// 2. Android mobile browser visiting / should also redirect
-	reqAndroid := httptest.NewRequest(http.MethodGet, "/", nil)
-	reqAndroid.Header.Set("User-Agent", "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36")
-	wAndroid := httptest.NewRecorder()
-	srv.GetHandler().ServeHTTP(wAndroid, reqAndroid)
-
-	if wAndroid.Code != http.StatusFound || wAndroid.Header().Get("Location") != "/mobile" {
-		t.Fatalf("expected Android mobile redirect to /mobile, got status %d, loc: %s", wAndroid.Code, wAndroid.Header().Get("Location"))
-	}
-
-	// 3. Mobile browser with ?view=desktop should NOT redirect, serving desktop index.html (200)
-	reqOverride := httptest.NewRequest(http.MethodGet, "/?view=desktop", nil)
-	reqOverride.Header.Set("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1")
-	wOverride := httptest.NewRecorder()
-	srv.GetHandler().ServeHTTP(wOverride, reqOverride)
-
-	if wOverride.Code != http.StatusOK {
-		t.Fatalf("expected ?view=desktop to serve status 200, got %d", wOverride.Code)
-	}
-
-	// 4. Desktop browser should serve index.html directly (200)
-	reqDesktop := httptest.NewRequest(http.MethodGet, "/", nil)
-	reqDesktop.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15")
-	wDesktop := httptest.NewRecorder()
-	srv.GetHandler().ServeHTTP(wDesktop, reqDesktop)
-
-	if wDesktop.Code != http.StatusOK {
-		t.Fatalf("expected desktop browser to receive status 200, got %d", wDesktop.Code)
+	for _, ua := range []string{
+		"Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Mobile Safari/604.1",
+		"Mozilla/5.0 (Linux; Android 14; Pixel 8) Chrome/120.0.0.0 Mobile Safari/537.36",
+		"Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) Safari/605.1.15",
+	} {
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		req.Header.Set("User-Agent", ua)
+		w := httptest.NewRecorder()
+		srv.GetHandler().ServeHTTP(w, req)
+		if w.Code != http.StatusOK {
+			t.Fatalf("expected shared responsive page, got %d", w.Code)
+		}
+		if !strings.Contains(w.Body.String(), "cinema-environment.js") {
+			t.Fatal("missing automatic appearance script")
+		}
 	}
 }
 
@@ -184,8 +157,8 @@ func TestListCinemas(t *testing.T) {
 	if err := json.Unmarshal(wCol.Body.Bytes(), &colCinemas); err != nil {
 		t.Fatalf("failed to decode colombo cinemas: %v", err)
 	}
-	if len(colCinemas) != 3 {
-		t.Fatalf("expected 3 Colombo Scope Cinemas, got %d", len(colCinemas))
+	if len(colCinemas) != 6 {
+		t.Fatalf("expected 6 Colombo cinemas, got %d", len(colCinemas))
 	}
 
 	// Rejection for unknown / unlisted city -> 404 Not Found
@@ -376,59 +349,19 @@ func TestCORSOptionsPreflight(t *testing.T) {
 	}
 }
 
-func TestListPaymentMethodsEndpoint(t *testing.T) {
+func TestPaymentFeaturesUnavailable(t *testing.T) {
 	srv := setupTestServer()
-
-	req := httptest.NewRequest(http.MethodGet, "/api/v1/payment-methods", nil)
-	w := httptest.NewRecorder()
-	srv.GetHandler().ServeHTTP(w, req)
-
-	if w.Code != http.StatusOK {
-		t.Fatalf("expected status 200, got %d", w.Code)
-	}
-
-	var methods []models.PaymentMethodInfo
-	if err := json.Unmarshal(w.Body.Bytes(), &methods); err != nil {
-		t.Fatalf("failed to decode payment methods: %v", err)
-	}
-	if len(methods) < 7 {
-		t.Fatalf("expected at least 7 payment methods, got %d", len(methods))
-	}
-}
-
-func TestCheckoutEndpoint(t *testing.T) {
-	srv := setupTestServer()
-
-	// 1. Checkout via LankaQR
-	qrReq := models.CheckoutRequest{
-		CinemaID:      "KND-KCC",
-		PaymentMethod: models.PaymentMethodLankaQR,
-		Items: []models.CartItemInput{
-			{ItemID: "KND-01", Quantity: 1}, // Jumbo Popcorn 1200
-		},
-	}
-	body, _ := json.Marshal(qrReq)
-	req := httptest.NewRequest(http.MethodPost, "/api/v1/checkout", bytes.NewReader(body))
-	w := httptest.NewRecorder()
-
-	srv.GetHandler().ServeHTTP(w, req)
-	if w.Code != http.StatusOK {
-		t.Fatalf("expected status 200 on checkout, got %d (body: %s)", w.Code, w.Body.String())
-	}
-
-	var res models.CheckoutResult
-	if err := json.Unmarshal(w.Body.Bytes(), &res); err != nil {
-		t.Fatalf("failed to parse checkout result: %v", err)
-	}
-
-	if res.PaymentMethod != models.PaymentMethodLankaQR {
-		t.Fatalf("expected LankaQR payment method, got %s", res.PaymentMethod)
-	}
-	if res.Status != "PENDING_LANKAQR_SCAN" {
-		t.Fatalf("expected PENDING_LANKAQR_SCAN status, got %s", res.Status)
-	}
-	if res.LankaQREMV == "" {
-		t.Fatal("expected LankaQR EMV payload to be populated")
+	for _, endpoint := range []struct{ method, path string }{
+		{http.MethodGet, "/api/v1/payment-methods"},
+		{http.MethodPost, "/api/v1/checkout"},
+		{http.MethodGet, "/checkout"},
+		{http.MethodGet, "/checkout.html"},
+	} {
+		w := httptest.NewRecorder()
+		srv.GetHandler().ServeHTTP(w, httptest.NewRequest(endpoint.method, endpoint.path, nil))
+		if w.Code == http.StatusOK {
+			t.Fatalf("removed feature still available: %s", endpoint.path)
+		}
 	}
 }
 
@@ -513,12 +446,12 @@ func TestMultiPageWebEndpoints(t *testing.T) {
 		expectedSnippet string
 	}{
 		{"/movies", "Now Showing"},
-		{"/cinemas", "Theaters & Regional Locations"},
-		{"/theaters", "Theaters & Regional Locations"},
-		{"/menu", "Live Concession Menu"},
-		{"/optimizer", "AI Concession Optimizer"},
-		{"/deals", "Active Deals & CinePass VIP"},
-		{"/checkout", "Concession Checkout"},
+		{"/cinemas", "Find a Cinema"},
+		{"/theaters", "Find a Cinema"},
+		{"/menu", "Cinema Food Menu"},
+		{"/optimizer", "Snack Planner"},
+		{"/deals", "Food Deals"},
+		{"/food-plan", "Your food plan"},
 	}
 
 	for _, ep := range endpoints {
@@ -541,4 +474,3 @@ func TestMultiPageWebEndpoints(t *testing.T) {
 		})
 	}
 }
-

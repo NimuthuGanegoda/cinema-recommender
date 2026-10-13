@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cinebite-v4';
+const CACHE_NAME = 'cinebite-v9-dark-mobile';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -7,9 +7,12 @@ const STATIC_ASSETS = [
   './menu.html',
   './optimizer.html',
   './deals.html',
-  './checkout.html',
+  './food-plan.html',
   './mobile.html',
   './apple-design-system.css',
+  './cinema-polish.css',
+  './cinema-environment.js',
+  './photo-credits.html',
   './cinema-client.js',
   './movies.json',
   './manifest.json',
@@ -19,7 +22,20 @@ const STATIC_ASSETS = [
   './combo.jpg',
   './hotdog.jpg',
   './nachos.jpg',
-  './rolls.jpg'
+  './rolls.jpg',
+  './food-caramel-popcorn.jpg'
+,  './food-butter-popcorn.jpg'
+,  './food-chocolate-popcorn.jpg'
+,  './food-cheese-sticks.jpg'
+,  './food-chicken-strips.jpg'
+,  './food-fries.jpg'
+,  './food-samosas.jpg'
+,  './food-iced-coffee.jpg'
+,  './food-iced-tea.jpg'
+,  './food-cola.jpg'
+,  './food-milo.jpg'
+,  './food-lemonade.jpg'
+
 ];
 
 self.addEventListener('install', (event) => {

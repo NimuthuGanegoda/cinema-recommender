@@ -48,11 +48,11 @@ func TestColomboScopeCinemasRegistry(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected to find Colombo cinemas, got: %v", err)
 	}
-	if len(colomboCinemas) != 3 {
-		t.Fatalf("expected 3 Colombo Scope Cinemas, got %d", len(colomboCinemas))
+	if len(colomboCinemas) != 6 {
+		t.Fatalf("expected 6 Colombo cinemas, got %d", len(colomboCinemas))
 	}
 
-	expectedIDs := map[string]bool{"CMB-CCC": true, "CMB-HCM": true, "CMB-LBT": true}
+	expectedIDs := map[string]bool{"CMB-CCC": true, "CMB-HCM": true, "CMB-LBT": true, "CMB-PVR": true, "CMB-MJC": true, "CMB-SVY": true}
 	for _, c := range colomboCinemas {
 		if !expectedIDs[c.ID] {
 			t.Errorf("unexpected cinema ID: %s", c.ID)
@@ -63,8 +63,8 @@ func TestColomboScopeCinemasRegistry(t *testing.T) {
 		if !c.HasInHouseFood {
 			t.Errorf("cinema %s expected to have in-house food", c.ID)
 		}
-		if c.Chain != "Scope Cinemas" {
-			t.Errorf("expected chain Scope Cinemas, got %s", c.Chain)
+		if c.Chain == "" {
+			t.Errorf("expected a cinema chain, got %s", c.Chain)
 		}
 	}
 

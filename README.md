@@ -1,6 +1,6 @@
 # CineBite 🍿 — Universal Sri Lanka Cinema Concession & Snack Recommender
 
-An intelligent, production-ready cinema concession recommendation service and Apple HIG-crafted interactive dashboard engineered in Go to scrape, aggregate, and recommend optimal candy bar deals across all Sri Lankan cinema theaters.
+An intelligent, prototype cinema concession recommendation service and Apple HIG-crafted interactive dashboard engineered in Go to scrape, aggregate, and recommend optimal candy bar deals across all Sri Lankan cinema theaters.
 
 ---
 
@@ -10,7 +10,7 @@ An intelligent, production-ready cinema concession recommendation service and Ap
 
 ### Key Design & Universal Directives
 - **Universal Cinema Coverage**: Designed for ANY theater circuit across Sri Lanka, with automated GPS nearby theater detection and in-person snack guide.
-- **Apple Human Interface Guidelines (HIG)**: Crafted with OLED true black canvas, Cupertino system grays (`#1c1c1e`), Apple System Blue (`#0071e3`), Apple Mint Green (`#30d158`), SF Pro typography, Dynamic Island live indicator, and Apple Wallet pass voucher card.
+- **Apple Human Interface Guidelines (HIG)**: Crafted with OLED true black canvas, Cupertino system grays (`#1c1c1e`), Apple System Blue (`#0071e3`), Apple Mint Green (`#30d158`), SF Pro typography, Dynamic Island live indicator, and local food planning summary.
 - **CinePass VIP Promotion Engine**: Evaluates discount tiers (Standard, Student, Silver, Gold, Platinum), combo rebates (`CINE-COMBO30`, `CINE-CINEMA25`, `CINE-PLATINUM`), and threshold upsell advice.
 
 ---
@@ -36,7 +36,6 @@ cinema-recommender/
 │   │   ├── concession.go           # Concession catalog items, categories, price trends & discounts
 │   │   ├── promotion.go            # Scope Privilege Club loyalty tiers, discount types & savings
 │   │   ├── recommendation.go       # Knapsack request/response DTOs & basket evaluation schemas
-│   │   ├── payment.go              # Sri Lankan payment channels, method metadata & checkout DTOs
 │   │   ├── ad.go                   # Cinema promotional lobby screen advertisements
 │   │   ├── errors.go               # Domain sentinel errors (ErrColomboExcluded, etc.)
 │   │   └── models.go               # Package overview and architectural documentation
@@ -47,9 +46,7 @@ cinema-recommender/
 │       ├── handlers_cinema.go      # Regional cinema listing & geolocation lookup handlers
 │       ├── handlers_concession.go  # Concessions, dynamic live rate ticker & lobby ads handlers
 │       ├── handlers_recommend.go   # AI knapsack recommendation & cart evaluation handlers
-│       ├── handlers_checkout.go    # Sri Lankan payment gateway listing & checkout handlers
 │       ├── handlers_static.go      # Desktop Web UI, Mobile PWA, manifest, sw & health handlers
-│       ├── server_test.go          # End-to-end HTTP endpoint, checkout & policy tests
 │       └── ui/
 │           ├── index.html          # Embedded dark-mode interactive web portal & mobile simulator
 │           ├── mobile.html         # Dedicated touch-optimized mobile web app shell (PWA)
@@ -58,13 +55,6 @@ cinema-recommender/
 │           ├── manifest.json       # Web App Manifest for mobile installation
 │           └── sw.js               # Service Worker for offline PWA caching
 ├── pkg/
-│   ├── payment/
-│   │   ├── payment.go              # Payment service struct, coordinator & method listing
-│   │   ├── methods.go              # Sri Lankan payment channels catalog (LankaQR, FriMi, etc.)
-│   │   ├── lankaqr.go              # Central Bank of Sri Lanka (CBSL) dynamic EMVCo QR generator
-│   │   ├── bnpl.go                 # Koko & Mintpay 3-month interest-free split payment engine
-│   │   ├── checkout.go             # Transaction processing & counter pickup voucher issuance
-│   │   └── payment_test.go         # CBSL EMV standard, USSD push & BNPL installment tests
 │   ├── recommender/
 │   │   ├── recommender.go          # Recommendation engine coordinator & promotion matcher
 │   │   ├── optimizer.go            # Bounded knapsack heuristic algorithm for food & beverage
@@ -94,19 +84,9 @@ For in-depth architectural blueprints and developer documentation:
 
 ---
 
-## 💳 Sri Lankan Payment Channels Supported
 
-Both the Desktop Web Portal and Mobile App Shell support authentic Sri Lankan payment channels (strictly adhering to genuine Sri Lankan financial systems):
 
-1. **LankaQR (CBSL National Standard)**: Generates dynamic EMV-compliant LankaQR payloads compatible with **Commercial Bank COMBANK Q+**, **Sampath WePay**, **Nations Trust FriMi**, **HNB SOLO**, **BOC SmartPay**, and **Seylan Pay**, including a 5% digital incentive.
-2. **FriMi (Nations Trust Bank)**: Leading digital banking lifestyle app with instant 10% concession cashback.
-3. **Genie (Dialog Finance)**: Digital wallet rebate with 8% instant savings.
-4. **eZ Cash (Dialog Axiata)**: Direct mobile wallet charging via instant USSD PIN push notification to Dialog, Hutch, and Airtel numbers.
-5. **mCash (SLT-Mobitel)**: Direct carrier billing and mobile wallet authorization for Mobitel subscribers.
-6. **Koko (Buy Now, Pay Later)**: Splits cinema concession orders over LKR 1,500 into 3 interest-free monthly installments.
-7. **Mintpay (Buy Now, Pay Later)**: Alternative Sri Lankan split-payment installment option.
 8. **Sri Lankan Bank Cards**: Visa / MasterCard / LankaPay issued by local banks (Commercial Bank, Sampath Bank, HNB, BOC, People's Bank).
-9. **Counter Cash**: Physical cash payment in LKR at the theater concession stand upon collection.
 
 *(Plus **Scope Privilege Club Concession Pass** unlocking up to 35% automated concession tier discounts and combos)*
 
@@ -115,7 +95,7 @@ Both the Desktop Web Portal and Mobile App Shell support authentic Sri Lankan pa
 ## 🚀 Getting Started
 
 ### Prerequisites
-- **Go**: Version 1.22 or higher (automatically verified and supported)
+- **Go**: Version 1.24 or higher (automatically verified and supported)
 
 ### Building the Application
 
@@ -153,8 +133,7 @@ Start the server on port `:8080` (or any custom port with `-port`):
 ./bin/cinema-recommender.exe -server -port :8080
 ```
 Then explore both application experiences:
-- 🖥️ **Desktop Web Application**: Visit **[http://localhost:8080](http://localhost:8080)** to access the full cinema concessions planner, visual deal optimizer, live concession menu browser, embedded smartphone simulator, and Sri Lankan checkout drawer.
-- 📱 **Mobile Application**: Visit **[http://localhost:8080/mobile](http://localhost:8080/mobile)** for the dedicated touch-optimized Mobile App shell with bottom navigation bar (Explore, Optimizer, VIP Pass, Voucher Pass).
+- 📱 **Mobile Application**: Visit **[http://localhost:8080/mobile](http://localhost:8080/mobile)** for the dedicated touch-optimized Mobile App shell with bottom navigation bar (Explore, Optimizer, VIP Pass, Food Plan).
 - 📲 **Installable PWA**: Open `http://localhost:8080/mobile` on any mobile browser (Safari iOS / Chrome Android) and tap **"Add to Home Screen"** to install it as an app on your phone!
 - 🧪 **Live Mobile Simulator**: From the desktop Web UI, click the **"📱 Mobile App Simulator"** button in the top navigation bar to test the live mobile app inside a virtual smartphone mockup directly on your screen!
 
@@ -173,10 +152,8 @@ Then explore both application experiences:
 | `GET` | `/api/v1/cinemas/{id}` | Retrieve specific theater details with GPS coords, maps, & in-house/nearby food locations |
 | `GET` | `/api/v1/cinemas/{id}/concessions` | Scrape and return live concession items with prices, serving location, & discount breakdowns |
 | `GET` | `/api/v1/promotions/privilege` | List all active Scope Privilege discount programs and rules (aliases: `/api/v1/promotions/scope`, `/api/v1/promotions`) |
-| `GET` | `/api/v1/payment-methods` | List supported Sri Lankan payment gateways with partner discounts |
 | `POST` | `/api/v1/recommend` | Compute AI/heuristic optimal concession bundle for budget & party size |
 | `POST` | `/api/v1/cart/evaluate` | Evaluate custom user cart against Scope Privilege promotion thresholds |
-| `POST` | `/api/v1/checkout` | Process order and checkout via LankaQR, eZ Cash, mCash, FriMi, or Koko |
 
 ### Example cURL Queries
 
@@ -195,18 +172,13 @@ curl -s "http://localhost:8080/api/v1/cinemas/KND-KCC/concessions"
 curl -i http://localhost:8080/api/v1/health
 ```
 
-**List Supported Sri Lankan Payment Methods:**
 ```bash
-curl -s http://localhost:8080/api/v1/payment-methods
 ```
 
-**Place Concession Order via LankaQR:**
 ```bash
-curl -X POST http://localhost:8080/api/v1/checkout \
   -H "Content-Type: application/json" \
   -d '{
     "cinema_id": "KND-KCC",
-    "payment_method": "LANKAQR",
     "customer_name": "Kasun Perera",
     "customer_phone": "0771234567",
     "items": [
@@ -216,13 +188,10 @@ curl -X POST http://localhost:8080/api/v1/checkout \
   }'
 ```
 
-**Place Concession Order via Koko BNPL (3 Installments):**
 ```bash
-curl -X POST http://localhost:8080/api/v1/checkout \
   -H "Content-Type: application/json" \
   -d '{
     "cinema_id": "KND-KCC",
-    "payment_method": "KOKO_BNPL",
     "customer_name": "Kasun Perera",
     "customer_phone": "0771234567",
     "items": [
@@ -241,12 +210,9 @@ Execute the full suite of unit, integration, concurrency, and policy tests:
 go test -v ./...
 ```
 
-All packages (`internal/server`, `pkg/payment`, `pkg/recommender`, `pkg/scraper`) include tests covering:
 - Regional cinema registry lookup and concession feed parsing
 - Promotion tier discounts, caps, and combo specials (`SCOPE-COMBO30`, `SCOPE-CINEMA25`)
 - Upsell intelligence and bundle recommendation heuristics
-- Sri Lankan payment gateways (CBSL LankaQR EMV strings, eZ Cash USSD push, Koko 3x installment calculation)
-- REST endpoint responses, CORS handling, checkout processing, and panic recovery
 
 ---
 
@@ -258,4 +224,24 @@ All packages (`internal/server`, `pkg/payment`, `pkg/recommender`, `pkg/scraper`
 - [x] Phase 4: Scope Privilege Promotion & Discount Calculator Engine (`pkg/recommender`)
 - [x] Phase 5: REST API Endpoints, Delivery Layer & Embedded Web UI (`internal/server` & `cmd/api`)
 - [x] Phase 6: Mobile Application Shell & Progressive Web App (`internal/server/ui/mobile.html`)
-- [x] Phase 7: Sri Lankan Payment Gateway Integrations (LankaQR, eZ Cash, mCash, FriMi, Koko BNPL)
+
+
+## Local food planning scope
+
+CineBite helps users browse cinemas and movies, explore cinema food menus, compare food offers, and build snack recommendations. The food plan is saved in the browser on the current device and can be printed. Listed prices and promotions are estimates or examples; confirm them with the cinema.
+
+Run with Go 1.24 or later. The Go server embeds the pages in `internal/server/ui/`; `docs/` and the root contain equivalent static pages. No publishing or remote deployment is required.
+
+## Run the Go assignment locally
+
+Go is the primary application language. `cmd/api` runs the HTTP server; `internal/server` serves the website and API; `pkg/recommender` calculates snack bundles and discounts; `pkg/scraper` holds cinema, movie, and food catalog logic. HTML and CSS provide the browser layout. JavaScript renders Go API responses and handles browser interactions; it does not calculate recommendations.
+
+With Go 1.24 or newer, run `go run ./cmd/api -server -port 127.0.0.1:8080` and open http://127.0.0.1:8080/. Run `go test ./...` to check the Go application. Cinema, movie, and food catalog data are local examples for the assignment. No payment or remote publishing feature is included.
+
+The shared layout adapts to phones, tablets, and desktops. Five dark Omarchy-inspired colour palettes rotate every 45 seconds with a 1.6-second fade. Palette timing and device detection stay in the browser; no Desktop/App switch is needed.
+
+Photo sources are in `IMAGE_CREDITS.json` and `photo-credits.html`.
+
+A compiled local macOS version is included in `bin/cinebite`. Double-click `run-local.command` to start it; no global Go installation is needed to run that binary. Stop it with Control-C in its terminal.
+
+The mobile layout wraps planner choices and action buttons, keeps touch targets usable, and lazily loads offscreen food and cinema photographs. No light palette or device-mode switch is included.

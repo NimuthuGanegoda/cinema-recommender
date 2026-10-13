@@ -14,20 +14,7 @@ import (
 func (s *RegionalScraper) scrapeByCity(city string, cinemaID string) ([]models.ConcessionItem, error) {
 	cityLower := strings.ToLower(strings.TrimSpace(city))
 
-	// Attempt Live Uber Eats Scraping First
-	uberEatsURLs := map[string]string{
-		"CMB-CCC": "https://www.ubereats.com/lk/store/scope-cinemas-multiplex-ccc",
-		"CMB-HCM": "https://www.ubereats.com/lk/store/scope-cinemas-multiplex-havelock",
-		"KND-KCC": "https://www.ubereats.com/lk/store/scope-partner-kcc-kandy",
-	}
-
-	if url, exists := uberEatsURLs[cinemaID]; exists {
-		items, err := s.ScrapeLiveUberEatsMenu(cinemaID, url)
-		if err == nil && len(items) > 0 {
-			return items, nil
-		}
-		// If scraping fails (e.g., Cloudflare 403 Forbidden), gracefully fall back to local database.
-	}
+	// Local catalog data makes the Go assignment reproducible without a remote food service.
 
 	switch cityLower {
 	case "colombo":

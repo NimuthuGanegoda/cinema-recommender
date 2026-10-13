@@ -11,10 +11,10 @@ const (
 	CategoryDessert  ItemCategory = "Dessert"
 )
 
-// ItemDiscountInfo describes a specific promotional or digital payment discount applicable to a food item.
+// ItemDiscountInfo describes a specific food promotion discount applicable to a food item.
 type ItemDiscountInfo struct {
 	PromoCode       string  `json:"promo_code,omitempty"`
-	Provider        string  `json:"provider"` // "Scope Privilege", "LankaQR", "FriMi", "Genie", "Koko"
+	Provider        string  `json:"provider"` // Food offer provider
 	Title           string  `json:"title"`
 	DiscountPct     float64 `json:"discount_pct"`
 	DiscountedPrice float64 `json:"discounted_price_lkr"`

@@ -8,7 +8,6 @@ Thank you for your interest in contributing. We hold our engineering standards t
 
 1. **Single Responsibility Principle (SRP)**: Each file in the repository must serve a single, clearly understood purpose. Do not accumulate disparate concerns in monolithic files.
 2. **Strict Regional Policy Compliance**: The scraping and recommendation pipeline is **strictly scoped for cinema circuits outside the Colombo metropolitan district**. Any attempt to register or scrape theaters within Colombo will be rejected by the domain layer (`models.ErrColomboExcluded`).
-3. **Authentic Localized Standards**: We strictly support authentic Sri Lankan payment channels (CBSL LankaQR, FriMi, Genie, eZ Cash, mCash, Koko, Mintpay). Fictional or non-existent payment providers must not be introduced.
 4. **Physical Counter Pickup Context**: This application is an in-theater recommender and counter savings pass. Food is never delivered online; vouchers are physically presented to cinema cashiers.
 
 ---

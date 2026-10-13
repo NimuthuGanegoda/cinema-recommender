@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"time"
 
-	"cinema-recommender/pkg/payment"
 	"cinema-recommender/pkg/recommender"
 	"cinema-recommender/pkg/scraper"
 )
@@ -29,7 +28,6 @@ type Server struct {
 	cfg         Config
 	scraper     *scraper.RegionalScraper
 	recEngine   *recommender.Engine
-	paymentSvc  *payment.Service
 	movieEngine *scraper.MovieSyncEngine
 	httpServer  *http.Server
 }
@@ -53,7 +51,6 @@ func NewServer(cfg Config, sc *scraper.RegionalScraper, recEngine *recommender.E
 		cfg:         cfg,
 		scraper:     sc,
 		recEngine:   recEngine,
-		paymentSvc:  payment.NewService(recEngine),
 		movieEngine: scraper.NewMovieSyncEngine(),
 	}
 

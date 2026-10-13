@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Concession Optimizer · CineBite Sri Lanka</title>
+  <title>Snack Planner · CineBite Sri Lanka</title>
   <meta name="description" content="Intelligent knapsack concession bundle optimizer for moviegoers in Sri Lanka. Maximize snack value, unlock VIP discount tiers, and minimize counter spend.">
   <meta name="theme-color" content="#06060b">
-  <meta property="og:title" content="AI Concession Optimizer · CineBite Sri Lanka">
+  <meta property="og:title" content="Snack Planner · CineBite Sri Lanka">
   <meta property="og:description" content="Intelligent knapsack concession bundle optimizer. Maximize snack value, unlock VIP discount tiers, and minimize counter spend.">
   <meta property="og:image" content="combo.jpg">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="AI Concession Optimizer · CineBite Sri Lanka">
+  <meta name="twitter:title" content="Snack Planner · CineBite Sri Lanka">
   <meta name="twitter:description" content="Intelligent knapsack concession bundle optimizer for cinema snacks across Sri Lanka.">
   <meta name="twitter:image" content="combo.jpg">
   <link rel="icon" type="image/jpeg" href="app-icon.jpg">
   <link rel="apple-touch-icon" href="app-icon.jpg">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="apple-design-system.css?v=2.2">
-  <script src="cinema-client.js?v=2.4"></script>
+  <script src="cinema-client.js?v=3.0"></script>
 
   <style>
     body {
@@ -275,39 +275,20 @@
       .optimizer-layout { grid-template-columns: 1fr; }
     }
   </style>
-</head>
+<link rel="stylesheet" href="cinema-polish.css?v=5"><script src="cinema-environment.js?v=2"></script></head>
 <body>
 
   <!-- Navigation Bar -->
-  <nav class="navbar">
-    <a href="index.html" class="nav-brand">
-      <div class="nav-logo">🍿</div>
-      <span class="nav-brand-text">CineBite</span>
-    </a>
-
-    <div class="nav-links">
-      <a href="index.html" class="nav-link">🏠 Home</a>
-      <a href="movies.html" class="nav-link">🎬 Movies</a>
-      <a href="cinemas.html" class="nav-link">🏛️ Theaters</a>
-      <a href="menu.html" class="nav-link">🍿 Concessions</a>
-      <a href="optimizer.html" class="nav-link active">✨ Optimizer</a>
-      <a href="deals.html" class="nav-link">⚡ Deals & VIP</a>
-    </div>
-
-    <div class="nav-right">
-      <a href="checkout.html" class="btn-primary" style="font-size:0.78rem; padding:0.4rem 0.85rem; text-decoration:none;">🛒 Cart (<span id="cart-count">0</span>)</a>
-      <a href="mobile.html" class="btn-secondary" style="font-size:0.78rem; padding:0.4rem 0.75rem; text-decoration:none;" title="Open Mobile PWA Web App">📱 App</a>
-    </div>
-  </nav>
+  <nav class="navbar" aria-label="Main navigation"><a href="index.html" class="nav-brand"><span class="nav-logo" aria-hidden="true">🍿</span><span class="nav-brand-text">CineBite</span></a><div class="nav-links"><a href="index.html" class="nav-link">Home</a><a href="movies.html" class="nav-link">Movies</a><a href="cinemas.html" class="nav-link">Cinemas</a><a href="menu.html" class="nav-link">Food menu</a><a href="optimizer.html" class="nav-link active" aria-current="page">Snack planner</a><a href="deals.html" class="nav-link">Food deals</a></div><div class="nav-right"><a href="food-plan.html" class="nav-plan">Food plan <span aria-label="Selected items">(<span id="cart-count">0</span>)</span></a></div><span id="nav-live-cinema" hidden></span><span id="nav-tier-badge" hidden></span></nav>
 
   <!-- Page Container -->
   <main class="page-container">
 
     <!-- Header -->
     <div class="page-header">
-      <h1 class="page-title">AI Concession Optimizer</h1>
+      <h1 class="page-title">Snack Planner</h1>
       <p class="page-subtitle">
-        Intelligent knapsack optimization algorithm engineered to maximize movie snack satisfaction while staying strictly inside your budget and applying instant CinePass VIP discounts.
+        Tell us your budget and how many people are going. We’ll suggest a mix of popcorn, drinks, and snacks to help you plan.
       </p>
     </div>
 
@@ -332,18 +313,18 @@
       <!-- Left: Configuration Form -->
       <div class="config-card">
         <div style="font-size:1.15rem; font-weight:800; color:#fff; margin-bottom:1.25rem; display:flex; align-items:center; gap:0.5rem;">
-          <span>⚙️</span> Setup Parameters
+          <span>⚙️</span> Plan your snacks
         </div>
 
         <div class="form-group">
-          <label class="form-label">Target Cinema</label>
+          <label class="form-label">Choose a cinema</label>
           <select id="opt-cinema" class="input-field" onchange="onCinemaChange(this.value)">
             <!-- Populated via JS -->
           </select>
         </div>
 
         <div class="form-group">
-          <label class="form-label">Total Concession Budget (LKR)</label>
+          <label class="form-label">Your food budget (LKR)</label>
           <input type="number" id="opt-budget" class="input-field" value="2500" step="100" min="500" max="15000">
           <div class="quick-budget-row">
             <button class="quick-btn" onclick="setBudget(1500)">LKR 1,500</button>
@@ -354,7 +335,7 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Moviegoers Party Size</label>
+          <label class="form-label">How many people?</label>
           <div class="segment-bar" id="seg-party">
             <button class="segment-btn" onclick="setParty(1, this)">Solo (1)</button>
             <button class="segment-btn active" onclick="setParty(2, this)">Couple (2)</button>
@@ -364,7 +345,7 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">CinePass VIP Tier</label>
+          <label class="form-label">Example discount tier</label>
           <div class="segment-bar" id="seg-tier">
             <button class="segment-btn active" onclick="setTier('Standard', this)">Standard</button>
             <button class="segment-btn" onclick="setTier('Student', this)">Student</button>
@@ -375,7 +356,7 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Privilege Promo Code (Optional)</label>
+          <label class="form-label">Food offer code (optional)</label>
           <input type="text" id="opt-promo" class="input-field" placeholder="e.g. CINE-COMBO30" style="text-transform:uppercase;">
           <div style="display:flex; gap:0.35rem; margin-top:0.4rem; flex-wrap:wrap;">
             <span class="badge badge-purple" style="cursor:pointer; font-size:0.65rem;" onclick="setPromo('CINE-COMBO30')">CINE-COMBO30</span>
@@ -385,7 +366,7 @@
         </div>
 
         <button class="btn-primary" style="width:100%; font-size:0.92rem; padding:0.75rem; cursor:pointer; font-weight:700; box-shadow:0 4px 20px rgba(168,85,247,0.4);" onclick="runOptimizer()" id="btn-run-opt">
-          ✨ Calculate Optimal Concession Bundle
+          ✨ Find my snack mix
         </button>
       </div>
 
@@ -394,9 +375,9 @@
         <!-- Dynamically rendered output -->
         <div style="text-align:center; padding:5rem 1rem; color:var(--cb-text-muted);">
           <div style="font-size:2.5rem; margin-bottom:1rem;">🍿</div>
-          <div style="font-size:1.1rem; font-weight:700; color:#fff; margin-bottom:0.35rem;">Ready to Optimize</div>
+          <div style="font-size:1.1rem; font-weight:700; color:#fff; margin-bottom:0.35rem;">Ready when you are</div>
           <div style="font-size:0.85rem; max-width:400px; margin:0 auto;">
-            Set your budget and preferences on the left, then click Calculate Optimal Concession Bundle.
+            Set your budget and preferences above, then click Find my snack mix.
           </div>
         </div>
       </div>
@@ -417,10 +398,10 @@
         <a href="movies.html">Movies</a>
         <a href="cinemas.html">Theaters</a>
         <a href="menu.html">Concessions</a>
-        <a href="optimizer.html" style="color:#fff; font-weight:700;">AI Optimizer</a>
-        <a href="deals.html">Deals & VIP</a>
-        <a href="checkout.html">Checkout</a>
-        <a href="mobile.html">📱 Mobile App</a>
+        <a href="optimizer.html" style="color:#fff; font-weight:700;">Snack Planner</a>
+        <a href="deals.html">Food Deals</a>
+        <a href="food-plan.html">Food Plan</a>
+        
       </div>
       <div>
         © 2026 CineBite Sri Lanka. All cinema concession trademarks belong to their respective circuits.
@@ -550,7 +531,7 @@
 
     async function runOptimizer() {
       const btn = document.getElementById('btn-run-opt');
-      btn.textContent = '⏳ Optimizing Value...';
+      btn.textContent = '⏳ Finding your snacks...';
 
       const budget = parseFloat(document.getElementById('opt-budget').value) || 2500;
       const promo = document.getElementById('opt-promo').value.trim();
@@ -571,7 +552,7 @@
       } catch (err) {
         console.error('Optimizer error:', err);
       } finally {
-        btn.textContent = '✨ Calculate Optimal Concession Bundle';
+        btn.textContent = '✨ Find my snack mix';
       }
     }
 
@@ -587,7 +568,7 @@
         <div>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
             <div>
-              <div style="font-size:1.25rem; font-weight:800; color:#fff;">🍿 Optimal Concession Bundle</div>
+              <div style="font-size:1.25rem; font-weight:800; color:#fff;">🍿 Your suggested snacks</div>
               <div style="font-size:0.8rem; color:var(--cb-text-muted);">Recommended for ${partySize} Moviegoers at ${res.cinema_name || 'Selected Cinema'}</div>
             </div>
             <span class="badge badge-green" style="font-size:0.82rem; font-weight:700;">
@@ -608,7 +589,7 @@
                 </div>
                 <div style="text-align:right;">
                   <div style="font-size:0.95rem; font-weight:800; color:#fff;">LKR ${Math.round(it.price || it.price_lkr || 0).toLocaleString()}</div>
-                  <div style="font-size:0.7rem; color:#30d158; font-weight:600;">Verified In-Stock</div>
+                  <div style="font-size:0.7rem; color:#30d158; font-weight:600;">Listed on the menu</div>
                 </div>
               </div>
             `).join('')}
@@ -617,7 +598,7 @@
           <!-- Pricing & Savings Breakdown Card -->
           <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:var(--r-md); padding:1.2rem; margin-bottom:1.5rem;">
             <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--cb-text-secondary); margin-bottom:0.4rem;">
-              <span>Menu Counter Subtotal:</span>
+              <span>Food subtotal:</span>
               <span>LKR ${origTotal.toLocaleString()}</span>
             </div>
             <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:#30d158; font-weight:600; margin-bottom:0.75rem;">
@@ -625,22 +606,22 @@
               <span>− LKR ${discount.toLocaleString()}</span>
             </div>
             <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:0.75rem; display:flex; justify-content:space-between; align-items:baseline;">
-              <span style="font-weight:700; font-size:1rem; color:#fff;">Net Counter Payable:</span>
+              <span style="font-weight:700; font-size:1rem; color:#fff;">Estimated Food Cost:</span>
               <span style="font-size:1.4rem; font-weight:900; color:#fff;">LKR ${finalTotal.toLocaleString()}</span>
             </div>
           </div>
 
-          <div style="background:rgba(168,85,247,0.12); border:1px solid rgba(168,85,247,0.3); border-radius:var(--r-sm); padding:0.75rem 1rem; font-size:0.8rem; color:rgba(255,255,255,0.9); margin-bottom:1.5rem; line-height:1.4;">
+          <div class="results-note" style="background:rgba(168,85,247,0.12); border:1px solid rgba(168,85,247,0.3); border-radius:var(--r-sm); padding:0.75rem 1rem; font-size:0.8rem; color:rgba(255,255,255,0.9); margin-bottom:1.5rem; line-height:1.4;">
             💡 ${res.message || res.upsell_advice || 'Optimized for maximum value satisfaction within your concession budget.'}
             ${res.next_tier_upsell ? `<div style="margin-top:0.35rem; color:var(--cb-purple-light); font-weight:600;">${res.next_tier_upsell}</div>` : ''}
           </div>
 
-          <div style="display:flex; gap:0.75rem;">
+          <div class="results-actions" style="display:flex; gap:0.75rem;">
             <button class="btn-primary" style="flex:1; font-size:0.88rem; padding:0.75rem; cursor:pointer;" onclick="addBundleToCart(false)">
-              🛒 Add Bundle to Cart
+              🛒 Add snacks to food plan
             </button>
             <button class="btn-secondary" style="font-size:0.88rem; padding:0.75rem 1.25rem; cursor:pointer; display:flex; align-items:center;" onclick="addBundleToCart(true)">
-              Instant Checkout →
+              Review Food Plan →
             </button>
           </div>
         </div>
@@ -669,7 +650,7 @@
       updateCartCount();
 
       if (redirect) {
-        window.location.href = 'checkout.html';
+        window.location.href = 'food-plan.html';
       } else {
         showToast(`🍿 ${items.length} items added to your concession cart!`);
       }
@@ -721,5 +702,6 @@
     }
   </script>
 
+<div class="sample-note">Local preview · Cinema and movie listings are sample data; food prices and offers are estimates. Food photos are illustrative. <a href="photo-credits.html">Photo credits</a></div>
 </body>
 </html>

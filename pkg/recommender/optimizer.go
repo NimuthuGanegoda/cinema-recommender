@@ -126,6 +126,31 @@ func (e *Engine) RecommendOptimalBundle(
 
 	// Evaluate final deal
 	res := e.EvaluateCart(cinema, selected, req.PromoCode, tier)
+	// A promotion threshold must never make the final recommendation exceed the budget.
+	for res.FinalTotal > budget && len(selected) > 0 {
+		mostExpensive := 0
+		for i := range selected {
+			if selected[i].Price > selected[mostExpensive].Price {
+				mostExpensive = i
+			}
+		}
+		selected = append(selected[:mostExpensive], selected[mostExpensive+1:]...)
+		res = e.EvaluateCart(cinema, selected, req.PromoCode, tier)
+	}
+	if len(selected) == 0 {
+		// A small budget may still afford a drink or snack when popcorn does not fit.
+		var cheapest *models.ConcessionItem
+		for i := range availableItems {
+			item := &availableItems[i]
+			if item.InStock && item.Price > 0 && item.Price <= budget &&
+				(cheapest == nil || item.Price < cheapest.Price) {
+				cheapest = item
+			}
+		}
+		if cheapest != nil {
+			res = e.EvaluateCart(cinema, []models.ConcessionItem{*cheapest}, req.PromoCode, tier)
+		}
+	}
 	res.PartySize = partySize
 
 	// Compute value score (coverage of party requirements & savings efficiency)

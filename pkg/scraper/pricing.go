@@ -8,7 +8,7 @@ import (
 	"cinema-recommender/internal/models"
 )
 
-// EnrichItemDiscounts calculates and attaches all available promotions and payment method discounts to a food item.
+// EnrichItemDiscounts calculates and attaches all available food promotions to a food item.
 func EnrichItemDiscounts(item models.ConcessionItem, foodLocation string) models.ConcessionItem {
 	price := item.Price
 	if price <= 0 {
@@ -67,45 +67,6 @@ func EnrichItemDiscounts(item models.ConcessionItem, foodLocation string) models
 		DiscountedPrice: stuDisc,
 		SavingsLKR:      math.Round((price-stuDisc)*100) / 100,
 		Requirement:     "Verified student ID cardholders",
-	})
-
-	// 5. FriMi Instant Concession Cashback (10% Cashback)
-	frimiPct := 0.10
-	frimiDisc := math.Round(price*(1.0-frimiPct)*100) / 100
-	discounts = append(discounts, models.ItemDiscountInfo{
-		PromoCode:       "FRIMI-CASHBACK",
-		Provider:        "FriMi",
-		Title:           "FriMi 10% Instant Concession Cashback",
-		DiscountPct:     frimiPct,
-		DiscountedPrice: frimiDisc,
-		SavingsLKR:      math.Round((price-frimiDisc)*100) / 100,
-		Requirement:     "Pay via FriMi digital lifestyle app",
-	})
-
-	// 6. Genie Concession Rebate (8% Rebate)
-	geniePct := 0.08
-	genieDisc := math.Round(price*(1.0-geniePct)*100) / 100
-	discounts = append(discounts, models.ItemDiscountInfo{
-		PromoCode:       "GENIE-REBATE",
-		Provider:        "Genie",
-		Title:           "Genie 8% Concession Rebate",
-		DiscountPct:     geniePct,
-		DiscountedPrice: genieDisc,
-		SavingsLKR:      math.Round((price-genieDisc)*100) / 100,
-		Requirement:     "Pay via Genie digital wallet",
-	})
-
-	// 7. CBSL LankaQR National Incentive (5% Off)
-	lqrPct := 0.05
-	lqrDisc := math.Round(price*(1.0-lqrPct)*100) / 100
-	discounts = append(discounts, models.ItemDiscountInfo{
-		PromoCode:       "LANKAQR-5",
-		Provider:        "LankaQR",
-		Title:           "CBSL LankaQR 5% National Incentive",
-		DiscountPct:     lqrPct,
-		DiscountedPrice: lqrDisc,
-		SavingsLKR:      math.Round((price-lqrDisc)*100) / 100,
-		Requirement:     "Scan dynamic LankaQR with any LK bank app",
 	})
 
 	item.ApplicableDiscounts = discounts
@@ -201,7 +162,7 @@ func ApplyLiveDynamicPricing(rawItems []models.ConcessionItem, foodLoc string, n
 		item.LastPriceUpdate = timestampStr
 		item.LiveTickID = tick
 
-		// Recompute all promotional and payment discounts on the live dynamic price
+		// Recompute all food promotional discounts on the live dynamic price
 		results[i] = EnrichItemDiscounts(item, foodLoc)
 	}
 

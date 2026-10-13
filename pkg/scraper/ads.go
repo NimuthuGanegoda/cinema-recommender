@@ -38,7 +38,7 @@ func (s *RegionalScraper) GetCinemaAds(cinema models.Cinema, items []models.Conc
 			ID:              fmt.Sprintf("AD-COMBO-%s", comboItem.ID),
 			CinemaID:        cinema.ID,
 			Title:           fmt.Sprintf("🎬 %s Special", comboItem.Name),
-			Subtitle:        fmt.Sprintf("Complete concession bundle: %s. Order via counter pass and unlock massive combo savings!", comboItem.Description),
+			Subtitle:        fmt.Sprintf("Complete concession bundle: %s. Compare the snacks in this food bundle.", comboItem.Description),
 			BadgeText:       "🎬 CINEBITE COMBO SPECIAL",
 			DiscountText:    fmt.Sprintf("Pass Rate LKR %.0f (Save LKR %.0f &bull; 30%% OFF)", comboItem.BestDiscountedPrice, savings),
 			PromoCode:       "CINE-COMBO30",
@@ -47,7 +47,7 @@ func (s *RegionalScraper) GetCinemaAds(cinema models.Cinema, items []models.Conc
 			OriginalPrice:   comboItem.Price,
 			DiscountedPrice: comboItem.BestDiscountedPrice,
 			SavingsLKR:      savings,
-			CallToAction:    "🎟️ Claim Combo Deal & Add to Cart",
+			CallToAction:    "🎟️ Add Combo to Food Plan",
 			IsFlashAd:       false,
 			Tags:            []string{"combo", "popular", "best-value"},
 		})
@@ -82,10 +82,10 @@ func (s *RegionalScraper) GetCinemaAds(cinema models.Cinema, items []models.Conc
 			ID:              fmt.Sprintf("AD-DRINK-%s", beverageItem.ID),
 			CinemaID:        cinema.ID,
 			Title:           fmt.Sprintf("🥤 Chilled Quencher Pairing: %s", beverageItem.Name),
-			Subtitle:        fmt.Sprintf("Pair your warm popcorn bucket with %s! Enjoy 30%% Combo discount or 10%% FriMi Instant Cashback.", beverageItem.Description),
+			Subtitle:        fmt.Sprintf("Pair your warm popcorn bucket with %s! Explore example popcorn and drink combo savings.", beverageItem.Description),
 			BadgeText:       "🍿 DRINK + SNACK PAIRING",
-			DiscountText:    fmt.Sprintf("Starting from LKR %.0f with digital payment pass", beverageItem.BestDiscountedPrice),
-			PromoCode:       "FRIMI-CASHBACK",
+			DiscountText:    fmt.Sprintf("Starting from LKR %.0f estimated food offer", beverageItem.BestDiscountedPrice),
+			PromoCode:       "CINE-COMBO30",
 			TargetItemID:    beverageItem.ID,
 			TargetItemName:  beverageItem.Name,
 			OriginalPrice:   beverageItem.Price,
@@ -96,20 +96,6 @@ func (s *RegionalScraper) GetCinemaAds(cinema models.Cinema, items []models.Conc
 			Tags:            []string{"beverage", "chilled", "pairing"},
 		})
 	}
-
-	// 4. National CBSL LankaQR Ad
-	ads = append(ads, models.CinemaAd{
-		ID:              "AD-LANKAQR-NATIONAL",
-		CinemaID:        cinema.ID,
-		Title:           "🇱🇰 CBSL LankaQR 5% Instant Counter Rebate",
-		Subtitle:        "Scan dynamic LankaQR at the counter with your bank app (Commercial Bank Q+, Sampath WePay, FriMi, HNB SOLO, BOC SmartPay) to receive a 5% instant price reduction!",
-		BadgeText:       "🇱🇰 5% NATIONAL REBATE",
-		DiscountText:    "Instant 5% Off Any Concession Order",
-		PromoCode:       "LANKAQR-5",
-		CallToAction:    "📱 Apply LankaQR 5% Discount",
-		IsFlashAd:       false,
-		Tags:            []string{"national-qr", "all-banks", "cbsl"},
-	})
 
 	return ads
 }

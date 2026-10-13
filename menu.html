@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Live Concession Menu · CineBite Sri Lanka</title>
-  <meta name="description" content="Order fresh popcorn, chilled beverages, Ceylon hot bakery bites, and combo boxes with live dynamic pricing and instant VIP discounts.">
+  <title>Cinema Food Menu · CineBite Sri Lanka</title>
+  <meta name="description" content="Browse popcorn, drinks, savoury bites, and sharing combos. Add favourites to your food plan.">
   <meta name="theme-color" content="#06060b">
-  <meta property="og:title" content="Live Concession Menu · CineBite Sri Lanka">
+  <meta property="og:title" content="Cinema Food Menu · CineBite Sri Lanka">
   <meta property="og:description" content="Fresh caramel popcorn, Milo Dinosaur floats, Ceylon savory bakery bites, and combo boxes across Sri Lanka.">
   <meta property="og:image" content="popcorn.jpg">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Live Concession Menu · CineBite Sri Lanka">
+  <meta name="twitter:title" content="Cinema Food Menu · CineBite Sri Lanka">
   <meta name="twitter:description" content="Fresh cinema snacks, combos, and beverages with dynamic pricing and VIP discounts.">
   <meta name="twitter:image" content="popcorn.jpg">
   <link rel="icon" type="image/jpeg" href="app-icon.jpg">
   <link rel="apple-touch-icon" href="app-icon.jpg">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="apple-design-system.css?v=2.2">
-  <script src="cinema-client.js?v=2.4"></script>
+  <script src="cinema-client.js?v=3.0"></script>
 
   <style>
     body {
@@ -321,30 +321,11 @@
       .menu-filter-bar { flex-direction: column; align-items: stretch; }
     }
   </style>
-</head>
+<link rel="stylesheet" href="cinema-polish.css?v=5"><script src="cinema-environment.js?v=2"></script></head>
 <body>
 
   <!-- Navigation Bar -->
-  <nav class="navbar">
-    <a href="index.html" class="nav-brand">
-      <div class="nav-logo">🍿</div>
-      <span class="nav-brand-text">CineBite</span>
-    </a>
-
-    <div class="nav-links">
-      <a href="index.html" class="nav-link">🏠 Home</a>
-      <a href="movies.html" class="nav-link">🎬 Movies</a>
-      <a href="cinemas.html" class="nav-link">🏛️ Theaters</a>
-      <a href="menu.html" class="nav-link active">🍿 Concessions</a>
-      <a href="optimizer.html" class="nav-link">✨ Optimizer</a>
-      <a href="deals.html" class="nav-link">⚡ Deals & VIP</a>
-    </div>
-
-    <div class="nav-right">
-      <a href="checkout.html" class="btn-primary" style="font-size:0.78rem; padding:0.4rem 0.85rem; text-decoration:none;">🛒 Cart (<span id="cart-count">0</span>)</a>
-      <a href="mobile.html" class="btn-secondary" style="font-size:0.78rem; padding:0.4rem 0.75rem; text-decoration:none;" title="Open Mobile PWA Web App">📱 App</a>
-    </div>
-  </nav>
+  <nav class="navbar" aria-label="Main navigation"><a href="index.html" class="nav-brand"><span class="nav-logo" aria-hidden="true">🍿</span><span class="nav-brand-text">CineBite</span></a><div class="nav-links"><a href="index.html" class="nav-link">Home</a><a href="movies.html" class="nav-link">Movies</a><a href="cinemas.html" class="nav-link">Cinemas</a><a href="menu.html" class="nav-link active" aria-current="page">Food menu</a><a href="optimizer.html" class="nav-link">Snack planner</a><a href="deals.html" class="nav-link">Food deals</a></div><div class="nav-right"><a href="food-plan.html" class="nav-plan">Food plan <span aria-label="Selected items">(<span id="cart-count">0</span>)</span></a></div><span id="nav-live-cinema" hidden></span><span id="nav-tier-badge" hidden></span></nav>
 
   <!-- Page Container -->
   <main class="page-container">
@@ -352,7 +333,7 @@
     <!-- Header -->
     <div class="page-header">
       <div>
-        <h1 class="page-title">Live Concession Menu</h1>
+        <h1 class="page-title">Cinema Food Menu</h1>
         <p class="page-subtitle">
           Freshly popped warm butterfly corn, Ceylon bakery bites, ice-cold fountain drinks, and exclusive CinePass VIP discount combos.
         </p>
@@ -383,10 +364,7 @@
         <select id="theater-dropdown" class="theater-select" onchange="onTheaterSwitch(this.value)" style="background:#11111a; border:1px solid rgba(255,255,255,0.15); color:#fff; padding:0.45rem 0.85rem; border-radius:var(--r-sm); font-size:0.82rem; cursor:pointer;">
           <!-- Loaded via JS -->
         </select>
-        <div style="display:flex; background:rgba(255,255,255,0.05); padding:0.25rem; border-radius:var(--r-sm); gap:0.25rem;">
-          <button class="filter-chip active" id="btn-pickup" onclick="setFulfillment('pickup')" style="font-size:0.72rem; padding:0.25rem 0.6rem;">🍿 Counter Pickup</button>
-          <button class="filter-chip" id="btn-seat" onclick="setFulfillment('seat')" style="font-size:0.72rem; padding:0.25rem 0.6rem;">🛋️ Seat Delivery</button>
-        </div>
+
       </div>
     </div>
 
@@ -418,8 +396,8 @@
       <div style="font-size:0.75rem; color:var(--cb-text-muted);">Cart Total (<span id="cart-item-count">0</span> items)</div>
       <div style="font-size:1.15rem; font-weight:800; color:#fff;" id="cart-total-price">LKR 0</div>
     </div>
-    <a href="checkout.html" class="btn-primary" style="font-size:0.82rem; padding:0.55rem 1.25rem; text-decoration:none; box-shadow:0 4px 16px rgba(168,85,247,0.4);">
-      Review & Checkout →
+    <a href="food-plan.html" class="btn-primary" style="font-size:0.82rem; padding:0.55rem 1.25rem; text-decoration:none; box-shadow:0 4px 16px rgba(168,85,247,0.4);">
+      Review Food Plan →
     </a>
   </div>
 
@@ -435,10 +413,10 @@
         <a href="movies.html">Movies</a>
         <a href="cinemas.html">Theaters</a>
         <a href="menu.html" style="color:#fff; font-weight:700;">Concessions</a>
-        <a href="optimizer.html">AI Optimizer</a>
-        <a href="deals.html">Deals & VIP</a>
-        <a href="checkout.html">Checkout</a>
-        <a href="mobile.html">📱 Mobile App</a>
+        <a href="optimizer.html">Snack Planner</a>
+        <a href="deals.html">Food Deals</a>
+        <a href="food-plan.html">Food Plan</a>
+        
       </div>
       <div>
         © 2026 CineBite Sri Lanka. All cinema concession trademarks belong to their respective circuits.
@@ -455,7 +433,8 @@
     let searchQuery = '';
     let cart = [];
     let fulfillment = 'pickup';
-    let countdown = 8;
+    const refreshSeconds = window.matchMedia("(max-width:600px)").matches ? 60 : 30;
+      let countdown = refreshSeconds;
 
     window.addEventListener('DOMContentLoaded', async () => {
       const urlParams = new URLSearchParams(window.location.search);
@@ -539,7 +518,7 @@
       try {
         const data = await client.getLiveConcessions(activeCinemaId);
         menuItems = (data.items || []).map(item => {
-          let img = item.image;
+          let img = foodImageFor(item);
           if (!img) {
             if (item.category === 'Popcorn') img = 'popcorn.jpg';
             else if (item.category === 'Beverage') img = 'beverage.jpg';
@@ -568,12 +547,6 @@
       loadConcessions();
     }
 
-    function setFulfillment(mode) {
-      fulfillment = mode;
-      document.getElementById('btn-pickup').classList.toggle('active', mode === 'pickup');
-      document.getElementById('btn-seat').classList.toggle('active', mode === 'seat');
-      localStorage.setItem('cinebite_fulfillment', mode);
-    }
 
     function filterCategory(cat) {
       currentCategory = cat;
@@ -623,7 +596,7 @@
         return `
           <div class="menu-card">
             <div>
-              <div class="menu-card-img" style="background-image:url('${item.image}');">
+              <div class="menu-card-img" style=""><img class="card-photo" src="${foodImageFor(item)}" alt="" loading="lazy" decoding="async" width="640" height="400">
                 <div class="menu-card-overlay"></div>
                 <div style="position:absolute; top:0.75rem; left:0.75rem; z-index:2;">
                   <span class="badge badge-purple" style="font-size:0.68rem; backdrop-filter:blur(8px);">${item.category}</span>
@@ -693,9 +666,10 @@
 
     function startTicker() {
       setInterval(() => {
+        if (document.hidden) return;
         countdown--;
         if (countdown <= 0) {
-          countdown = 8;
+          countdown = refreshSeconds;
           loadConcessions();
         }
         const el = document.getElementById('pricing-ticker');
@@ -704,5 +678,6 @@
     }
   </script>
 
+<div class="sample-note">Local preview · Cinema and movie listings are sample data; food prices and offers are estimates. Food photos are illustrative. <a href="photo-credits.html">Photo credits</a></div>
 </body>
 </html>

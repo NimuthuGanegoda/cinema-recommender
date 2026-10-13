@@ -53,6 +53,7 @@ func NewRegionalScraper() *RegionalScraper {
 	}
 
 	sc.cinemaRegistry = defaultCinemaRegistry()
+	applyCinemaPresentation(sc)
 	return sc
 }
 

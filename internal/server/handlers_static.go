@@ -2,42 +2,13 @@ package server
 
 import (
 	"net/http"
-	"strings"
 	"time"
 )
 
-// isMobileBrowser checks if the incoming request's User-Agent represents a mobile browser.
-func isMobileBrowser(ua string) bool {
-	if ua == "" {
-		return false
-	}
-	lower := strings.ToLower(ua)
-	mobileTokens := []string{
-		"android", "iphone", "ipod", "ipad", "windows phone",
-		"blackberry", "mobile", "opera mini", "iemobile", "webos",
-	}
-	for _, token := range mobileTokens {
-		if strings.Contains(lower, token) {
-			return true
-		}
-	}
-	return false
-}
-
-// Handler: Root serves index.html (Responsive Multi-Page Web UI) or redirects mobile browsers to /mobile
+// handleRoot serves the shared responsive cinema and food website.
 func (s *Server) handleRoot(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
-		return
-	}
-
-	// Automatic mobile browser detection: redirect to /mobile unless desktop view explicitly requested (?view=desktop)
-	if r.URL.Query().Get("view") != "desktop" && isMobileBrowser(r.UserAgent()) {
-		target := "/mobile"
-		if r.URL.RawQuery != "" {
-			target += "?" + r.URL.RawQuery
-		}
-		http.Redirect(w, r, target, http.StatusFound)
 		return
 	}
 
@@ -84,21 +55,13 @@ func (s *Server) handleDealsPage(w http.ResponseWriter, r *http.Request) {
 	s.serveHTMLPage(w, "deals.html")
 }
 
-func (s *Server) handleCheckoutPage(w http.ResponseWriter, r *http.Request) {
-	s.serveHTMLPage(w, "checkout.html")
+func (s *Server) handleFoodPlanPage(w http.ResponseWriter, r *http.Request) {
+	s.serveHTMLPage(w, "food-plan.html")
 }
 
-// Handler: Mobile serves mobile.html (Dedicated Mobile Application)
+// handleMobile preserves old bookmarks while using the shared responsive page.
 func (s *Server) handleMobile(w http.ResponseWriter, r *http.Request) {
-	content, err := uiAssets.ReadFile("ui/mobile.html")
-	if err != nil {
-		http.Error(w, "Mobile UI asset not found", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write(content)
+	s.serveHTMLPage(w, "index.html")
 }
 
 // Handler: Manifest serves manifest.json for PWA installation
@@ -148,7 +111,7 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 		"service":           "cinema-food-beverage-recommender",
 		"version":           "2.0.0",
 		"regional_theaters": len(cinemas),
-		"scope":             "strictly_outside_colombo",
+		"scope":             "sri_lanka",
 		"promotion_engine":  "scope_privilege_optimized",
 		"timestamp":         time.Now().UTC().Format(time.RFC3339),
 	})

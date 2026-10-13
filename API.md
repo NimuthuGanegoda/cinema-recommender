@@ -19,10 +19,8 @@ Content-Type: `application/json; charset=utf-8`
 | | `GET` | `/api/v1/cinemas/{id}/concessions/live` | Stream real-time dynamic pricing feed & ticker |
 | | `GET` | `/api/v1/cinemas/{id}/ads` | Retrieve in-theater promotional lobby screen ads |
 | **Promotions**| `GET` | `/api/v1/promotions/privilege` | List active Scope Privilege Club discount programs |
-| | `GET` | `/api/v1/payment-methods` | List authentic Sri Lankan payment channels |
 | **Intelligence**| `POST` | `/api/v1/recommend` | Compute AI/knapsack value-maximizing concession bundle |
 | | `POST` | `/api/v1/cart/evaluate` | Evaluate custom user cart against promotion thresholds |
-| | `POST` | `/api/v1/checkout` | Process order and issue physical counter voucher |
 
 ---
 
@@ -122,10 +120,7 @@ Calculates an optimal snacking combination based on budget, party size, and loya
 
 ---
 
-## 5. In-Person Counter Voucher Checkout
 
-### `POST /api/v1/checkout`
-Issues an authentic Sri Lankan payment voucher for physical collection at the theater snack counter.
 
 **Request Payload:**
 ```json
@@ -135,7 +130,6 @@ Issues an authentic Sri Lankan payment voucher for physical collection at the th
     { "item_id": "KND-01", "quantity": 1 },
     { "item_id": "KND-03", "quantity": 2 }
   ],
-  "payment_method": "LANKAQR",
   "privilege_tier": "Gold",
   "customer_phone": "+94 77 123 4567",
   "customer_name": "Amal Perera"
@@ -143,20 +137,5 @@ Issues an authentic Sri Lankan payment voucher for physical collection at the th
 ```
 
 **Response `200 OK`**:
-```json
-{
-  "order_id": "VCH-LK-KND-KCC-78921",
-  "cinema_name": "Scope Partner Multiplex - KCC Kandy",
-  "cinema_city": "Kandy",
-  "subtotal_lkr": 2500,
-  "discount_lkr": 125,
-  "final_payable_lkr": 2375,
-  "payment_method": "LANKAQR",
-  "payment_method_name": "LankaQR (CBSL National Standard)",
-  "status": "PENDING_LANKAQR_SCAN",
-  "lanka_qr_emv": "00020101021226480010com.lankaqr0118VCH-LK-KND-KCC-78921...",
-  "voucher_type": "PHYSICAL_IN_THEATER_COUNTER_VOUCHER",
-  "counter_pickup_location": "Scope Signature Candy Bar (Level 3 Lobby)",
-  "physical_redemption_notice": "⚠️ In-Person Counter Redemption: This is a cinema concession recommendation voucher. Food is NOT delivered online. Please visit the theater concession counter in person to collect your freshly prepared snacks."
-}
-```
+
+`GET /food-plan` serves the local food planning page. Cinema, movie, concession, promotion, recommendation, and basket evaluation endpoints remain available.
