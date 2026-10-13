@@ -9,7 +9,7 @@ import (
 // registerRoutes sets up all RESTful endpoints and web UI routing.
 func (s *Server) registerRoutes(mux *http.ServeMux) {
 	// Web UI & Mobile App
-	uiSub, err := fs.Sub(uiAssets, "ui")
+	uiSub, err := fs.Sub(uiAssets, ".")
 	if err == nil {
 		fileServer := http.FileServer(http.FS(uiSub))
 		mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
@@ -19,7 +19,7 @@ func (s *Server) registerRoutes(mux *http.ServeMux) {
 			}
 			if strings.HasSuffix(r.URL.Path, ".html") {
 				page := strings.TrimPrefix(r.URL.Path, "/")
-				if _, err := uiAssets.ReadFile("ui/" + page); err == nil {
+				if _, err := uiAssets.ReadFile(page); err == nil {
 					s.serveHTMLPage(w, page)
 					return
 				}

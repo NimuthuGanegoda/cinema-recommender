@@ -1,4 +1,4 @@
-name: Build Go browser app and deploy to GitHub Pages
+name: Build and deploy browser application
 
 on:
   push:
@@ -15,35 +15,47 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
-
-      - name: Test Go application
+      - name: Test application
         run: go test ./...
-
-      - name: Build browser Go engine
-        run: ./scripts/build-browser.sh
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
+      - name: Package browser application
+        run: ./scripts/package-browser.sh
+      - name: Check website package
+        run: |
+          test -s dist/browser/index.html
+          test -s dist/browser/assets/wasm/cinebite.wasm
+          test -s dist/browser/assets/wasm/wasm_exec.js
+      - name: Upload website artifact
+        id: upload
         uses: actions/upload-pages-artifact@v3
         with:
-          # The Go engine is a browser asset; no server process is needed
-          path: './internal/server/ui'
+          name: github-pages
+          path: dist/browser
+          retention-days: 7
+      - name: Verify artifact upload
+        env:
+          ARTIFACT_ID: ${{ steps.upload.outputs.artifact_id }}
+        run: test -n "$ARTIFACT_ID"
 
-      - name: Deploy to GitHub Pages
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Configure deployment
+        uses: actions/configure-pages@v5
+      - name: Deploy website artifact
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages

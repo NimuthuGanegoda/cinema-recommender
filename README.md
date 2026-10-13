@@ -72,12 +72,12 @@ Build the browser assets using:
 ./scripts/build-browser.sh
 ```
 
-The script produces `cinebite.wasm` and its matching `wasm_exec.js` runtime, and places them beside the website files. Include those files together with `cinema-browser.js` and `cinema-worker.js` when distributing the browser version. The Go engine runs in a worker so calculations do not block the interface. Asset paths are relative, which allows the site to work inside a subdirectory.
+The script produces `cinebite.wasm` and its matching `wasm_exec.js` runtime, and places them in `web/assets/wasm/`. Include those files together with `cinema-browser.js` and `cinema-worker.js` when distributing the browser version. The Go engine runs in a worker so calculations do not block the interface. Asset paths are relative, which allows the site to work inside a subdirectory.
 
-For a local static preview, serve this directory using any static file server. For example, if Python is available:
+For a local static preview, serve the `web/` directory using any static file server. For example, if Python is available:
 
 ```sh
-python3 -m http.server 8080 --bind 127.0.0.1
+python3 -m http.server 8080 --bind 127.0.0.1 --directory web
 ```
 
 This server only delivers the files. Cinema data and recommendations execute in the browser. When the Go server is used instead, the application automatically uses its API.
@@ -124,18 +124,25 @@ Real orders would require a shared backend and storage managed by the participat
 ## Project structure
 
 ```text
-cmd/api/             Go server and command-line entry point
-cmd/browser/         Go WebAssembly entry point
-internal/models/     Cinema, movie, food, and recommendation models
-internal/server/     Go API handlers and embedded website files
-pkg/recommender/     Go snack recommendation and promotion calculations
-pkg/scraper/         Cinema, movie, menu, and location data processing
-scripts/             Browser build script
-docs/                Static website files
+cmd/                 Go entry points: API server and browser engine
+internal/            Go models, server handlers, and tests
+pkg/                 Go recommendations and cinema data processing
+web/                 One shared website source
+  assets/css/        Stylesheets
+  assets/js/         Browser interactions and Go worker
+  assets/images/     Cinema and food photographs
+  assets/wasm/       Compiled Go browser engine and runtime
+  data/              Example movie data
+  *.html             Website pages
+  embed.go           Embed website assets in the native Go server
+docs/                API, architecture, contribution notes, photo credits
+scripts/             Browser build and packaging scripts
+bin/                 Local server executable (generated)
+dist/browser/        Standalone browser package (generated)
 ```
 
-The root, `docs/`, and `internal/server/ui/` contain matching website files. Go server builds embed the website assets. Browser builds exclude those assets from the Go module so photographs are not duplicated inside the WebAssembly download.
+Both runtimes use the same `web/` source. Run `./scripts/package-browser.sh` to prepare a browser-only distribution in `dist/browser/`, without Go source files. Rebuild the native server after editing website files because the executable embeds them.
 
 ## Photo credits
 
-Food image sources, authors, and licences are listed in `IMAGE_CREDITS.json` and the website's `photo-credits.html` page.
+Food image sources, authors, and licences are listed in `docs/IMAGE_CREDITS.json` and the website's `web/photo-credits.html` page.

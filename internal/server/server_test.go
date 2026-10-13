@@ -71,7 +71,7 @@ func TestResponsiveRootForAllDevices(t *testing.T) {
 		if w.Code != http.StatusOK {
 			t.Fatalf("expected shared responsive page, got %d", w.Code)
 		}
-		if !strings.Contains(w.Body.String(), "cinema-environment.js") {
+		if !strings.Contains(w.Body.String(), "assets/js/cinema-environment.js") {
 			t.Fatal("missing automatic appearance script")
 		}
 	}
@@ -483,6 +483,19 @@ func TestNativePagesSelectServerRuntime(t *testing.T) {
 			srv.GetHandler().ServeHTTP(response, httptest.NewRequest(http.MethodGet, path, nil))
 			if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), `<meta name="cinebite-runtime" content="server">`) {
 				t.Fatalf("page %s must select the native Go API", path)
+			}
+		})
+	}
+}
+
+func TestCategorizedWebsiteAssets(t *testing.T) {
+	app := setupTestServer()
+	for _, path := range []string{"/assets/css/cinema-polish.css", "/assets/js/cinema-worker.js", "/assets/images/food-milo.jpg", "/favicon.ico", "/data/movies.json"} {
+		t.Run(path, func(t *testing.T) {
+			response := httptest.NewRecorder()
+			app.GetHandler().ServeHTTP(response, httptest.NewRequest(http.MethodGet, path, nil))
+			if response.Code != http.StatusOK || response.Body.Len() == 0 {
+				t.Fatalf("asset %s unavailable: %d", path, response.Code)
 			}
 		})
 	}

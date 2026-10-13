@@ -25,7 +25,7 @@ func applyCinemaPresentation(s *RegionalScraper) {
 			FoodPlaceType:       "In-Front Luxury Mall Food Court & Scope Candy Bar",
 			FoodHours:           "10:00 AM - 11:30 PM (Open during all movie screenings)",
 			FoodDeliveryToSeat:  true,
-			Image:               "cinema-ccc.jpg",
+			Image:               "assets/images/cinema-ccc.jpg",
 			Technology:          "IMAX Laser • Dolby Atmos 7.1",
 		},
 		{
@@ -48,7 +48,7 @@ func applyCinemaPresentation(s *RegionalScraper) {
 			FoodPlaceType:       "In-Front Mall Food Lounge & IMAX Concession Stand",
 			FoodHours:           "10:00 AM - 11:30 PM (Open during all movie screenings)",
 			FoodDeliveryToSeat:  true,
-			Image:               "cinema-hcm.jpg",
+			Image:               "assets/images/cinema-hcm.jpg",
 			Technology:          "Sri Lanka's Largest IMAX • 4K Laser",
 		},
 		{
@@ -71,7 +71,7 @@ func applyCinemaPresentation(s *RegionalScraper) {
 			FoodPlaceType:       "In-Front Mall Food Court & Gourmet Cinema Bar",
 			FoodHours:           "10:00 AM - 11:30 PM (Daily)",
 			FoodDeliveryToSeat:  true,
-			Image:               "cinema-pvr-ogf.jpg",
+			Image:               "assets/images/cinema-pvr-ogf.jpg",
 			Technology:          "P[XL] Laser • Luxe VIP Lounges • Dolby Atmos",
 		},
 		{
@@ -94,7 +94,7 @@ func applyCinemaPresentation(s *RegionalScraper) {
 			FoodPlaceType:       "In-Front Cinema Concession Food Court",
 			FoodHours:           "10:00 AM - 10:45 PM (Open during all movie screenings)",
 			FoodDeliveryToSeat:  true,
-			Image:               "cinema-liberty.jpg",
+			Image:               "assets/images/cinema-liberty.jpg",
 			Technology:          "Scope VIP Gold Class • Dolby 7.1",
 		},
 		{
@@ -117,7 +117,7 @@ func applyCinemaPresentation(s *RegionalScraper) {
 			FoodPlaceType:       "In-Front Mall Food Court & Cineplex Snack Counters",
 			FoodHours:           "10:00 AM - 11:00 PM (Daily)",
 			FoodDeliveryToSeat:  false,
-			Image:               "cinema-majestic.jpg",
+			Image:               "assets/images/cinema-majestic.jpg",
 			Technology:          "Platinum & Gold Class 3D • Dolby Surround 7.1",
 		},
 		{
@@ -140,7 +140,7 @@ func applyCinemaPresentation(s *RegionalScraper) {
 			FoodPlaceType:       "In-Front Historic Cinema Snack Bar & Cafe",
 			FoodHours:           "10:00 AM - 11:00 PM (Daily)",
 			FoodDeliveryToSeat:  false,
-			Image:               "cinema-savoy.jpg",
+			Image:               "assets/images/cinema-savoy.jpg",
 			Technology:          "Savoy Premier 3D & 4K • Dolby Atmos",
 		},
 		{
@@ -163,7 +163,7 @@ func applyCinemaPresentation(s *RegionalScraper) {
 			FoodPlaceType:       "In-Front Mall Food Court & Cinema Concession Stand",
 			FoodHours:           "10:00 AM - 10:45 PM (Open during all movie screenings)",
 			FoodDeliveryToSeat:  true,
-			Image:               "cinema-kcc.jpg",
+			Image:               "assets/images/cinema-kcc.jpg",
 			Technology:          "4K Laser Projection • Dolby Digital 7.1",
 		},
 		{
@@ -186,7 +186,7 @@ func applyCinemaPresentation(s *RegionalScraper) {
 			FoodPlaceType:       "In-Front Cinema Concession Food Court",
 			FoodHours:           "10:00 AM - 10:30 PM",
 			FoodDeliveryToSeat:  false,
-			Image:               "cinema-gampaha.jpg",
+			Image:               "assets/images/cinema-gampaha.jpg",
 			Technology:          "Ceylon Theatres 3D • 2K Digital Screen",
 		},
 		{
@@ -209,7 +209,7 @@ func applyCinemaPresentation(s *RegionalScraper) {
 			FoodPlaceType:       "In-Front Cinema Concessions",
 			FoodHours:           "10:00 AM - 10:30 PM",
 			FoodDeliveryToSeat:  false,
-			Image:               "cinema-galle.jpg",
+			Image:               "assets/images/cinema-galle.jpg",
 			Technology:          "Heritage Galle 3D Screen • Dolby Digital",
 		},
 		{
@@ -232,7 +232,7 @@ func applyCinemaPresentation(s *RegionalScraper) {
 			FoodPlaceType:       "In-Front Concession Food Court",
 			FoodHours:           "10:30 AM - 11:00 PM",
 			FoodDeliveryToSeat:  false,
-			Image:               "cinema-negombo.jpg",
+			Image:               "assets/images/cinema-negombo.jpg",
 			Technology:          "Coastal Multiplex 3D • 4K RealD",
 		},
 		{
@@ -255,7 +255,7 @@ func applyCinemaPresentation(s *RegionalScraper) {
 			FoodPlaceType:       "In-Front Cinema Concessions",
 			FoodHours:           "10:00 AM - 10:00 PM",
 			FoodDeliveryToSeat:  false,
-			Image:               "cinema-kurunegala.jpg",
+			Image:               "assets/images/cinema-kurunegala.jpg",
 			Technology:          "North Western 3D Cineplex • Dolby Digital",
 		},
 		{
@@ -278,7 +278,7 @@ func applyCinemaPresentation(s *RegionalScraper) {
 			FoodPlaceType:       "In-Front Concession Food Court",
 			FoodHours:           "10:00 AM - 10:30 PM",
 			FoodDeliveryToSeat:  false,
-			Image:               "cinema-matara.jpg",
+			Image:               "assets/images/cinema-matara.jpg",
 			Technology:          "Southern Screen 3D & 4K • Dolby Surround",
 		},
 		{
@@ -301,7 +301,7 @@ func applyCinemaPresentation(s *RegionalScraper) {
 			FoodPlaceType:       "In-Front Modern Mall Food Court & Concession Bar",
 			FoodHours:           "10:00 AM - 10:30 PM",
 			FoodDeliveryToSeat:  false,
-			Image:               "cinema-jaffna.jpg",
+			Image:               "assets/images/cinema-jaffna.jpg",
 			Technology:          "Northern Star 3D Multiplex • 4K Digital Cinema",
 		},
 	}

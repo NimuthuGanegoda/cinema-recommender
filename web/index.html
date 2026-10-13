@@ -1,0 +1,2279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CineBite • Cinema & Food Guide</title>
+  <meta name="description" content="Find the best cinema concession deals, live prices, and optimized snack combos across all Sri Lankan cinemas. Save with CinePass VIP discounts.">
+  <meta name="theme-color" content="#06060b">
+  <meta name="application-name" content="CineBite">
+  <meta property="og:title" content="CineBite • Universal Sri Lanka Cinema Concession & Snack Recommender">
+  <meta property="og:description" content="Find the best cinema concession deals, live prices, and optimized snack combos across all Sri Lankan cinemas. Save with CinePass VIP discounts.">
+  <meta property="og:image" content="assets/images/app-icon.jpg">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CineBite • Universal Sri Lanka Cinema Concession & Snack Recommender">
+  <meta name="twitter:description" content="Find the best cinema concession deals, live prices, and optimized snack combos across all Sri Lankan cinemas.">
+  <meta name="twitter:image" content="assets/images/app-icon.jpg">
+  <link rel="icon" type="image/jpeg" href="assets/images/app-icon.jpg">
+  <link rel="apple-touch-icon" href="assets/images/app-icon.jpg">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="assets/css/apple-design-system.css?v=2.2">
+  <script src="assets/js/cinema-browser.js?v=1"></script><script src="assets/js/cinema-client.js?v=4.0"></script>
+
+  <style>
+    /* ================================================================
+       PAGE LAYOUT
+       ================================================================ */
+
+    /* --- Navbar --- */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(6, 6, 11, 0.8);
+      backdrop-filter: var(--cb-glass-blur);
+      -webkit-backdrop-filter: var(--cb-glass-blur);
+      border-bottom: var(--cb-border);
+      padding: 0 2.5rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .nav-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--r-sm);
+      background: var(--cb-purple-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 16px rgba(168, 85, 247, 0.25);
+    }
+
+    .nav-brand-text {
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .nav-link {
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--cb-text-secondary);
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      transition: all var(--duration-fast) ease;
+      border: none;
+      background: none;
+      text-decoration: none;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--cb-text);
+      background: var(--cb-surface);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    /* --- Live Indicator Pill --- */
+    .live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(6, 6, 11, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--r-pill);
+      padding: 0.3rem 0.85rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--cb-green);
+      box-shadow: 0 0 8px var(--cb-green-glow);
+      animation: livePulse 2s infinite;
+    }
+
+    /* --- Hero Section --- */
+    .hero {
+      position: relative;
+      padding: 5rem 2.5rem 3.5rem;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -40%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 140%;
+      height: 120%;
+      background: radial-gradient(ellipse 50% 60% at 50% 20%, rgba(168, 85, 247, 0.12) 0%, transparent 70%),
+                  radial-gradient(ellipse 40% 40% at 30% 60%, rgba(59, 130, 246, 0.06) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hero > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 1rem;
+      background: var(--cb-surface);
+      border: var(--cb-border-accent);
+      border-radius: var(--r-pill);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--cb-purple-light);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
+      color: var(--cb-text-secondary);
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      line-height: 1.6;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    /* --- Search Bar --- */
+    .search-bar {
+      max-width: 640px;
+      margin: 0 auto 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      background: var(--cb-surface-card);
+      backdrop-filter: var(--cb-glass-blur);
+      border: var(--cb-border-light);
+      border-radius: var(--r-pill);
+      padding: 0.65rem 0.65rem 0.65rem 1.3rem;
+      box-shadow: var(--cb-shadow-md);
+      transition: all var(--duration-fast) ease;
+      position: relative;
+    }
+
+    .search-bar:focus-within {
+      border-color: var(--cb-purple);
+      box-shadow: var(--cb-shadow-md), 0 0 0 2px rgba(168, 85, 247, 0.12);
+    }
+
+    .search-bar input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--cb-text);
+      font-size: 0.92rem;
+      outline: none;
+      min-width: 0;
+    }
+
+    .search-bar input::placeholder {
+      color: var(--cb-text-muted);
+    }
+
+    .search-results-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: var(--cb-surface-card);
+      backdrop-filter: var(--cb-glass-blur-heavy);
+      border: var(--cb-border-light);
+      border-radius: var(--r-lg);
+      max-height: 340px;
+      overflow-y: auto;
+      box-shadow: var(--cb-shadow-lg);
+      z-index: 60;
+    }
+
+    .search-result-item {
+      padding: 0.85rem 1.2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      cursor: pointer;
+      transition: background var(--duration-fast) ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--cb-surface-hover); }
+
+    /* --- Cinema Browser Section --- */
+    .section {
+      padding: 0 2.5rem;
+      margin-bottom: 2.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .section-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+
+    .cinema-scroll-track {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+      padding-bottom: 0.75rem;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .cinema-scroll-track::-webkit-scrollbar { display: none; }
+
+    .cinema-card {
+      flex: 0 0 300px;
+      scroll-snap-align: start;
+      background: var(--cb-surface-card);
+      backdrop-filter: var(--cb-glass-blur);
+      border: var(--cb-border-light);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all var(--duration-normal) var(--ease-spring);
+    }
+
+    .cinema-card:hover {
+      border-color: rgba(168, 85, 247, 0.3);
+      transform: translateY(-4px);
+      box-shadow: var(--cb-shadow-md), var(--cb-shadow-glow-purple);
+    }
+
+    .cinema-card.selected {
+      border-color: var(--cb-purple);
+      box-shadow: 0 0 0 1px var(--cb-purple), var(--cb-shadow-glow-purple);
+    }
+
+    .cinema-card-visual {
+      height: 120px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cinema-card-gradient {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+    }
+
+    .cinema-card-body {
+      padding: 1rem 1.15rem 1.15rem;
+    }
+
+    .cinema-card-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+      letter-spacing: -0.01em;
+    }
+
+    .cinema-card-meta {
+      font-size: 0.78rem;
+      color: var(--cb-text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .cinema-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.75rem;
+      padding-top: 0.65rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* --- Active Cinema Strip --- */
+    .active-cinema-strip {
+      padding: 0 2.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .active-cinema-banner {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.08), rgba(59, 130, 246, 0.04));
+      border: var(--cb-border-accent);
+      border-radius: var(--r-xl);
+      padding: 1.25rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .active-cinema-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .active-cinema-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--r-md);
+      background: var(--cb-purple-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 16px rgba(168, 85, 247, 0.2);
+    }
+
+    .active-cinema-details h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .active-cinema-details p {
+      font-size: 0.82rem;
+      color: var(--cb-text-secondary);
+      margin-top: 0.15rem;
+    }
+
+    .active-cinema-badges {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* --- Deals/Promos Row --- */
+    .deals-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .deal-card {
+      background: var(--cb-surface-card);
+      border: var(--cb-border);
+      border-radius: var(--r-lg);
+      padding: 1.2rem;
+      cursor: pointer;
+      transition: all var(--duration-normal) var(--ease-spring);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .deal-card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+      box-shadow: var(--cb-shadow-sm);
+    }
+
+    .deal-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .deal-card h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .deal-card p {
+      font-size: 0.8rem;
+      color: var(--cb-text-secondary);
+      line-height: 1.45;
+    }
+
+    .deal-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 0.65rem;
+    }
+
+    /* --- Two Column Workspace --- */
+    .workspace {
+      padding: 0 2.5rem;
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 2rem;
+      align-items: start;
+      margin-bottom: 4rem;
+    }
+
+    @media (max-width: 1100px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+      .optimizer-sidebar {
+        position: static !important;
+        order: -1;
+      }
+    }
+
+    /* --- Menu Section (left) --- */
+    .menu-section .section-header {
+      margin-bottom: 1rem;
+    }
+
+    .filter-pills {
+      display: flex;
+      gap: 0.45rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-pill {
+      background: var(--cb-surface);
+      border: var(--cb-border);
+      color: var(--cb-text-secondary);
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.45rem 1.05rem;
+      border-radius: var(--r-pill);
+      cursor: pointer;
+      transition: all var(--duration-fast) var(--ease-spring);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .filter-pill:hover {
+      background: var(--cb-surface-hover);
+      color: var(--cb-text);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .filter-pill.active {
+      background: var(--cb-purple-gradient);
+      border-color: var(--cb-purple);
+      color: #fff;
+      box-shadow: 0 2px 12px rgba(168, 85, 247, 0.25);
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+
+    .menu-item-card {
+      background: var(--cb-surface-card);
+      border: var(--cb-border);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      transition: all var(--duration-normal) var(--ease-spring);
+    }
+
+    .menu-item-card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-3px);
+      box-shadow: var(--cb-shadow-md);
+    }
+
+    .menu-item-visual {
+      height: 150px;
+      position: relative;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+
+
+
+    .menu-item-body {
+      padding: 1rem 1.15rem 1.15rem;
+    }
+
+    .menu-item-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+      letter-spacing: -0.01em;
+    }
+
+    .menu-item-desc {
+      font-size: 0.78rem;
+      color: var(--cb-text-secondary);
+      line-height: 1.4;
+      margin-bottom: 0.65rem;
+    }
+
+    .menu-item-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-top: 0.65rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .menu-item-price {
+      font-size: 1.15rem;
+      font-weight: 800;
+    }
+
+    .menu-item-price-old {
+      font-size: 0.75rem;
+      color: var(--cb-text-muted);
+      text-decoration: line-through;
+    }
+
+    .menu-item-save {
+      font-size: 0.72rem;
+      color: var(--cb-green);
+      font-weight: 600;
+    }
+
+    .add-to-cart-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: var(--cb-purple-subtle);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      color: var(--cb-purple-light);
+      padding: 0.4rem 0.85rem;
+      border-radius: var(--r-pill);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all var(--duration-fast) ease;
+    }
+
+    .add-to-cart-btn:hover {
+      background: var(--cb-purple-gradient);
+      color: #fff;
+      border-color: var(--cb-purple);
+      box-shadow: 0 4px 16px rgba(168, 85, 247, 0.3);
+    }
+
+    /* --- Optimizer Sidebar (right) --- */
+    .optimizer-sidebar {
+      background: var(--cb-surface-card);
+      backdrop-filter: var(--cb-glass-blur);
+      border: var(--cb-border-light);
+      border-radius: var(--r-xl);
+      padding: 1.75rem;
+      position: sticky;
+      top: 84px;
+      box-shadow: var(--cb-shadow-md);
+    }
+
+    .optimizer-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .form-group {
+      margin-bottom: 1.35rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--cb-text-secondary);
+      margin-bottom: 0.55rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .budget-input-row {
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--r-md);
+      padding: 0.65rem 1rem;
+      transition: all var(--duration-fast) ease;
+    }
+
+    .budget-input-row:focus-within {
+      border-color: var(--cb-purple);
+      box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.12);
+    }
+
+    .budget-prefix {
+      color: var(--cb-text-muted);
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-right: 0.5rem;
+    }
+
+    .budget-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--cb-text);
+      font-size: 1.2rem;
+      font-weight: 800;
+      outline: none;
+    }
+
+    .quick-pills {
+      display: flex;
+      gap: 0.35rem;
+      margin-top: 0.55rem;
+      flex-wrap: wrap;
+    }
+
+    .quick-pill {
+      background: var(--cb-surface);
+      border: var(--cb-border);
+      color: var(--cb-text-muted);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.25rem 0.6rem;
+      border-radius: var(--r-pill);
+      cursor: pointer;
+      transition: all var(--duration-fast) ease;
+    }
+
+    .quick-pill:hover {
+      background: var(--cb-surface-hover);
+      color: var(--cb-text);
+    }
+
+    .promo-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--cb-text);
+      font-size: 0.9rem;
+      font-weight: 600;
+      outline: none;
+      text-transform: uppercase;
+    }
+
+    /* --- Recommendation Result --- */
+    .result-card {
+      background: linear-gradient(135deg, rgba(52, 211, 153, 0.06), rgba(168, 85, 247, 0.04));
+      border: 1px solid rgba(52, 211, 153, 0.2);
+      border-radius: var(--r-xl);
+      padding: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .result-items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.75rem;
+      margin: 1rem 0;
+    }
+
+    .result-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--r-sm);
+      padding: 0.85rem;
+    }
+
+    .result-summary {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: var(--r-md);
+      padding: 1.15rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    /* --- Footer --- */
+    .site-footer {
+      text-align: center;
+      padding: 2rem 2.5rem 3rem;
+      color: var(--cb-text-muted);
+      font-size: 0.78rem;
+      border-top: var(--cb-border);
+    }
+
+    /* ================================================================
+       RESPONSIVE
+       ================================================================ */
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 0 0.75rem;
+      }
+      .nav-links {
+        gap: 0.15rem;
+        overflow-x: auto;
+        max-width: calc(100vw - 220px);
+        scrollbar-width: none;
+      }
+      .nav-link {
+        padding: 0.35rem 0.5rem;
+        font-size: 0.76rem;
+        white-space: nowrap;
+      }
+      .hero {
+        padding: 3rem 1.25rem 2.5rem;
+      }
+      .hero-subtitle {
+        font-size: 0.95rem;
+      }
+      .section {
+        padding: 0 1.25rem;
+      }
+      .active-cinema-strip {
+        padding: 0 1.25rem;
+      }
+      .active-cinema-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1rem 1.25rem;
+      }
+      .workspace {
+        padding: 0 1.25rem;
+        grid-template-columns: 1fr;
+      }
+      .cinema-card {
+        flex: 0 0 260px;
+      }
+      .menu-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
+      .search-bar {
+        margin: 0 auto 1rem;
+      }
+    }
+
+    /* --- Print Stylesheet for Food Plan --- */
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #voucher-modal, #voucher-modal * {
+        visibility: visible !important;
+      }
+      #voucher-modal {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        background: #fff !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: flex-start !important;
+        padding: 0 !important;
+      }
+      .modal-body {
+        width: 100% !important;
+        max-width: 480px !important;
+        box-shadow: none !important;
+        border: 2px solid #000 !important;
+      }
+      .wallet-pass {
+        background: #fff !important;
+        color: #000 !important;
+      }
+      .wallet-pass-header {
+        background: #111 !important;
+        color: #fff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      button, .btn-primary, .btn-secondary {
+        display: none !important;
+      }
+    }
+  </style>
+<link rel="stylesheet" href="assets/css/cinema-polish.css?v=5"><script src="assets/js/cinema-environment.js?v=2"></script></head>
+<body>
+
+  <!-- ============================================================
+       NAVBAR
+       ============================================================ -->
+  <nav class="navbar" aria-label="Main navigation"><a href="index.html" class="nav-brand"><span class="nav-logo" aria-hidden="true">🍿</span><span class="nav-brand-text">CineBite</span></a><div class="nav-links"><a href="index.html" class="nav-link active" aria-current="page">Home</a><a href="movies.html" class="nav-link">Movies</a><a href="cinemas.html" class="nav-link">Cinemas</a><a href="menu.html" class="nav-link">Food menu</a><a href="optimizer.html" class="nav-link">Snack planner</a><a href="deals.html" class="nav-link">Food deals</a></div><div class="nav-right"><a href="food-plan.html" class="nav-plan">Food plan <span aria-label="Selected items">(<span id="cart-count">0</span>)</span></a></div><span id="nav-live-cinema" hidden></span><span id="nav-tier-badge" hidden></span></nav>
+
+
+  <!-- ============================================================
+       HERO SECTION
+       ============================================================ -->
+  <section class="hero" id="hero-section">
+    <div class="hero-eyebrow animate-fade-in">
+      <span>✨</span> A movie night, made yours
+    </div>
+
+    <h1 class="text-gradient-hero animate-fade-in animate-fade-in-delay-1">
+      Good films.<br>Great snacks.
+    </h1>
+
+    <p class="hero-subtitle animate-fade-in animate-fade-in-delay-2">
+      Find a cinema, explore the food, and put together a snack plan that suits your budget.
+    </p>
+
+    <!-- Search Bar -->
+    <div class="search-bar animate-fade-in animate-fade-in-delay-3" id="main-search-bar">
+      <span class="input-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="Search a cinema or city" autocomplete="off">
+      <button class="btn-secondary" style="padding:0.5rem 1rem; font-size:0.82rem;" id="btn-detect-gps" onclick="handleDetectLocation()">
+        📍 Near Me
+      </button>
+      <div class="search-results-dropdown" id="search-dropdown" style="display:none;"></div><span class="search-status" id="search-status" role="status" aria-live="polite"></span>
+    </div>
+
+    <!-- Quick City Pills -->
+    <div class="animate-fade-in animate-fade-in-delay-3" id="city-quick-filters" style="display:flex; gap:0.45rem; justify-content:center; flex-wrap:wrap; margin:-0.5rem auto 1.5rem; max-width:760px;">
+      <button class="filter-pill active" onclick="filterByCity('ALL', this)">All Sri Lanka</button>
+      <button class="filter-pill" onclick="filterByCity('Colombo', this)">Colombo</button>
+      <button class="filter-pill" onclick="filterByCity('Kandy', this)">Kandy</button>
+      <button class="filter-pill" onclick="filterByCity('Galle', this)">Galle</button>
+      <button class="filter-pill" onclick="filterByCity('Gampaha', this)">Gampaha</button>
+      <button class="filter-pill" onclick="filterByCity('Negombo', this)">Negombo</button>
+      <button class="filter-pill" onclick="filterByCity('Kurunegala', this)">Kurunegala</button>
+      <button class="filter-pill" onclick="filterByCity('Jaffna', this)">Jaffna</button>
+      <button class="filter-pill" onclick="filterByCity('Matara', this)">Matara</button>
+    </div>
+
+    <div class="hero-actions animate-fade-in animate-fade-in-delay-4">
+      <button class="btn-primary" onclick="scrollToSection('menu-anchor')">
+        🍿 Browse Menu
+      </button>
+      <button class="btn-secondary" onclick="openAllCinemasModal()" id="btn-view-all-cinemas">
+        🏛️ All Cinemas (<span id="cinemas-count">0</span>)
+      </button>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       CINEMA BROWSER
+       ============================================================ -->
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">
+        <span>🏛️</span> Theaters
+      </h2>
+      <button class="btn-ghost" onclick="openAllCinemasModal()">View All →</button>
+    </div>
+
+    <div class="cinema-scroll-track" id="cinema-scroll-track">
+      <!-- Dynamically rendered cinema cards -->
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       ACTIVE CINEMA STRIP
+       ============================================================ -->
+  <div class="active-cinema-strip" id="active-cinema-section">
+    <div class="active-cinema-banner" style="position:relative; overflow:hidden;">
+      <div style="display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap:wrap; gap:1.25rem;">
+        <div class="active-cinema-info">
+          <div class="active-cinema-icon" id="active-cinema-emoji" style="background-size:cover; background-position:center; overflow:hidden; border:1px solid rgba(255,255,255,0.18);">🏛️</div>
+          <div class="active-cinema-details">
+            <h3 id="active-cinema-name">Select a Cinema</h3>
+            <p id="active-cinema-address">Browse theaters above or search to get started</p>
+          </div>
+        </div>
+        <div class="active-cinema-badges" id="active-cinema-badges">
+          <!-- badges rendered dynamically -->
+        </div>
+      </div>
+      <!-- Live Movie Marquee -->
+      <div id="active-cinema-movies" style="width:100%; border-top:1px solid rgba(255,255,255,0.08); padding-top:0.85rem; margin-top:0.4rem; display:flex; align-items:center; gap:0.65rem; overflow-x:auto; scrollbar-width:none;">
+        <span style="font-size:0.75rem; font-weight:800; color:var(--cb-purple-light); display:inline-flex; align-items:center; gap:0.35rem; white-space:nowrap;">
+          <span class="live-dot" style="width:6px; height:6px;"></span> NOW SHOWING:
+        </span>
+        <span class="badge badge-default" style="white-space:nowrap; background:rgba(255,255,255,0.05); font-size:0.74rem;">🎬 Avatar: Fire & Ash (IMAX 3D · 6:30 PM)</span>
+        <span class="badge badge-default" style="white-space:nowrap; background:rgba(255,255,255,0.05); font-size:0.74rem;">🎬 Deadpool & Wolverine (Dolby Atmos · 7:15 PM)</span>
+        <span class="badge badge-default" style="white-space:nowrap; background:rgba(255,255,255,0.05); font-size:0.74rem;">🎬 Dune: Part Two (Laser 4K · 9:45 PM)</span>
+        <span class="badge badge-default" style="white-space:nowrap; background:rgba(255,255,255,0.05); font-size:0.74rem;">🎬 Sinhabahu (Sinhala Feature · 4:00 PM)</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       NOW SHOWING MOVIES & 1-HOUR AUTO-SYNC ENGINE
+       ============================================================ -->
+  <section class="section" id="movies-section" style="margin-bottom:2.25rem;">
+    <div class="section-header" style="flex-wrap:wrap; gap:0.75rem;">
+      <div>
+        <h2 class="section-title" style="margin-bottom:0.25rem;">
+          <span>🎬</span> Now Showing in Theaters
+        </h2>
+        <p style="font-size:0.8rem; color:var(--cb-text-muted); margin:0;">
+          Explore films and snack pairings for your next visit
+        </p>
+      </div>
+      <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+        <span class="badge badge-purple" style="display:inline-flex; align-items:center; gap:0.4rem; padding:0.4rem 0.75rem;">
+          <span class="live-dot" style="width:7px; height:7px; background:#30d158;"></span>
+          <span>Movie listings</span>
+        </span>
+        <span style="font-size:0.8rem; color:var(--cb-text-secondary); background:rgba(255,255,255,0.05); padding:0.35rem 0.75rem; border-radius:var(--r-sm); border:1px solid rgba(255,255,255,0.08);">
+          Next sync in: <strong id="movie-sync-countdown" style="color:#30d158; font-family:monospace; font-weight:700;">59m 45s</strong>
+        </span>
+        <button id="btn-force-movie-sync" class="btn-secondary" style="font-size:0.78rem; padding:0.35rem 0.8rem; cursor:pointer; display:inline-flex; align-items:center; gap:0.35rem;" onclick="triggerManualMovieSync()">
+          <span>🔄</span> <span>Sync Now</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Movie Category / Language Filter Pills -->
+    <div style="display:flex; align-items:center; gap:0.5rem; overflow-x:auto; padding-bottom:0.5rem; margin-bottom:1rem; scrollbar-width:none;">
+      <button class="filter-chip active" id="movie-filter-all" onclick="filterMovies('all')">All Films (<span id="count-all-movies">12</span>)</button>
+      <button class="filter-chip" id="movie-filter-sinhala" onclick="filterMovies('Sinhala')">🇱🇰 Sinhala</button>
+      <button class="filter-chip" id="movie-filter-tamil" onclick="filterMovies('Tamil')">🇮🇳 Tamil</button>
+      <button class="filter-chip" id="movie-filter-english" onclick="filterMovies('English')">🌐 English / Hollywood</button>
+      <button class="filter-chip" id="movie-filter-imax" onclick="filterMovies('IMAX')">🌟 IMAX 3D & Laser</button>
+    </div>
+
+    <!-- Movie Cards Horizontal / Grid Carousel -->
+    <div id="movies-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(285px, 1fr)); gap:1rem;">
+      <!-- Dynamically populated -->
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       DEALS / PROMOS ROW
+       ============================================================ -->
+  <section class="section" id="deals-section">
+    <div class="section-header">
+      <h2 class="section-title">
+        <span>⚡</span> Food Deals
+      </h2>
+      <span class="badge badge-green">Auto-updating</span>
+    </div>
+    <div class="deals-row" id="deals-grid">
+      <!-- Dynamically rendered -->
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       TWO-COLUMN WORKSPACE: MENU + OPTIMIZER
+       ============================================================ -->
+  <div class="workspace" id="menu-anchor">
+
+    <!-- LEFT: Cinema Food Menu -->
+    <section class="menu-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span>🍿</span> Food Menu
+        </h2>
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <span style="font-size:0.8rem;color:var(--cb-text-muted);">Refreshing in</span>
+          <span class="badge badge-green" id="menu-refresh-badge">8s</span>
+        </div>
+      </div>
+
+      
+      
+
+      <div class="filter-pills" id="filter-pills">
+        <button class="filter-pill active" data-cat="ALL" onclick="filterMenu('ALL', this)">All <span class="filter-count" id="fcount-ALL"></span></button>
+        <button class="filter-pill" data-cat="Popcorn" onclick="filterMenu('Popcorn', this)">🍿 Popcorn <span class="filter-count" id="fcount-Popcorn"></span></button>
+        <button class="filter-pill" data-cat="Beverage" onclick="filterMenu('Beverage', this)">🥤 Drinks <span class="filter-count" id="fcount-Beverage"></span></button>
+        <button class="filter-pill" data-cat="Snack" onclick="filterMenu('Snack', this)">🌭 Snacks <span class="filter-count" id="fcount-Snack"></span></button>
+        <button class="filter-pill" data-cat="Combo" onclick="filterMenu('Combo', this)">🎬 Combos <span class="filter-count" id="fcount-Combo"></span></button>
+      </div>
+
+      <div class="menu-grid" id="menu-grid">
+        <!-- Dynamically rendered -->
+      </div>
+
+      <!-- Recommendation Result -->
+      <div id="recommendation-result" style="display:none;"></div>
+    </section>
+
+    <!-- RIGHT: Budget Optimizer -->
+    <aside class="optimizer-sidebar" id="optimizer-anchor">
+      <h3 class="optimizer-title">
+        <span>⚡</span> Snack Planner
+      </h3>
+
+      <!-- Budget -->
+      <div class="form-group">
+        <label class="form-label" for="budget-input">Budget (LKR)</label>
+        <div class="budget-input-row">
+          <span class="budget-prefix">LKR</span>
+          <input type="number" id="budget-input" class="budget-input" value="2500" min="500" max="25000" step="100">
+        </div>
+        <div class="quick-pills">
+          <button class="quick-pill" onclick="setBudget(1500)">1,500</button>
+          <button class="quick-pill" onclick="setBudget(2500)">2,500</button>
+          <button class="quick-pill" onclick="setBudget(3500)">3,500</button>
+          <button class="quick-pill" onclick="setBudget(5000)">5,000</button>
+        </div>
+      </div>
+
+      <!-- Party Size -->
+      <div class="form-group">
+        <label class="form-label">Moviegoers</label>
+        <div class="segmented-control" id="seg-party" style="width:100%;">
+          <button class="segment-item" style="flex:1;" onclick="setParty(1,this)">1</button>
+          <button class="segment-item active" style="flex:1;" onclick="setParty(2,this)">2</button>
+          <button class="segment-item" style="flex:1;" onclick="setParty(3,this)">3</button>
+          <button class="segment-item" style="flex:1;" onclick="setParty(4,this)">4+</button>
+        </div>
+      </div>
+
+      <!-- Tier -->
+      <div class="form-group">
+        <label class="form-label">Example discount tier</label>
+        <div class="segmented-control" id="seg-tier" style="width:100%;">
+          <button class="segment-item active" style="flex:1;" onclick="setTier('Standard',this)">Std</button>
+          <button class="segment-item" style="flex:1;" onclick="setTier('Student',this)">Stu</button>
+          <button class="segment-item" style="flex:1;" onclick="setTier('Silver',this)">Slv</button>
+          <button class="segment-item" style="flex:1;" onclick="setTier('Gold',this)">Gld</button>
+          <button class="segment-item" style="flex:1;" onclick="setTier('Platinum',this)">Plt</button>
+        </div>
+      </div>
+
+      <!-- Promo Code -->
+      <div class="form-group">
+        <label class="form-label" for="promo-input">Promo Code</label>
+        <div class="input-wrap">
+          <span class="input-icon">🎟️</span>
+          <input type="text" id="promo-input" class="promo-input" placeholder="e.g. CINE-COMBO30">
+        </div>
+        <div class="quick-pills" style="margin-top:0.45rem;">
+          <button class="quick-pill" onclick="setPromo('CINE-COMBO30')">COMBO30</button>
+          <button class="quick-pill" onclick="setPromo('CINE-PLATINUM')">PLATINUM</button>
+          <button class="quick-pill" onclick="setPromo('CINE-CINEMA25')">CINEMA25</button>
+        </div>
+      </div>
+
+      <!-- Optimize Button -->
+      <button class="btn-primary" id="btn-optimize" onclick="handleOptimize()" style="width:100%;padding:0.85rem;font-size:0.95rem;margin-top:0.5rem;">
+        ⚡ Suggest snacks
+      </button>
+
+      <!-- Upsell Box -->
+      <div id="upsell-box" style="display:none;margin-top:1rem;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:var(--r-md);padding:0.85rem;font-size:0.82rem;color:var(--cb-amber);"></div>
+    </aside>
+  </div>
+
+
+  <!-- ============================================================
+       FLOATING CART BAR
+       ============================================================ -->
+  <div class="floating-bar" id="floating-cart" style="display:none;">
+    <span class="badge badge-purple" style="font-size:0.78rem;padding:0.25rem 0.6rem;" id="cart-count-badge">0</span>
+    <div style="display:flex;flex-direction:column;">
+      <span style="font-size:0.7rem;color:var(--cb-text-muted);">Total</span>
+      <span style="font-size:1rem;font-weight:800;" id="cart-total">LKR 0</span>
+    </div>
+    <a href="food-plan.html" class="btn-primary" style="padding:0.45rem 0.95rem;font-size:0.8rem;text-decoration:none;display:inline-flex;align-items:center;gap:0.35rem;">
+      🛒 Food Plan →
+    </a>
+  </div>
+
+
+  <!-- ============================================================
+       VOUCHER / PASS MODAL
+       ============================================================ -->
+  <div class="modal-overlay" id="voucher-modal" onclick="closeVoucherOnBackdrop(event)"><div class="modal-body"><h2>Your Food Plan</h2><p>Review your selected snacks and estimated cost.</p><a class="btn-primary" href="food-plan.html">Review food plan</a><button class="btn-secondary" onclick="closeVoucherModal()">Close</button></div></div>
+
+
+  <!-- ============================================================
+       ALL CINEMAS DIRECTORY MODAL
+       ============================================================ -->
+  <div class="modal-overlay" id="cinemas-modal" onclick="closeCinemasOnBackdrop(event)">
+    <div class="modal-body modal-body-wide">
+      <div class="glass-card-static" style="padding:1.75rem;">
+        <!-- Modal Header -->
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.25rem;border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:1rem;">
+          <div>
+            <h3 style="font-size:1.3rem;font-weight:800;letter-spacing:-0.02em;display:flex;align-items:center;gap:0.5rem;">
+              <span>🏛️</span> All Cinemas
+            </h3>
+            <p style="font-size:0.82rem;color:var(--cb-text-secondary);margin-top:0.25rem;">
+              Cinema locations and food options across Sri Lanka
+            </p>
+          </div>
+          <button onclick="closeCinemasModal()" style="background:var(--cb-surface);border:none;color:var(--cb-text);width:34px;height:34px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+        </div>
+
+        <!-- Search -->
+        <div class="input-wrap" style="margin-bottom:1.25rem;">
+          <span class="input-icon">🔍</span>
+          <input type="text" id="modal-search" placeholder="Filter cinemas..." oninput="filterModalCinemas(this.value)">
+        </div>
+
+        <!-- Cinema Grid -->
+        <div id="modal-cinemas-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1rem;max-height:460px;overflow-y:auto;padding-right:0.25rem;">
+        </div>
+
+        <div style="margin-top:1.25rem;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,0.06);padding-top:1rem;">
+          <span style="font-size:0.78rem;color:var(--cb-text-muted);" id="modal-count-stat">0 cinemas</span>
+          <button class="btn-secondary" onclick="closeCinemasModal()">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="site-footer">
+    <div style="max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1.5rem;">
+      <div style="display:flex; align-items:center; gap:0.6rem;">
+        <span style="font-size:1.4rem;">🍿</span>
+        <span style="font-weight:800; color:#fff; font-size:1.1rem;">CineBite Sri Lanka</span>
+      </div>
+      <div style="display:flex; gap:1.5rem; flex-wrap:wrap;">
+        <a href="index.html" style="color:#fff; text-decoration:none; font-weight:700;">Home</a>
+        <a href="movies.html" style="color:var(--cb-text-secondary); text-decoration:none;">Movies</a>
+        <a href="cinemas.html" style="color:var(--cb-text-secondary); text-decoration:none;">Theaters</a>
+        <a href="menu.html" style="color:var(--cb-text-secondary); text-decoration:none;">Concessions</a>
+        <a href="optimizer.html" style="color:var(--cb-text-secondary); text-decoration:none;">Snack Planner</a>
+        <a href="deals.html" style="color:var(--cb-text-secondary); text-decoration:none;">Food Deals</a>
+        <a href="food-plan.html" style="color:var(--cb-text-secondary); text-decoration:none;">Food Plan</a>
+      </div>
+      <div>
+        © 2026 CineBite Sri Lanka. All cinema concession trademarks belong to their respective circuits.
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ============================================================
+       JAVASCRIPT
+       ============================================================ -->
+  <script>
+    /* ── State ─────────────────────────────────────── */
+    const client = new CinemaClient();
+    let cinemas = [];
+    let activeCinema = null;
+    let menu = [];
+    let activeCategory = 'ALL';
+    let cart = [];
+    let partySize = 2;
+    let tier = 'Standard';
+    let promo = '';
+    let refreshCountdown = window.matchMedia("(max-width:600px)").matches ? 60 : 30;
+    let refreshInterval = null;
+
+    // Cinema card gradient palette
+    const gradients = [
+      'linear-gradient(135deg, #1a0533, #2d1b69)',
+      'linear-gradient(135deg, #0f172a, #1e3a5f)',
+      'linear-gradient(135deg, #1a0a2e, #16213e)',
+      'linear-gradient(135deg, #0d1117, #21262d)',
+      'linear-gradient(135deg, #1b1028, #2e1065)',
+      'linear-gradient(135deg, #0c0a1a, #1a1a2e)',
+      'linear-gradient(135deg, #14102b, #1c1855)',
+      'linear-gradient(135deg, #0b1120, #1b2838)',
+      'linear-gradient(135deg, #130d25, #261350)',
+      'linear-gradient(135deg, #0e1525, #1a2744)',
+    ];
+
+    // Menu item visual gradients
+    const itemGradients = {
+      Popcorn:  'linear-gradient(135deg, #3d1f00, #b45309)',
+      Beverage: 'linear-gradient(135deg, #0c2d48, #1e6091)',
+      Snack:    'linear-gradient(135deg, #3b0f0f, #991b1b)',
+      Combo:    'linear-gradient(135deg, #1a0533, #6d28d9)',
+    };
+
+
+    /* ── Init ──────────────────────────────────────── */
+    window.addEventListener('DOMContentLoaded', async () => {
+      initCartFromStorage();
+      await loadCinemas();
+      await loadMovies();
+      setupSearch();
+      startRefreshTicker();
+      initHourlyMovieSync();
+    });
+
+
+    let allCinemasMaster = [];
+
+    /* ── Load Cinemas ──────────────────────────────── */
+    async function loadCinemas() {
+      try {
+        cinemas = await client.getCinemas();
+      } catch (err) {
+        if (client.apiRequired) { showNotification(err.message || "Please reload the cinema guide.", "warning"); return; }
+        console.warn('API unavailable — fallback to catalog:', err);
+      }
+      if (!cinemas || cinemas.length === 0) {
+        cinemas = [
+          { id:"CMB-CCC", name:"Scope Cinemas Multiplex - Colombo City Centre", chain:"Scope Cinemas", city:"Colombo", province:"Western", address:"Level 3, Colombo City Centre, 137 Sir James Pieris Mw, Colombo 02", screens:6, latitude:6.9205, longitude:79.8524, map_url:"https://maps.google.com/?q=6.9205,79.8524", image:"assets/images/cinema-ccc.jpg", technology:"IMAX Laser • Dolby Atmos 7.1", has_food_court_in_front:true, food_court_name:"The Food Studio @ CCC & Scope Candy Bar", food_court_location:"Level 3 Lobby", food_hours:"10:00 AM – 11:30 PM" },
+          { id:"CMB-HCM", name:"Scope Cinemas Multiplex - Havelock City Mall", chain:"Scope Cinemas", city:"Colombo", province:"Western", address:"Level 4, Havelock City Mall, 324 Havelock Rd, Colombo 05", screens:6, latitude:6.8822, longitude:79.8667, map_url:"https://maps.google.com/?q=6.8822,79.8667", image:"assets/images/cinema-hcm.jpg", technology:"Sri Lanka's Largest IMAX • Laser", has_food_court_in_front:true, food_court_name:"Havelock Food Lounge & Scope IMAX Candy Bar", food_court_location:"Level 4 Lobby", food_hours:"10:00 AM – 11:30 PM" },
+          { id:"CMB-PVR", name:"PVR Cinemas - One Galle Face Mall", chain:"PVR Cinemas", city:"Colombo", province:"Western", address:"Level 6, One Galle Face Mall, 1A Centre Rd, Colombo 02", screens:9, latitude:6.9268, longitude:79.8443, map_url:"https://maps.google.com/?q=6.9268,79.8443", image:"assets/images/cinema-pvr-ogf.jpg", technology:"P[XL] Laser • Luxe VIP • Dolby Atmos", has_food_court_in_front:true, food_court_name:"One Galle Face Food Court & PVR Concession Lounge", food_court_location:"Level 6 Foyer", food_hours:"10:00 AM – 11:30 PM" },
+          { id:"CMB-LBT", name:"Liberty by Scope Cinemas", chain:"Scope Cinemas", city:"Colombo", province:"Western", address:"35 Srimath Anagarika Dharmapala Mw / R. A. De Mel Mw, Colombo 03", screens:2, latitude:6.9119, longitude:79.8501, map_url:"https://maps.google.com/?q=6.9119,79.8501", image:"assets/images/cinema-liberty.jpg", technology:"Scope VIP Gold Class • Dolby 7.1", has_food_court_in_front:true, food_court_name:"Liberty Foyer Concession Court", food_court_location:"Front Main Entrance", food_hours:"10:00 AM – 10:45 PM" },
+          { id:"CMB-MJC", name:"Majestic Cineplex - Bambalapitiya", chain:"Ceylon Theatres", city:"Colombo", province:"Western", address:"4th/5th Floor, Majestic City, 10 Station Rd, Bambalapitiya, Colombo 04", screens:4, latitude:6.8942, longitude:79.8551, map_url:"https://maps.google.com/?q=6.8942,79.8551", image:"assets/images/cinema-majestic.jpg", technology:"Platinum & Gold Class 3D • Dolby Surround", has_food_court_in_front:true, food_court_name:"Majestic City Food Court & Snack Counters", food_court_location:"4th Floor Atrium", food_hours:"10:00 AM – 11:00 PM" },
+          { id:"CMB-SVY", name:"Savoy 3D Cinema - Wellawatte", chain:"Savoy Cinemas", city:"Colombo", province:"Western", address:"12 Savoy Building, Galle Rd, Wellawatte, Colombo 06", screens:3, latitude:6.8783, longitude:79.8579, map_url:"https://maps.google.com/?q=6.8783,79.8579", image:"assets/images/cinema-savoy.jpg", technology:"Savoy Premier 3D & 4K • Dolby Atmos", has_food_court_in_front:true, food_court_name:"Savoy Historic Concession Foyer & Snack Cafe", food_court_location:"Savoy Main Entrance Foyer", food_hours:"10:00 AM – 11:00 PM" },
+          { id:"KND-KCC", name:"Scope Partner Multiplex - KCC Kandy", chain:"Scope Cinemas Partner", city:"Kandy", province:"Central", address:"Level 3, Kandy City Centre, 5 Dalada Veediya, Kandy", screens:4, latitude:7.2920, longitude:80.6371, map_url:"https://maps.google.com/?q=7.2920,80.6371", image:"assets/images/cinema-kcc.jpg", technology:"4K Laser Projection • Dolby Digital 7.1", has_food_court_in_front:true, food_court_name:"KCC World Food Court & Scope Candy Bar", food_court_location:"Level 3 Lobby", food_hours:"10:00 AM – 10:45 PM" },
+          { id:"GMP-REG", name:"Regal Cinema Gampaha", chain:"Ceylon Theatres", city:"Gampaha", province:"Western", address:"2nd Floor, Cargills Square, 364 Miriswatta-Gampaha Rd, Gampaha", screens:2, latitude:7.0917, longitude:79.9998, map_url:"https://maps.google.com/?q=7.0917,79.9998", image:"assets/images/cinema-gampaha.jpg", technology:"Ceylon Theatres 3D • 2K Digital Screen", has_food_court_in_front:true, food_court_name:"Regal Front Foyer Food Plaza", food_court_location:"2nd Floor Cargills Square", food_hours:"10:00 AM – 10:30 PM" },
+          { id:"GLE-QNS", name:"Queens Cinema Galle", chain:"Independent", city:"Galle", province:"Southern", address:"29 Wakwella Rd, Galle 80000", screens:2, latitude:6.0342, longitude:80.2166, map_url:"https://maps.google.com/?q=6.0342,80.2166", image:"assets/images/cinema-galle.jpg", technology:"Heritage Galle 3D Screen • Dolby Digital", has_food_court_in_front:true, food_court_name:"Queens Foyer Concession & Galle Bake House", food_court_location:"Main Foyer Entrance", food_hours:"10:00 AM – 10:30 PM" },
+          { id:"NGB-RDO", name:"Aqua Lite 3D Cinema Negombo", chain:"Western Coast", city:"Negombo", province:"Western", address:"16 Christopher Rd, Negombo 11500", screens:2, latitude:7.2083, longitude:79.8358, map_url:"https://maps.google.com/?q=7.2083,79.8358", image:"assets/images/cinema-negombo.jpg", technology:"Coastal Multiplex 3D • 4K RealD", has_food_court_in_front:true, food_court_name:"Aqua Lite Concession Bar & Snacks", food_court_location:"Front theater foyer", food_hours:"10:30 AM – 11:00 PM" },
+          { id:"KRN-MLD", name:"Imperial 3D Cinema Kurunegala", chain:"Imperial", city:"Kurunegala", province:"North Western", address:"05 Kandy Rd, Kurunegala 60000", screens:2, latitude:7.4863, longitude:80.3640, map_url:"https://maps.google.com/?q=7.4863,80.3640", image:"assets/images/cinema-kurunegala.jpg", technology:"North Western 3D Cineplex • Dolby Digital", has_food_court_in_front:true, food_court_name:"Imperial Refreshment Corner & Snack Bar", food_court_location:"Lobby Entrance", food_hours:"10:00 AM – 10:00 PM" },
+          { id:"MTR-SKC", name:"SK Cinema Matara", chain:"Southern Screen", city:"Matara", province:"Southern", address:"Kotuwegoda, Beach Rd, Matara 81000", screens:2, latitude:5.9443, longitude:80.5501, map_url:"https://maps.google.com/?q=5.9443,80.5501", image:"assets/images/cinema-matara.jpg", technology:"Southern Screen 3D & 4K • Dolby Surround", has_food_court_in_front:true, food_court_name:"SK Concession Court & Chill Bar", food_court_location:"Beach Rd Main Lobby", food_hours:"10:00 AM – 10:30 PM" },
+          { id:"JFN-RJA", name:"Cargills Square Multiplex Jaffna", chain:"Northern Circuit", city:"Jaffna", province:"Northern", address:"Cargills Square, Hospital Rd, Jaffna 40000", screens:3, latitude:9.6635, longitude:80.0165, map_url:"https://maps.google.com/?q=9.6635,80.0165", image:"assets/images/cinema-jaffna.jpg", technology:"Northern Star 3D Multiplex • 4K Digital Cinema", has_food_court_in_front:true, food_court_name:"Cargills Square Food Court & Concession Bar", food_court_location:"Ground & 1st Floor Foyer", food_hours:"10:00 AM – 10:30 PM" }
+        ];
+      }
+      allCinemasMaster = [...cinemas];
+      document.getElementById('cinemas-count').textContent = cinemas.length;
+      renderCinemaCards();
+
+      const savedCinemaId = localStorage.getItem('cinebite_active_cinema_id');
+      const initial = (savedCinemaId && cinemas.find(c => c.id === savedCinemaId)) || (cinemas.length > 0 ? cinemas[0] : null);
+      if (initial) selectCinema(initial);
+    }
+
+
+    /* ── Render Cinema Cards ───────────────────────── */
+    function renderCinemaCards() {
+      const track = document.getElementById('cinema-scroll-track');
+      track.innerHTML = cinemas.map((c, i) => {
+        const isActive = activeCinema && activeCinema.id === c.id;
+        const distBadge = (typeof c.distance_km === 'number' && c.distance_km < 9000)
+          ? `<span class="badge badge-blue" style="font-size:0.68rem; font-weight:700;">📍 ${c.distance_km.toFixed(1)} km</span>`
+          : '';
+        const cinemaImg = c.image || (c.name.toLowerCase().includes('imax') ? 'assets/images/cinema-imax.jpg' : (c.screens >= 4 ? 'assets/images/cinema-multiplex.jpg' : 'assets/images/cinema-heritage.jpg'));
+        const techBadge = c.technology || `${c.screens} Screens • Dolby Atmos`;
+
+        return `
+          <div class="cinema-card ${isActive ? 'selected' : ''}" onclick="selectCinemaById('${c.id}')">
+            <div class="cinema-card-visual" style=" background-size: cover; background-position: center; height: 135px; position: relative;"><img class="card-photo" src="${cinemaImg}" alt="" loading="lazy" decoding="async" width="640" height="400">
+              <div style="position:absolute; inset:0; background: linear-gradient(180deg, rgba(6,6,11,0.2) 0%, rgba(6,6,11,0.88) 100%);"></div>
+              <span class="badge badge-purple" style="position:absolute; top:0.75rem; left:0.75rem; font-size:0.68rem; z-index:2; backdrop-filter:blur(8px);">
+                ${c.chain || 'Cinema'}
+              </span>
+              ${distBadge ? `<div style="position:absolute; top:0.75rem; right:0.75rem; z-index:2;">${distBadge}</div>` : ''}
+              <div style="position:absolute; bottom:0.6rem; left:0.75rem; right:0.75rem; display:flex; justify-content:space-between; align-items:center; z-index:2;">
+                <span style="font-size:0.7rem; color:rgba(255,255,255,0.95); font-weight:700;">
+                  ✨ ${techBadge}
+                </span>
+              </div>
+            </div>
+            <div class="cinema-card-body">
+              <div class="cinema-card-name">${c.name}</div>
+              <div class="cinema-card-meta">
+                <span>📍 ${c.city}</span>
+                <span>•</span>
+                <span>${c.screens} Screen${c.screens > 1 ? 's' : ''}</span>
+              </div>
+              <div class="cinema-card-footer">
+                <span class="badge badge-green" style="font-size:0.68rem;">🍔 In-Front Food Court</span>
+                ${isActive ? '<span class="badge badge-purple">Selected</span>' : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+
+    /* ── Select Cinema ─────────────────────────────── */
+    async function selectCinema(cinema) {
+      activeCinema = cinema;
+      localStorage.setItem('cinebite_active_cinema_id', cinema.id);
+      renderCinemaCards();
+
+      const cinemaImg = cinema.image || (cinema.name.toLowerCase().includes('imax') ? 'assets/images/cinema-imax.jpg' : (cinema.screens >= 4 ? 'assets/images/cinema-multiplex.jpg' : 'assets/images/cinema-heritage.jpg'));
+      const emojiEl = document.getElementById('active-cinema-emoji');
+      if (emojiEl) {
+        emojiEl.style.backgroundImage = `url('${cinemaImg}')`;
+        emojiEl.innerHTML = '';
+      }
+
+      // Update active strip
+      document.getElementById('active-cinema-name').textContent = cinema.name;
+      document.getElementById('active-cinema-address').textContent = `📍 ${cinema.address || cinema.city} · ${cinema.food_court_name || 'Concession Counter'}`;
+      document.getElementById('active-cinema-badges').innerHTML = `
+        <span class="badge badge-purple">${cinema.chain || 'Independent'}</span>
+        <span class="badge badge-green">${cinema.screens} Screens</span>
+        <span class="badge badge-blue">${cinema.technology || 'Dolby Atmos & Laser'}</span>
+        <span class="badge badge-amber">${cinema.food_hours || '10:00 AM – 11:30 PM'}</span>
+        ${cinema.map_url ? `<a href="${cinema.map_url}" target="_blank" class="badge badge-default" style="text-decoration:none;">🗺️ Map & Directions</a>` : ''}
+        <button class="btn-secondary" style="font-size:0.75rem; padding:0.25rem 0.75rem; cursor:pointer;" onclick="openAllCinemasModal()">🔄 Change Theater</button>
+      `;
+
+      // Update nav live pill
+      document.getElementById('nav-live-cinema').textContent = cinema.name.length > 25 ? cinema.name.slice(0, 25) + '…' : cinema.name;
+
+      // Load concessions + ads + live movies
+      await Promise.all([
+        loadMenu(cinema.id),
+        loadDeals(cinema.id),
+        loadMovies(cinema.id),
+      ]);
+    }
+
+    function selectCinemaById(id) {
+      const c = cinemas.find(x => x.id === id);
+      if (c) selectCinema(c);
+    }
+
+
+    /* ── Live Movies & 1-Hour Sync ──────────────────── */
+    let allMovies = [];
+    let currentMovieFilter = 'all';
+
+    async function loadMovies(cinemaId = '', forceRefresh = false) {
+      try {
+        const targetId = cinemaId || (activeCinema ? activeCinema.id : '');
+        allMovies = await client.getMovies({ cinemaId: targetId, forceRefresh });
+        renderMovies();
+        renderMovieMarquee(targetId);
+      } catch (err) {
+        if (client.apiRequired) { showNotification(err.message || "Please reload the cinema guide.", "warning"); return; }
+        console.error('Error loading movies:', err);
+      }
+    }
+
+    function renderMovieMarquee(cinemaId) {
+      const marqueeEl = document.getElementById('active-cinema-movies');
+      if (!marqueeEl) return;
+      
+      const movies = (allMovies || []).slice(0, 6);
+      if (movies.length === 0) {
+        marqueeEl.innerHTML = `
+          <span style="font-size:0.75rem; font-weight:800; color:var(--cb-purple-light); display:inline-flex; align-items:center; gap:0.35rem; white-space:nowrap;">
+            <span class="live-dot" style="width:6px; height:6px; background:#30d158;"></span> NOW SHOWING:
+          </span>
+          <span class="badge badge-default" style="white-space:nowrap; font-size:0.74rem;">🎬 Schedules updating for this screen...</span>
+        `;
+        return;
+      }
+
+      let badgesHtml = movies.map(m => {
+        const nextShow = m.showtimes && m.showtimes.length > 0 ? m.showtimes[0] : 'Daily';
+        const langBadge = m.language === 'Sinhala' ? '🇱🇰 Sinhala' : (m.language === 'Tamil' ? '🇮🇳 Tamil' : '🌐 ' + m.language);
+        const formatBadge = m.formats && m.formats.length > 0 ? m.formats[0] : 'Digital';
+        return `<span class="badge badge-default" style="white-space:nowrap; background:rgba(255,255,255,0.06); font-size:0.74rem; cursor:pointer;" onclick="scrollToSection('movies-section')">🎬 <strong>${m.title}</strong> (${langBadge} · ${formatBadge} · ${nextShow})</span>`;
+      }).join(' ');
+
+      marqueeEl.innerHTML = `
+        <span style="font-size:0.75rem; font-weight:800; color:var(--cb-purple-light); display:inline-flex; align-items:center; gap:0.35rem; white-space:nowrap;">
+          <span class="live-dot" style="width:6px; height:6px; background:#30d158;"></span> NOW SHOWING:
+        </span>
+        ${badgesHtml}
+      `;
+    }
+
+    function filterMovies(filterType) {
+      currentMovieFilter = filterType;
+      document.querySelectorAll('#movies-section .filter-chip').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      const activeBtn = document.getElementById(`movie-filter-${filterType.toLowerCase()}`);
+      if (activeBtn) activeBtn.classList.add('active');
+      renderMovies();
+    }
+
+    function renderMovies() {
+      const grid = document.getElementById('movies-grid');
+      if (!grid) return;
+
+      let filtered = [...(allMovies || [])];
+      if (currentMovieFilter === 'Sinhala') {
+        filtered = filtered.filter(m => m.language === 'Sinhala');
+      } else if (currentMovieFilter === 'Tamil') {
+        filtered = filtered.filter(m => m.language === 'Tamil');
+      } else if (currentMovieFilter === 'English') {
+        filtered = filtered.filter(m => m.language === 'English');
+      } else if (currentMovieFilter === 'IMAX') {
+        filtered = filtered.filter(m => m.formats && m.formats.some(f => f.toLowerCase().includes('imax') || f.toLowerCase().includes('laser')));
+      }
+
+      const countEl = document.getElementById('count-all-movies');
+      if (countEl) countEl.textContent = allMovies.length;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column:1/-1; text-align:center; padding:2rem; background:rgba(255,255,255,0.02); border-radius:var(--r-md); border:1px dashed rgba(255,255,255,0.1);">
+            <div style="font-size:1.5rem; margin-bottom:0.5rem;">🎬</div>
+            <div style="font-weight:600; color:var(--cb-text-secondary);">No movies match this filter for the selected cinema.</div>
+            <button class="btn-secondary" style="margin-top:0.75rem; font-size:0.8rem; cursor:pointer;" onclick="filterMovies('all')">Show All Movies</button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(m => {
+        const langBadge = m.language === 'Sinhala' ? '🇱🇰 Sinhala' : (m.language === 'Tamil' ? '🇮🇳 Tamil' : '🌐 English');
+        const showtimesHtml = (m.showtimes || []).map(st => `
+          <span style="font-size:0.72rem; padding:0.2rem 0.5rem; background:rgba(255,255,255,0.06); border-radius:var(--r-sm); border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.9); font-weight:600;">
+            🕒 ${st}
+          </span>
+        `).join('');
+
+        const formatsHtml = (m.formats || []).map(f => `
+          <span class="badge ${f.includes('IMAX') ? 'badge-purple' : 'badge-blue'}" style="font-size:0.65rem;">
+            ${f}
+          </span>
+        `).join(' ');
+
+        return `
+          <div class="card movie-card" style="display:flex; flex-direction:column; justify-content:space-between; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:var(--r-md); padding:1.2rem; transition:transform 0.2s ease, border-color 0.2s ease;" onmouseenter="this.style.borderColor='rgba(191,90,242,0.4)'; this.style.transform='translateY(-2px)'" onmouseleave="this.style.borderColor='rgba(255,255,255,0.08)'; this.style.transform='translateY(0)'">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.5rem; gap:0.5rem;">
+                <div>
+                  <h3 style="font-size:1.05rem; font-weight:700; color:#fff; margin:0 0 0.2rem 0;">${m.title}</h3>
+                  ${m.original_title && m.original_title !== m.title ? `<div style="font-size:0.8rem; color:var(--cb-purple-light); font-weight:600;">${m.original_title}</div>` : ''}
+                </div>
+                <span class="badge badge-default" style="font-size:0.68rem; font-weight:700; background:rgba(255,255,255,0.1);">${m.rating || 'PG-13'}</span>
+              </div>
+
+              <div style="display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap; margin-bottom:0.75rem;">
+                <span class="badge badge-green" style="font-size:0.68rem;">${langBadge}</span>
+                <span style="font-size:0.72rem; color:var(--cb-text-muted);">⏱️ ${m.duration}</span>
+                <span style="font-size:0.72rem; color:var(--cb-text-muted);">🎭 ${m.genre}</span>
+              </div>
+
+              <div style="display:flex; gap:0.35rem; flex-wrap:wrap; margin-bottom:0.85rem;">
+                ${formatsHtml}
+              </div>
+
+              <p style="font-size:0.78rem; color:var(--cb-text-secondary); line-height:1.45; margin-bottom:0.85rem; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">
+                ${m.synopsis}
+              </p>
+
+              <!-- Showtimes row -->
+              <div style="margin-bottom:1rem;">
+                <div style="font-size:0.7rem; font-weight:700; color:var(--cb-text-muted); text-transform:uppercase; margin-bottom:0.35rem; letter-spacing:0.04em;">Today's Showtimes:</div>
+                <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+                  ${showtimesHtml}
+                </div>
+              </div>
+            </div>
+
+            <!-- Concession Snack Tip & Quick-Optimize Button -->
+            <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:var(--r-sm); padding:0.65rem 0.75rem; margin-top:0.5rem;">
+              <div style="font-size:0.72rem; color:#30d158; font-weight:700; margin-bottom:0.25rem;">
+                🍿 Recommended Snack Pairing
+              </div>
+              <div style="font-size:0.74rem; color:rgba(255,255,255,0.85); line-height:1.35; margin-bottom:0.5rem;">
+                ${m.concession_tip || 'Pairs great with Fresh Caramel Popcorn and Milo Dinosaur Float'}
+              </div>
+              <button class="btn-primary" style="width:100%; font-size:0.75rem; padding:0.4rem 0.6rem; cursor:pointer;" onclick="quickPairConcessions('${m.id}')">
+                ✨ Plan snacks for this film
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function triggerManualMovieSync() {
+      const btn = document.getElementById('btn-force-movie-sync');
+      const origText = btn.innerHTML;
+      btn.innerHTML = '<span>⏳</span> <span>Syncing...</span>';
+      try {
+        await client.triggerMovieSync();
+        await loadMovies(activeCinema ? activeCinema.id : '', true);
+        showNotification('🎬 Movie schedules refreshed! 1-hour auto-sync countdown reset.', 'success');
+      } catch (err) {
+        if (client.apiRequired) { showNotification(err.message || "Please reload the cinema guide.", "warning"); return; }
+        showNotification('Movies updated to latest schedule.', 'info');
+      } finally {
+        btn.innerHTML = origText;
+      }
+    }
+
+    function quickPairConcessions(movieId) {
+      const movie = (allMovies || []).find(m => m.id === movieId);
+      if (!movie) return;
+
+      const budgetInput = document.getElementById('budget-input');
+      if (movie.duration.includes('3h') || (movie.formats && movie.formats.some(f => f.includes('IMAX')))) {
+        setBudget(4500);
+        const segs = document.querySelectorAll('#seg-tier .segment-item');
+        if (segs.length >= 5) setTier('Platinum', segs[4]);
+      } else {
+        setBudget(2500);
+      }
+      
+      showNotification(`🍿 Concession recommendations optimized for "${movie.title}"! Scroll down to view bundle.`, 'success');
+      scrollToSection('menu-anchor');
+      handleOptimize();
+    }
+
+    function initHourlyMovieSync() {
+      client.startHourlyMovieSyncEngine((freshMovies) => {
+        allMovies = freshMovies;
+        renderMovies();
+        if (activeCinema) renderMovieMarquee(activeCinema.id);
+        showNotification('🔄 Hourly Movie Sync: Schedules refreshed from theater feeds!', 'info');
+      }, (remainingSec, formatted) => {
+        const countdownEl = document.getElementById('movie-sync-countdown');
+        if (countdownEl) countdownEl.textContent = formatted;
+      });
+    }
+
+
+    /* ── Load Menu ─────────────────────────────────── */
+    async function loadMenu(cinemaId) {
+      try {
+        const data = await client.getLiveConcessions(cinemaId);
+        menu = (data.items || []).map(item => {
+          const price = item.price_lkr !== undefined ? item.price_lkr : (item.price || 0);
+          const orig = item.base_price_lkr !== undefined ? item.base_price_lkr : (item.original_price || price);
+          let img = foodImageFor(item);
+          if (!img) {
+            if (item.category === 'Popcorn') img = 'assets/images/popcorn.jpg';
+            else if (item.category === 'Beverage') img = 'assets/images/beverage.jpg';
+            else if (item.category === 'Combo') img = 'assets/images/combo.jpg';
+            else if (item.name && item.name.toLowerCase().includes('dog')) img = 'assets/images/hotdog.jpg';
+            else if (item.name && (item.name.toLowerCase().includes('roll') || item.name.toLowerCase().includes('samosa'))) img = 'assets/images/rolls.jpg';
+            else img = 'assets/images/nachos.jpg';
+          }
+          return {
+            ...item,
+            price: price,
+            original_price: orig,
+            image: img
+          };
+        });
+      } catch (err) {
+        if (client.apiRequired) { showNotification(err.message || "Please reload the cinema guide.", "warning"); return; }
+        console.warn('Menu fallback to authentic catalog:', err);
+      }
+      if (!menu || menu.length === 0) {
+        menu = [
+          { id:"P01", category:"Popcorn", name:"Scope Warm Caramel Popcorn Tub", size:"Jumbo Souvenir Tub", price:1350, original_price:1600, image:"assets/images/popcorn.jpg", price_trend:"down", description:"Scope signature crunchy caramelized warm corn in commemorative cinema souvenir tub" },
+          { id:"P02", category:"Popcorn", name:"Kochchi & White Cheddar Popcorn", size:"Large Bucket", price:1250, original_price:1450, image:"assets/images/popcorn.jpg", price_trend:"down", description:"Hot butterfly corn tossed with fiery Sri Lankan green kochchi & Wisconsin cheddar dust" },
+          { id:"P03", category:"Popcorn", name:"Classic Clarified Butter Salted Popcorn", size:"Large Bucket", price:1100, original_price:1300, image:"assets/images/popcorn.jpg", price_trend:"steady", description:"Freshly popped butterfly corn drenched in golden clarified butter and pure sea salt" },
+          { id:"P04", category:"Popcorn", name:"Scope Double Chocolate Glazed Popcorn", size:"Large Bucket", price:1250, original_price:1450, image:"assets/images/popcorn.jpg", price_trend:"down", description:"Crunchy popped corn generously drizzled with rich Belgian milk and dark chocolate glaze" },
+          { id:"B01", category:"Beverage", name:"Chilled Milo Dinosaur Float", size:"Tall Glass", price:550, original_price:650, image:"assets/images/beverage.jpg", price_trend:"down", description:"Chilled Ceylon chocolate malt Milo topped with vanilla ice cream and heaped cocoa powder" },
+          { id:"B02", category:"Beverage", name:"Elephant House Ginger Beer (EGB) Float", size:"Regular 450ml", price:480, original_price:580, image:"assets/images/beverage.jpg", price_trend:"steady", description:"Authentic spicy Ceylon ginger beer with crushed ice and creamy vanilla ice cream float" },
+          { id:"B03", category:"Beverage", name:"Scope Fresh Passion Fruit Mint Sparkler", size:"Medium 500ml", price:750, original_price:900, image:"assets/images/beverage.jpg", price_trend:"down", description:"Real island passion fruit pulp with crushed garden mint and sparkling soda" },
+          { id:"B04", category:"Beverage", name:"Scope Large Fountain Coca-Cola", size:"Large 650ml", price:650, original_price:800, image:"assets/images/beverage.jpg", price_trend:"steady", description:"Ice-cold fountain Coca-Cola with fresh carbonation and lemon wedge" },
+          { id:"B05", category:"Beverage", name:"Scope Creamy Iced Coffee Float", size:"Tall Glass", price:680, original_price:800, image:"assets/images/beverage.jpg", price_trend:"steady", description:"Rich brewed Ceylon coffee with sweetened milk, dark cocoa dust, and vanilla float" },
+          { id:"S01", category:"Snack", name:"Scope Kitchen Kochchi Cheese Sticks (4 pcs)", size:"Hot Snack", price:950, original_price:1100, image:"assets/images/rolls.jpg", price_trend:"down", description:"Golden crumbed molten mozzarella sticks spiked with spicy green kochchi chili dip" },
+          { id:"S02", category:"Snack", name:"Scope Kitchen Crispy Chicken Strips (4 pcs)", size:"Hot Snack", price:1150, original_price:1350, image:"assets/images/rolls.jpg", price_trend:"steady", description:"Golden crumbed tender chicken breast strips served with house garlic mayonnaise dip" },
+          { id:"S03", category:"Snack", name:"Loaded Steak & Queso Fries", size:"Sharing Platter", price:1450, original_price:1700, image:"assets/images/nachos.jpg", price_trend:"down", description:"Crispy skin-on seasoned fries smothered in hot jalapeño queso and tender steak strips" },
+          { id:"S04", category:"Snack", name:"IMAX Loaded Chicken Nachos", size:"Sharing Platter", price:1450, original_price:1700, image:"assets/images/nachos.jpg", price_trend:"down", description:"Stone-ground corn chips with hot queso, jalapeños, salsa, and seasoned chicken" },
+          { id:"S05", category:"Snack", name:"Gourmet Brioche Chicken Hotdog", size:"Single", price:1150, original_price:1350, image:"assets/images/hotdog.jpg", price_trend:"steady", description:"Artisan grilled chicken sausage in buttered brioche bun with sweet pickle relish" },
+          { id:"S06", category:"Snack", name:"Spicy Beef Chili Dog with Jalapeños", size:"Single", price:1350, original_price:1550, image:"assets/images/hotdog.jpg", price_trend:"down", description:"Grilled beef frankfurter loaded with spiced meat chili, melted cheddar, and jalapeño slices" },
+          { id:"S07", category:"Snack", name:"Crispy Ceylon Chicken Rolls (2 pcs)", size:"Hot Snack", price:820, original_price:950, image:"assets/images/rolls.jpg", price_trend:"down", description:"Crispy golden crumbed Sri Lankan bakery-style spicy chicken rolls with chili dip" },
+          { id:"S08", category:"Snack", name:"Crispy Vegetable Samosa Platter (4 pcs)", size:"Sharing Plate", price:750, original_price:900, image:"assets/images/rolls.jpg", price_trend:"steady", description:"Golden spiced potato and pea pastry triangles served with sweet tamarind chutney" },
+          { id:"C01", category:"Combo", name:"Scope Director's Deluxe Couple Combo", size:"Duo Feast", price:2950, original_price:3600, image:"assets/images/combo.jpg", price_trend:"down", description:"1 Jumbo Caramel Popcorn + 2 Large Fountain Drinks + 1 Loaded Nachos Platter" },
+          { id:"C02", category:"Combo", name:"CinePass VIP Platinum Movie Feast", size:"Family (3-4 Pax)", price:4200, original_price:5200, image:"assets/images/combo.jpg", price_trend:"down", description:"2 Jumbo Popcorns (Caramel + Cheese) + 3 Drinks + 1 Brioche Hotdog + 1 Nachos Platter" },
+          { id:"C03", category:"Combo", name:"Scope Kitchen Movie Meal Box", size:"Solo Combo", price:2250, original_price:2700, image:"assets/images/combo.jpg", price_trend:"down", description:"1 Large Caramel Popcorn + 1 Kochchi Cheese Sticks (4 pcs) + 1 Chilled Milo Dinosaur Float" },
+          { id:"C04", category:"Combo", name:"Solo Movie Snack Saver", size:"Single Pack", price:1650, original_price:2100, image:"assets/images/combo.jpg", price_trend:"down", description:"1 Large Clarified Butter Popcorn + 1 Medium Fountain Drink + 2 Ceylon Bakery Rolls" }
+        ];
+      }
+      updateFilterCounts();
+      renderMenu();
+    }
+
+
+    /* ── Load Deals ────────────────────────────────── */
+    async function loadDeals(cinemaId) {
+      try {
+        const ads = await client.getCinemaAds(cinemaId);
+        renderDeals(ads);
+      } catch (err) {
+        if (client.apiRequired) { showNotification(err.message || "Please reload the cinema guide.", "warning"); return; }
+        renderDeals([
+          { promo_code:"CINE-COMBO30", title:"Combo Flash Deal", subtitle:"Save 30% on any couple or family combo this weekend", discount_text:"30% OFF", is_flash_ad:true, badge_text:"FLASH DEAL" },
+          { promo_code:"CINE-CINEMA25", title:"CinePass Silver+ Perk", subtitle:"Unlock 25% on all fountain beverages with Silver tier or above", discount_text:"25% OFF", badge_text:"VIP PERK" },
+          { promo_code:"CINE-STUDENT", title:"Student Movie Special", subtitle:"Show your school/university ID for 15% off entire order", discount_text:"15% OFF", badge_text:"STUDENT" },
+        ]);
+      }
+    }
+
+    function renderDeals(ads) {
+      const grid = document.getElementById('deals-grid');
+      if (!ads || ads.length === 0) {
+        grid.innerHTML = '<div style="color:var(--cb-text-muted);font-size:0.85rem;">No active deals right now.</div>';
+        return;
+      }
+      grid.innerHTML = ads.map(ad => `
+        <div class="deal-card" onclick="applyDeal('${ad.promo_code || ''}')">
+          <div class="deal-card-header">
+            <h4>${ad.title}</h4>
+            <span class="badge ${ad.is_flash_ad ? 'badge-amber' : 'badge-blue'}">${ad.badge_text || 'DEAL'}</span>
+          </div>
+          <p>${ad.subtitle}</p>
+          <div class="deal-card-footer">
+            <span style="font-weight:700;color:var(--cb-green);">${ad.discount_text}</span>
+            <button class="add-to-cart-btn" style="font-size:0.75rem;padding:0.3rem 0.7rem;">Try this offer →</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function applyDeal(code) {
+      if (code) setPromo(code);
+      scrollToSection('optimizer-anchor');
+      showNotification(`Applied promo code ${code}! Finding best bundle...`, 'success');
+      handleOptimize();
+    }
+
+
+    /* ── Render Menu ───────────────────────────────── */
+    function renderMenu() {
+      const grid = document.getElementById('menu-grid');
+      const filtered = activeCategory === 'ALL' ? menu : menu.filter(i => i.category.toLowerCase() === activeCategory.toLowerCase());
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div style="color:var(--cb-text-muted);padding:2rem;grid-column:1/-1;text-align:center;">No items in this category.</div>';
+        return;
+      }
+
+      const emojiMap = { Popcorn:'🍿', Beverage:'🥤', Snack:'🌭', Combo:'🎬' };
+      const imageMap = { Popcorn:'assets/images/popcorn.jpg', Beverage:'assets/images/beverage.jpg', Snack:'assets/images/nachos.jpg', Combo:'assets/images/combo.jpg' };
+
+      grid.innerHTML = filtered.map(item => {
+        const price = (typeof item.price_lkr === 'number') ? item.price_lkr : (typeof item.price === 'number' ? item.price : 0);
+        const origPrice = (typeof item.base_price_lkr === 'number') ? item.base_price_lkr : (typeof item.original_price === 'number' ? item.original_price : price);
+        const savings = Math.max(0, origPrice - price);
+        const emoji = emojiMap[item.category] || '🍴';
+        const img = foodImageFor(item);
+        const hasDrop = item.price_trend === 'down' || item.price_trend === 'flash_drop';
+
+        return `
+          <div class="menu-item-card">
+            <div class="menu-item-visual" style=""><img class="card-photo" src="${img}" alt="" loading="lazy" decoding="async" width="640" height="400">
+              <div style="position:absolute; inset:0; background: linear-gradient(180deg, rgba(6,6,11,0.2) 0%, rgba(6,6,11,0.85) 100%);"></div>
+              <span class="badge badge-purple" style="position:absolute; top:0.75rem; left:0.75rem; font-size:0.68rem; z-index:2; backdrop-filter:blur(8px);">
+                ${emoji} ${item.category}
+              </span>
+              ${hasDrop ? '<span class="badge badge-green" style="position:absolute; top:0.75rem; right:0.75rem; font-size:0.68rem; z-index:2; backdrop-filter:blur(8px);">⚡ Price estimate</span>' : ''}
+              <div style="position:absolute; bottom:0.65rem; left:0.75rem; font-size:0.72rem; color:rgba(255,255,255,0.85); z-index:2; font-weight:600;">
+                ${item.size || 'Cinema Portion'}
+              </div>
+            </div>
+            <div class="menu-item-body">
+              <div class="menu-item-name">${item.name}</div>
+              <div class="menu-item-desc">${item.description || item.category + ' · ' + (item.size || 'Regular')}</div>
+              ${savings > 0 ? `<div class="menu-item-save">Save LKR ${savings.toFixed(0)} with CinePass</div>` : '<div style="height:19px;"></div>'}
+              <div class="menu-item-footer">
+                <div>
+                  <div class="menu-item-price">LKR ${price.toFixed(0)}</div>
+                  ${savings > 0 ? `<div class="menu-item-price-old">LKR ${origPrice.toFixed(0)}</div>` : ''}
+                </div>
+                <button class="add-to-cart-btn" onclick="addToCartById('${item.id}')">+ Add to Tray</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateFilterCounts() {
+      const counts = {
+        ALL: menu.length,
+        Popcorn: menu.filter(i => (i.category || '').toLowerCase() === 'popcorn').length,
+        Beverage: menu.filter(i => (i.category || '').toLowerCase() === 'beverage').length,
+        Snack: menu.filter(i => (i.category || '').toLowerCase() === 'snack').length,
+        Combo: menu.filter(i => (i.category || '').toLowerCase() === 'combo').length,
+      };
+      for (const [k, v] of Object.entries(counts)) {
+        const el = document.getElementById(`fcount-${k}`);
+        if (el) el.textContent = `(${v})`;
+      }
+    }
+
+    function filterMenu(cat, el) {
+      activeCategory = cat;
+      document.querySelectorAll('.filter-pill').forEach(btn => btn.classList.remove('active'));
+      el.classList.add('active');
+      renderMenu();
+    }
+
+
+    /* ── Cart ──────────────────────────────────────── */
+    function addToCartById(id) {
+      const item = menu.find(i => i.id === id);
+      if (item) {
+        const price = (typeof item.price_lkr === 'number') ? item.price_lkr : (typeof item.price === 'number' ? item.price : 0);
+        const originalPrice = (typeof item.base_price_lkr === 'number') ? item.base_price_lkr : (typeof item.original_price === 'number' ? item.original_price : price);
+        const existing = cart.find(x => x.id === item.id);
+        if (existing) {
+          existing.quantity = (existing.quantity || 1) + 1;
+        } else {
+          cart.push({ ...item, price, original_price: originalPrice, quantity: 1, cinema_id: activeCinema ? activeCinema.id : '' });
+        }
+        updateCart();
+        showNotification(`Added ${item.name} to tray`, 'success');
+      }
+    }
+
+    function updateCart() {
+      const bar = document.getElementById('floating-cart');
+      const totalItems = cart.reduce((s, i) => s + (i.quantity || 1), 0);
+      const cartCountEl = document.getElementById('cart-count');
+      if (cartCountEl) cartCountEl.textContent = totalItems;
+      localStorage.setItem('cinebite_cart', JSON.stringify(cart));
+
+      if (cart.length === 0) { if (bar) bar.style.display = 'none'; return; }
+      if (bar) bar.style.display = 'flex';
+      const countBadge = document.getElementById('cart-count-badge');
+      if (countBadge) countBadge.textContent = totalItems;
+      const subtotal = cart.reduce((s, i) => s + (((typeof i.price_lkr === 'number') ? i.price_lkr : (typeof i.price === 'number' ? i.price : 0)) * (i.quantity || 1)), 0);
+      const totEl = document.getElementById('cart-total');
+      if (totEl) totEl.textContent = `LKR ${subtotal.toFixed(0)}`;
+    }
+
+    function initCartFromStorage() {
+      try {
+        const raw = localStorage.getItem('cinebite_cart');
+        if (raw) {
+          cart = JSON.parse(raw);
+          updateCart();
+        }
+      } catch (e) {}
+    }
+
+    
+
+
+
+    /* ── Optimizer ─────────────────────────────────── */
+    async function handleOptimize() {
+      if (!activeCinema) return;
+      const budget = parseFloat(document.getElementById('budget-input').value) || 2500;
+      const promoCode = document.getElementById('promo-input').value.trim();
+      const btn = document.getElementById('btn-optimize');
+      btn.textContent = '⏳ Calculating...';
+
+      try {
+        const result = await client.recommendBundle({
+          cinemaId: activeCinema.id,
+          budget,
+          partySize,
+          privilegeTier: tier,
+          promoCode,
+        });
+        renderResult(result);
+      } catch (err) {
+        if (client.apiRequired) { showNotification(err.message || "Please reload the cinema guide.", "warning"); return; }
+        console.error('Optimize error:', err);
+        showNotification('Calculated best bundle for your budget.', 'info');
+      } finally {
+        btn.textContent = '⚡ Suggest snacks';
+      }
+    }
+
+    function renderResult(res) {
+      lastRecommendedBundle = res;
+      const container = document.getElementById('recommendation-result');
+      const upsellBox = document.getElementById('upsell-box');
+
+      if (res.upsell_advice) {
+        upsellBox.textContent = `💡 ${res.upsell_advice}`;
+        upsellBox.style.display = 'block';
+      }
+
+      container.style.display = 'block';
+      container.innerHTML = `
+        <div class="result-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;flex-wrap:wrap;gap:0.5rem;">
+            <div>
+              <span class="badge badge-green" style="margin-bottom:0.35rem;">🎉 Best Deal Found</span>
+              <h3 style="font-size:1.2rem;font-weight:800;">Recommended Bundle</h3>
+            </div>
+            <span class="badge badge-purple">${res.applied_promo || 'No Promo'}</span>
+          </div>
+
+          <div class="result-items-grid">
+            ${res.items.map(item => {
+              const p = (typeof item.price_lkr === 'number') ? item.price_lkr : (typeof item.price === 'number' ? item.price : 0);
+              return `
+              <div class="result-item">
+                <div style="font-weight:700;font-size:0.9rem;">${item.name}</div>
+                <div style="font-size:0.75rem;color:var(--cb-text-secondary);">${item.category} · ${item.size || 'Regular'}</div>
+                <div style="font-weight:700;margin-top:0.3rem;">LKR ${p.toFixed(0)}</div>
+              </div>
+            `;}).join('')}
+          </div>
+
+          <div class="result-summary">
+            <div>
+              <span style="font-size:0.8rem;color:var(--cb-text-secondary);">Original: <del>LKR ${(res.original_total || 0).toFixed(0)}</del></span>
+              <div style="font-size:1.3rem;font-weight:800;color:var(--cb-green);">
+                LKR ${(res.final_total || 0).toFixed(0)}
+                <span style="font-size:0.82rem;font-weight:600;">(Saved LKR ${(res.discount_amount || 0).toFixed(0)})</span>
+              </div>
+            </div>
+            <button class="btn-primary btn-green" onclick="openVoucherWithResult()">
+              🎟️ Review Food Plan
+            </button>
+          </div>
+        </div>
+      `;
+      container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+
+    /* ── Voucher Modal ─────────────────────────────── */
+    let lastRecommendedBundle = null;
+
+    function openVoucherWithResult(res = null) {
+      const data = res || lastRecommendedBundle;
+      if (data && data.items) cart = [...data.items];
+      openVoucherModal(data);
+    }
+
+
+
+
+
+    function openVoucherModal(customRes = null) {
+      if (customRes && customRes.items) {
+        cart = customRes.items.map(item => ({...item, quantity: item.quantity || 1, cinema_id: activeCinema ? activeCinema.id : ''}));
+        updateCart();
+      }
+      window.location.href = 'food-plan.html';
+    }
+
+    function closeVoucherModal() {
+      document.getElementById('voucher-modal').classList.remove('open');
+    }
+
+    function closeVoucherOnBackdrop(e) {
+      if (e.target.id === 'voucher-modal') closeVoucherModal();
+    }
+
+
+    /* ── All Cinemas Modal ─────────────────────────── */
+    function openAllCinemasModal() {
+      renderModalCinemas(cinemas);
+      document.getElementById('modal-count-stat').textContent = `${cinemas.length} cinemas listed`;
+      document.getElementById('cinemas-modal').classList.add('open');
+    }
+
+    function closeCinemasModal() {
+      document.getElementById('cinemas-modal').classList.remove('open');
+    }
+
+    function closeCinemasOnBackdrop(e) {
+      if (e.target.id === 'cinemas-modal') closeCinemasModal();
+    }
+
+    function renderModalCinemas(list) {
+      const grid = document.getElementById('modal-cinemas-grid');
+      if (list.length === 0) {
+        grid.innerHTML = '<div style="color:var(--cb-text-muted);grid-column:1/-1;padding:2rem;text-align:center;">No cinemas match your search.</div>';
+        return;
+      }
+      grid.innerHTML = list.map(c => {
+        const isActive = activeCinema && activeCinema.id === c.id;
+        const cinemaImg = c.image || (c.name.toLowerCase().includes('imax') ? 'assets/images/cinema-imax.jpg' : (c.screens >= 4 ? 'assets/images/cinema-multiplex.jpg' : 'assets/images/cinema-heritage.jpg'));
+        const techBadge = c.technology || `${c.screens} Screens • Dolby Atmos`;
+        return `
+          <div class="glass-card" style="padding:1.15rem;cursor:pointer;${isActive ? 'border-color:var(--cb-purple);box-shadow:var(--cb-shadow-glow-purple);' : ''}" onclick="selectFromModal('${c.id}')">
+            <div style="background-image: url('${cinemaImg}'); background-size: cover; background-position: center; height: 110px; border-radius: var(--r-sm); position: relative; margin-bottom: 0.75rem;">
+              <div style="position:absolute; inset:0; background: linear-gradient(180deg, rgba(6,6,11,0.2) 0%, rgba(6,6,11,0.85) 100%); border-radius: var(--r-sm);"></div>
+              <span class="badge badge-purple" style="position:absolute; top:0.5rem; left:0.5rem; font-size:0.65rem; z-index:2; backdrop-filter:blur(6px);">${c.chain || 'Independent'}</span>
+              <span style="position:absolute; bottom:0.4rem; left:0.5rem; font-size:0.68rem; color:#fff; font-weight:700; z-index:2;">✨ ${techBadge}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem;margin-bottom:0.35rem;">
+              <h4 style="font-size:0.98rem;font-weight:700;">${c.name}</h4>
+              <span class="badge badge-blue" style="font-size:0.68rem;white-space:nowrap;">${c.chain || 'Independent'}</span>
+            </div>
+            <div style="font-size:0.78rem;color:var(--cb-text-secondary);margin-bottom:0.5rem;">
+              📍 ${c.address || c.city} · <span style="color:var(--cb-green);font-weight:600;">${c.screens} Screens</span>
+            </div>
+            <div style="background:rgba(52,211,153,0.05);border:1px solid rgba(52,211,153,0.15);border-radius:var(--r-sm);padding:0.55rem 0.7rem;margin-bottom:0.5rem;">
+              <div style="font-size:0.72rem;color:var(--cb-green);font-weight:700;">🍔 Food Court In Front</div>
+              <div style="font-size:0.82rem;font-weight:700;margin-top:0.15rem;">${c.food_court_name || 'Concession Counter'}</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,0.05);padding-top:0.55rem;">
+              ${isActive ? '<span class="badge badge-green">✓ Active</span>' : '<span style="font-size:0.72rem;color:var(--cb-text-muted);">Tap to select</span>'}
+              <button class="btn-${isActive ? 'secondary' : 'primary'}" style="font-size:0.78rem;padding:0.35rem 0.8rem;" onclick="event.stopPropagation();selectFromModal('${c.id}')">
+                ${isActive ? 'Selected' : 'Select'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterModalCinemas(query) {
+      const q = query.toLowerCase().trim();
+      if (!q) { renderModalCinemas(cinemas); return; }
+      renderModalCinemas(cinemas.filter(c =>
+        c.name.toLowerCase().includes(q) ||
+        c.city.toLowerCase().includes(q) ||
+        (c.chain || '').toLowerCase().includes(q) ||
+        (c.food_court_name || '').toLowerCase().includes(q)
+      ));
+    }
+
+    function selectFromModal(id) {
+      selectCinemaById(id);
+      closeCinemasModal();
+    }
+
+
+    /* ── Search ────────────────────────────────────── */
+    function setupSearch() {
+      const input = document.getElementById('search-input');
+      const dropdown = document.getElementById('search-dropdown');
+      const status = document.getElementById('search-status');
+      input.setAttribute('role', 'combobox');
+      input.setAttribute('aria-autocomplete', 'list');
+      input.setAttribute('aria-controls', 'search-dropdown');
+      input.setAttribute('aria-expanded', 'false');
+      input.setAttribute('aria-label', 'Search cinemas or cities');
+      dropdown.setAttribute('role', 'listbox');
+      dropdown.setAttribute('aria-label', 'Matching cinemas');
+      let matches = [];
+      let selectedIndex = -1;
+      const close = () => {
+        document.body.classList.remove("search-open");
+        dropdown.style.display = 'none';
+        input.setAttribute('aria-expanded', 'false');
+        input.removeAttribute('aria-activedescendant');
+        selectedIndex = -1;
+      };
+      const render = () => {
+        const q = input.value.toLowerCase().trim();
+        dropdown.replaceChildren();
+        selectedIndex = -1;
+        input.removeAttribute('aria-activedescendant');
+        if (!q) { close(); status.textContent = ''; return; }
+        matches = cinemas.filter(c => [c.name,c.city,c.chain||''].some(value => value.toLowerCase().includes(q)));
+        status.textContent = matches.length ? `${matches.length} matching cinemas` : 'No matching cinemas';
+        if (!matches.length) {
+          const empty = document.createElement('div');
+          empty.className = 'search-empty';
+          empty.textContent = 'No cinemas found. Try another cinema name or city.';
+          dropdown.append(empty);
+        }
+        matches.forEach((cinema, index) => {
+          const row = document.createElement('button');
+          row.type = 'button'; row.className = 'search-result-item';
+          row.id = `cinema-search-option-${index}`;
+          row.setAttribute('role','option'); row.setAttribute('aria-selected','false');
+          row.tabIndex = -1;
+          const image = document.createElement('img');
+          image.className = 'search-result-photo'; image.src = cinema.image || 'assets/images/cinema-heritage.jpg'; image.alt = '';
+          const copy = document.createElement('span'); copy.className = 'search-result-copy';
+          const name = document.createElement('span'); name.className = 'search-result-name'; name.textContent = cinema.name;
+          const meta = document.createElement('span'); meta.className = 'search-result-meta'; meta.textContent = `${cinema.city} · ${cinema.chain || 'Independent'}`;
+          const arrow = document.createElement('span'); arrow.className = 'search-result-arrow'; arrow.textContent = '→'; arrow.setAttribute('aria-hidden','true');
+          copy.append(name,meta); row.append(image,copy,arrow);
+          row.onclick = () => { onSearchSelect(cinema.id); close(); };
+          dropdown.append(row);
+        });
+        document.body.classList.add("search-open");
+        dropdown.style.display = 'block';
+        input.setAttribute('aria-expanded', 'true');
+      };
+      input.addEventListener('input', render);
+      input.addEventListener('focus', () => {if (input.value.trim()) render();});
+      input.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {close();return;}
+        if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && matches.length) {
+          event.preventDefault();
+          if (dropdown.style.display === 'none') render();
+          selectedIndex = event.key === 'ArrowDown' ? (selectedIndex+1)%matches.length : (selectedIndex-1+matches.length)%matches.length;
+          const rows = dropdown.querySelectorAll('[role="option"]');
+          rows.forEach((row,index) => row.setAttribute('aria-selected', String(index===selectedIndex)));
+          input.setAttribute('aria-activedescendant', rows[selectedIndex].id);
+          rows[selectedIndex].scrollIntoView({block:'nearest'});
+        } else if (event.key === 'Enter' && dropdown.style.display !== 'none' && matches.length) {
+          event.preventDefault();
+          onSearchSelect(matches[selectedIndex<0?0:selectedIndex].id); close();
+        } else if (event.key === 'Tab') close();
+      });
+      document.addEventListener('click', event => {if (!input.contains(event.target) && !dropdown.contains(event.target)) close();});
+    }
+
+    function onSearchSelect(id) {
+      selectCinemaById(id);
+      document.getElementById('search-dropdown').style.display = 'none';
+      document.getElementById('search-input').value = '';
+    }
+
+
+    /* ── Floating Notification Toast ───────────────── */
+    function showNotification(message, type = 'info') {
+      let toast = document.getElementById('cb-toast-notification');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'cb-toast-notification';
+        toast.style.cssText = `
+          position: fixed;
+          bottom: 2rem;
+          left: 50%;
+          transform: translateX(-50%) translateY(20px);
+          background: rgba(28, 28, 30, 0.95);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          color: #fff;
+          padding: 0.85rem 1.4rem;
+          border-radius: 999px;
+          font-size: 0.9rem;
+          font-weight: 600;
+          box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+          z-index: 9999;
+          opacity: 0;
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          pointer-events: none;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          max-width: 90vw;
+          text-align: center;
+        `;
+        document.body.appendChild(toast);
+      }
+      toast.textContent = message;
+      if (type === 'success') {
+        toast.style.borderColor = 'rgba(48, 209, 88, 0.5)';
+        toast.style.boxShadow = '0 12px 32px rgba(48, 209, 88, 0.25)';
+      } else if (type === 'warning') {
+        toast.style.borderColor = 'rgba(255, 159, 10, 0.5)';
+        toast.style.boxShadow = '0 12px 32px rgba(255, 159, 10, 0.25)';
+      } else {
+        toast.style.borderColor = 'rgba(10, 132, 255, 0.5)';
+        toast.style.boxShadow = '0 12px 32px rgba(10, 132, 255, 0.25)';
+      }
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateX(-50%) translateY(0)';
+      clearTimeout(toast._timeout);
+      toast._timeout = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(20px)';
+      }, 3500);
+    }
+
+    /* ── Geolocation & Haversine Distance Engine ───── */
+    function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
+      if (!lat1 || !lon1 || !lat2 || !lon2) return 9999;
+      const R = 6371.0;
+      const dLat = (lat2 - lat1) * (Math.PI / 180.0);
+      const dLon = (lon2 - lon1) * (Math.PI / 180.0);
+      const rLat1 = lat1 * (Math.PI / 180.0);
+      const rLat2 = lat2 * (Math.PI / 180.0);
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(rLat1) * Math.cos(rLat2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return Math.round(R * c * 10) / 10;
+    }
+
+    /* ── Quick City Filter ──────────────────────────── */
+    function filterByCity(cityName, btnEl) {
+      if (btnEl) {
+        document.querySelectorAll('#city-quick-filters .filter-pill').forEach(b => b.classList.remove('active'));
+        btnEl.classList.add('active');
+      }
+      if (!allCinemasMaster || allCinemasMaster.length === 0) {
+        allCinemasMaster = [...cinemas];
+      }
+      if (cityName === 'ALL' || !cityName) {
+        cinemas = [...allCinemasMaster];
+      } else {
+        const query = cityName.toLowerCase();
+        cinemas = allCinemasMaster.filter(c => 
+          (c.city && c.city.toLowerCase().includes(query)) ||
+          (c.name && c.name.toLowerCase().includes(query)) ||
+          (c.province && c.province.toLowerCase().includes(query))
+        );
+      }
+      renderCinemaCards();
+      if (cinemas.length > 0) {
+        selectCinema(cinemas[0]);
+        showNotification(`Filtered to ${cityName} (${cinemas.length} theater${cinemas.length > 1 ? 's' : ''})`, 'info');
+      } else {
+        showNotification(`No theaters in ${cityName}. Showing all theaters.`, 'warning');
+        cinemas = [...allCinemasMaster];
+        renderCinemaCards();
+      }
+    }
+
+    /* ── GPS Detection ─────────────────────────────── */
+    async function handleDetectLocation() {
+      const btn = document.getElementById('btn-detect-gps');
+      const originalText = btn.textContent;
+      btn.textContent = '📡 Detecting...';
+
+      if (!navigator.geolocation) {
+        showNotification('GPS not available in browser. Select your city below.', 'warning');
+        btn.textContent = originalText;
+        return;
+      }
+
+      showNotification('🛰️ Accessing GPS to locate nearest Sri Lankan theater...', 'info');
+
+      // 8-second safety timeout so button never gets stuck
+      const safetyTimer = setTimeout(() => {
+        if (btn.textContent === '📡 Detecting...') {
+          btn.textContent = originalText;
+          showNotification('GPS response delayed. Pick your city below!', 'warning');
+        }
+      }, 8000);
+
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        clearTimeout(safetyTimer);
+        try {
+          const userLat = pos.coords.latitude;
+          const userLng = pos.coords.longitude;
+
+          // Always ensure cinemas has our full catalog
+          if (!allCinemasMaster || allCinemasMaster.length === 0) {
+            allCinemasMaster = [...cinemas];
+          }
+
+          cinemas = [...allCinemasMaster];
+
+          // Compute distances client-side with 100% reliability
+          cinemas.forEach(c => {
+            if (c.latitude && c.longitude) {
+              c.distance_km = calculateHaversineDistance(userLat, userLng, c.latitude, c.longitude);
+            } else {
+              c.distance_km = 9999;
+            }
+          });
+
+          // Sort ascending by geographical distance
+          cinemas.sort((a, b) => (a.distance_km || 9999) - (b.distance_km || 9999));
+          renderCinemaCards();
+
+          if (cinemas.length > 0) {
+            await selectCinema(cinemas[0]);
+            const nearest = cinemas[0];
+            const dist = nearest.distance_km;
+            const distStr = (typeof dist === 'number' && dist < 9000) ? ` (${dist.toFixed(1)} km away)` : '';
+            showNotification(`📍 Nearest Theater: ${nearest.name}${distStr}`, 'success');
+          }
+        } catch (err) {
+        if (client.apiRequired) { showNotification(err.message || "Please reload the cinema guide.", "warning"); return; }
+          console.error('GPS calculation error:', err);
+          showNotification('Location detected! Select your cinema.', 'info');
+        } finally {
+          btn.textContent = '📍 Near Me';
+        }
+      }, (err) => {
+        clearTimeout(safetyTimer);
+        btn.textContent = '📍 Near Me';
+        console.warn('Geolocation permission or error:', err.code, err.message);
+        showNotification('Location access blocked. Pick your city from the buttons above!', 'warning');
+      }, { timeout: 8000, enableHighAccuracy: true });
+    }
+
+
+
+    /* ── Controls ──────────────────────────────────── */
+    function setBudget(v) { document.getElementById('budget-input').value = v; }
+
+    function setParty(size, el) {
+      partySize = size;
+      document.querySelectorAll('#seg-party .segment-item').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function setTier(t, el) {
+      tier = t;
+      document.getElementById('nav-tier-badge').textContent = `🎟️ ${t}`;
+      document.querySelectorAll('#seg-tier .segment-item').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function setPromo(code) {
+      document.getElementById('promo-input').value = code;
+      promo = code;
+    }
+
+
+    /* ── Live Refresh ──────────────────────────────── */
+    function startRefreshTicker() {
+      refreshInterval = setInterval(async () => {
+        if (document.hidden) return;
+        refreshCountdown--;
+        if (refreshCountdown <= 0) {
+          refreshCountdown = window.matchMedia("(max-width:600px)").matches ? 60 : 30;
+          if (activeCinema) await loadMenu(activeCinema.id);
+        }
+        const navTimer = document.getElementById('nav-sync-timer');
+        if (navTimer) navTimer.textContent = `${refreshCountdown}s`;
+        const badge = document.getElementById('menu-refresh-badge');
+        if (badge) badge.textContent = `${refreshCountdown}s`;
+      }, 1000);
+    }
+
+
+    /* ── Scroll Helper ─────────────────────────────── */
+    function scrollToSection(id) {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  </script>
+
+<div class="sample-note">Local preview · Cinema and movie listings are sample data; food prices and offers are estimates. Food photos are illustrative. <a href="photo-credits.html">Photo credits</a></div>
+</body>
+</html>

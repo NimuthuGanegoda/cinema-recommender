@@ -2,7 +2,6 @@
 
 package server
 
-import "embed"
+import "cinema-recommender/web"
 
-//go:embed ui/*
-var uiAssets embed.FS
+var uiAssets = web.Files

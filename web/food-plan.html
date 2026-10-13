@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Food Plan — CineBite</title><link rel="stylesheet" href="assets/css/apple-design-system.css">
+<style>body{background:#08080d;color:#fff;font-family:system-ui;margin:0}main{max-width:760px;margin:3rem auto;padding:1.5rem}nav{display:flex;gap:1.2rem;flex-wrap:wrap}a{color:#b795ff}article{padding:1rem;margin:.7rem 0;background:#1c1c1e;border-radius:12px;display:flex;justify-content:space-between;gap:1rem}button,input{font:inherit}button{cursor:pointer;border:0;border-radius:8px;padding:.5rem .8rem}input{width:4rem}#summary{padding:1rem;background:#1c1c1e;border-radius:12px}p{line-height:1.6;color:#bcbcc8}</style><link rel="stylesheet" href="assets/css/cinema-polish.css?v=5"><script src="assets/js/cinema-environment.js?v=2"></script></head>
+<body><nav class="navbar" aria-label="Main navigation"><a href="index.html" class="nav-brand"><span class="nav-logo" aria-hidden="true">🍿</span><span class="nav-brand-text">CineBite</span></a><div class="nav-links"><a href="index.html" class="nav-link">Home</a><a href="movies.html" class="nav-link">Movies</a><a href="cinemas.html" class="nav-link">Cinemas</a><a href="menu.html" class="nav-link">Food menu</a><a href="optimizer.html" class="nav-link">Snack planner</a><a href="deals.html" class="nav-link">Food deals</a></div><div class="nav-right"><a href="food-plan.html" class="nav-plan" aria-current="page">Food plan <span aria-label="Selected items">(<span id="cart-count">0</span>)</span></a></div><span id="nav-live-cinema" hidden></span><span id="nav-tier-badge" hidden></span></nav><main class="food-plan-page">
+<h1>Your food plan</h1><p class="food-plan-intro">Compare snacks and estimate your cinema food budget. Prices and availability should be checked with the cinema.</p>
+<div id="items"></div><div id="summary" aria-live="polite"></div><p id="status"></p>
+<button id="print-plan" type="button">Print food plan</button> <a href="menu.html">Add more food</a>
+<script>
+let plan=[];
+try { const saved=JSON.parse(localStorage.getItem('cinebite_cart')||'[]'); if(Array.isArray(saved)) plan=saved; } catch(e) {}
+function price(item){return typeof item.price_lkr==='number'?item.price_lkr:(Number(item.price)||0);}
+function renderPlan(){
+  const list=document.getElementById('items');list.replaceChildren();
+  if(!plan.length){const p=document.createElement('p');p.textContent='Your food plan is empty. Browse the menu or generate a recommendation.';list.append(p);}
+  plan.forEach((item,index)=>{
+    const row=document.createElement('article');const details=document.createElement('div');
+    const title=document.createElement('strong');title.textContent=item.name||'Cinema snack';details.append(title);
+    const description=document.createElement('p');description.textContent=[item.cinema_name||item.cinema_id,item.category,item.size].filter(Boolean).join(' · ');details.append(description);
+    const controls=document.createElement('div');const quantity=document.createElement('input');quantity.type='number';quantity.min='1';quantity.max='99';quantity.value=Math.min(99,Math.max(1,Number(item.quantity)||1));quantity.setAttribute('aria-label','Quantity for '+(item.name||'snack'));
+    quantity.oninput=()=>{const value=Number(quantity.value);if(!Number.isInteger(value)||value<1||value>99)return;item.quantity=value;savePlan(false);cost.textContent="LKR "+(price(item)*value).toLocaleString();};quantity.onchange=()=>{item.quantity=Math.min(99,Math.max(1,Math.floor(Number(quantity.value)||1)));savePlan();};controls.append(quantity);
+    const cost=document.createElement('p');cost.textContent='LKR '+(price(item)*Number(quantity.value)).toLocaleString();controls.append(cost);
+    const remove=document.createElement('button');remove.textContent='Remove';remove.onclick=()=>{plan.splice(index,1);savePlan();};controls.append(remove);row.append(details,controls);list.append(row);
+  });
+  const total=plan.reduce((sum,item)=>sum+price(item)*Math.min(99,Math.max(1,Number(item.quantity)||1)),0);
+  document.getElementById('cart-count').textContent=plan.reduce((sum,item)=>sum+Math.min(99,Math.max(1,Number(item.quantity)||1)),0);
+  document.getElementById('summary').textContent='Estimated food cost: LKR '+total.toLocaleString();
+}
+function savePlan(updateUI=true){try{localStorage.setItem('cinebite_cart',JSON.stringify(plan));document.getElementById('status').textContent='Food plan saved on this device.';}catch(e){document.getElementById('status').textContent='Changes are shown here, but this browser could not save them.';}if(updateUI)renderPlan();else{const total=plan.reduce((sum,item)=>sum+price(item)*Math.min(99,Math.max(1,Number(item.quantity)||1)),0);document.getElementById("summary").textContent="Estimated food cost: LKR "+total.toLocaleString();document.getElementById("cart-count").textContent=plan.reduce((sum,item)=>sum+(Number(item.quantity)||1),0);}}
+document.getElementById('print-plan').onclick=()=>window.print();renderPlan();
+</script></main><div class="sample-note">Local preview · Cinema and movie listings are sample data; food prices and offers are estimates. Food photos are illustrative. <a href="photo-credits.html">Photo credits</a></div>
+</body></html>

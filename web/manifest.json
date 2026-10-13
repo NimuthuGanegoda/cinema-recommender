@@ -1,0 +1,23 @@
+{
+  "name": "CineBite \u00b7 Cinema & Food Guide",
+  "short_name": "CineBite",
+  "description": "Explore cinemas, films, food menus, and snack plans for your movie night.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#10141c",
+  "theme_color": "#10141c",
+  "icons": [
+    {
+      "src": "assets/images/app-icon.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "entertainment",
+    "food",
+    "lifestyle"
+  ]
+}

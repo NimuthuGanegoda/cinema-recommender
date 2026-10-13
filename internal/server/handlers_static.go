@@ -17,7 +17,7 @@ func (s *Server) handleRoot(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) serveHTMLPage(w http.ResponseWriter, pageFile string) {
-	content, err := uiAssets.ReadFile("ui/" + pageFile)
+	content, err := uiAssets.ReadFile(pageFile)
 	if err != nil {
 		http.Error(w, pageFile+" asset not found", http.StatusInternalServerError)
 		return
@@ -60,7 +60,7 @@ func (s *Server) handleMobile(w http.ResponseWriter, r *http.Request) {
 
 // Handler: Manifest serves manifest.json for PWA installation
 func (s *Server) handleManifest(w http.ResponseWriter, r *http.Request) {
-	content, err := uiAssets.ReadFile("ui/manifest.json")
+	content, err := uiAssets.ReadFile("manifest.json")
 	if err != nil {
 		http.Error(w, "Manifest not found", http.StatusNotFound)
 		return
@@ -73,7 +73,7 @@ func (s *Server) handleManifest(w http.ResponseWriter, r *http.Request) {
 
 // Handler: Service Worker serves sw.js
 func (s *Server) handleServiceWorker(w http.ResponseWriter, r *http.Request) {
-	content, err := uiAssets.ReadFile("ui/sw.js")
+	content, err := uiAssets.ReadFile("sw.js")
 	if err != nil {
 		http.Error(w, "Service Worker not found", http.StatusNotFound)
 		return
@@ -86,7 +86,7 @@ func (s *Server) handleServiceWorker(w http.ResponseWriter, r *http.Request) {
 
 // Handler: Favicon
 func (s *Server) handleFavicon(w http.ResponseWriter, r *http.Request) {
-	content, err := uiAssets.ReadFile("ui/app-icon.jpg")
+	content, err := uiAssets.ReadFile("assets/images/app-icon.jpg")
 	if err != nil {
 		http.NotFound(w, r)
 		return
