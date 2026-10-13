@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cinebite-v11-organized';
+const CACHE_NAME = 'cinebite-v12-print-layout';
 const STATIC_ASSETS = [
   './',
   './index.html',

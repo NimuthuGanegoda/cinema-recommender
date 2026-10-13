@@ -121,3 +121,43 @@ html[data-touch="true"] .nav-link,html[data-touch="true"] .search-result-item{mi
 body.search-open #floating-cart{visibility:hidden!important;pointer-events:none!important}
 
 .engine-loading{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:10000;max-width:calc(100% - 32px);padding:14px 20px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);box-shadow:var(--shadow);font-size:.86rem}
+
+/* Paper layout: independent of the rotating screen palette. */
+.print-only{display:none}
+@media print{
+ @page{margin:16mm}
+ html,html[data-palette],body{
+  --ink:#111;--muted:#444;--surface:#fff;--raised:#fff;--line:#bbb;
+  --accent:#111;--accent-soft:#fff;--accent-ink:#fff;
+  background:#fff!important;color:#111!important;color-scheme:light!important;
+ }
+ .food-plan-page,.food-plan-page *{
+  color:#111!important;-webkit-text-fill-color:#111!important;
+  text-shadow:none!important;box-shadow:none!important;
+  animation:none!important;transition:none!important;
+ }
+ .navbar,.site-footer,.sample-note,.food-plan-actions,#status,#items button,#items input{display:none!important}
+ .food-plan-page{margin:0!important;padding:0!important;max-width:none!important;width:100%!important}
+ .print-only{display:block!important}
+ .print-brand{font-weight:700;letter-spacing:.03em;margin:0 0 8mm}
+ #print-created{font-size:10pt;margin:0 0 5mm}
+ .food-plan-page h1{font-size:22pt!important}
+ .food-plan-intro{font-size:10pt!important;margin-bottom:6mm!important}
+ #items article{
+  display:grid!important;grid-template-columns:minmax(0,1fr) 40mm!important;
+  gap:5mm!important;padding:4mm!important;margin:0 0 3mm!important;
+  border:1px solid #bbb!important;border-radius:0!important;background:#fff!important;
+  break-inside:avoid;page-break-inside:avoid;
+ }
+ #items article strong{font-size:11pt!important}
+ #items article p{font-size:10pt!important;color:#444!important}
+ #items article>div:last-child{display:block!important;text-align:right}
+ .print-quantity{font-size:10pt;margin-bottom:2mm}
+ #summary{margin-top:6mm!important;padding:4mm!important;font-size:12pt!important;border-radius:0!important;background:#fff!important;break-inside:avoid}
+}
+
+@media print{
+ html,body{height:auto!important;min-height:0!important;overflow:visible!important;position:static!important}
+ body::before,body::after{display:none!important;content:none!important}
+ .food-plan-page{position:static!important;overflow:visible!important;visibility:visible!important}
+}
