@@ -12,26 +12,29 @@ type RecommendationRequest struct {
 	BudgetLKR           float64        `json:"budget_lkr"`
 	PartySize           int            `json:"party_size"`
 	PreferredCategories []ItemCategory `json:"preferred_categories,omitempty"`
-	DietaryPreferences []string       `json:"dietary_preferences,omitempty"`
-	PrivilegeTier      PrivilegeTier  `json:"privilege_tier,omitempty"`
-	RedopayTier        RedopayTier    `json:"redopay_tier,omitempty"`
-	PromoCode          string         `json:"promo_code,omitempty"`
+	DietaryPreferences  []string       `json:"dietary_preferences,omitempty"`
+	PrivilegeTier       PrivilegeTier  `json:"privilege_tier,omitempty"`
+	RedopayTier         RedopayTier    `json:"redopay_tier,omitempty"`
+	PromoCode           string         `json:"promo_code,omitempty"`
 }
 
 // RecommendationResult represents the calculated recommendation with Scope Privilege and promotional savings.
 type RecommendationResult struct {
-	CinemaName     string           `json:"cinema_name"`
-	Location       string           `json:"location"`
-	PartySize      int              `json:"party_size,omitempty"`
-	SelectedItems  []ConcessionItem `json:"selected_items"`
-	OriginalTotal  float64          `json:"original_total_lkr"`
-	DiscountAmount float64          `json:"discount_amount_lkr"`
-	FinalTotal     float64          `json:"final_total_lkr"`
-	Savings        SavingsBreakdown `json:"savings_breakdown"`
-	AppliedPromo   string           `json:"applied_promo"`
-	Message        string           `json:"message"`
-	NextTierUpsell string           `json:"next_tier_upsell,omitempty"`
-	ValueScore     float64          `json:"value_score,omitempty"`
+	Algorithm       string           `json:"algorithm,omitempty"`
+	BudgetRemaining float64          `json:"budget_remaining_lkr"`
+	Explanation     string           `json:"explanation,omitempty"`
+	CinemaName      string           `json:"cinema_name"`
+	Location        string           `json:"location"`
+	PartySize       int              `json:"party_size,omitempty"`
+	SelectedItems   []ConcessionItem `json:"selected_items"`
+	OriginalTotal   float64          `json:"original_total_lkr"`
+	DiscountAmount  float64          `json:"discount_amount_lkr"`
+	FinalTotal      float64          `json:"final_total_lkr"`
+	Savings         SavingsBreakdown `json:"savings_breakdown"`
+	AppliedPromo    string           `json:"applied_promo"`
+	Message         string           `json:"message"`
+	NextTierUpsell  string           `json:"next_tier_upsell,omitempty"`
+	ValueScore      float64          `json:"value_score,omitempty"`
 }
 
 // String provides a formatted summary of the recommendation.

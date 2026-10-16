@@ -1,3 +1,22 @@
+/* Storage may be disabled or contain a malformed plan; keep the UI usable. */
+(function () {
+ const memory = new Map();
+ let persistent = true;
+ function normalize(key,value) {
+  if (key !== 'cinebite_cart' || value === null) return value;
+  try {
+   const items=JSON.parse(value);
+   if (!Array.isArray(items)) return '[]';
+   return JSON.stringify(items.filter(item=>item&&typeof item==='object'&&typeof item.name==='string').slice(0,100).map(item=>({...item,quantity:Math.min(99,Math.max(1,Math.floor(Number(item.quantity)||1)))})));
+  } catch { return '[]'; }
+ }
+ window.CineBiteStorage = {
+  get persistent(){return persistent;},
+  getItem(key){try{return normalize(key,localStorage.getItem(key));}catch{persistent=false;return normalize(key,memory.get(key)??null);}},
+  setItem(key,value){value=normalize(key,String(value));memory.set(key,value);try{localStorage.setItem(key,value);}catch{persistent=false;}},
+  removeItem(key){memory.delete(key);try{localStorage.removeItem(key);}catch{persistent=false;}}
+ };
+})();
 /* Automatic appearance and device adaptation, kept entirely in this browser. */
 (function () {
   'use strict';
@@ -27,7 +46,7 @@
   }
   let transitionTimer;
   function refreshAppearance() {
-    const palette = paletteForElapsed(Date.now() - startedAt);
+    const palette = paletteForElapsed(window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : Date.now() - startedAt);
     if (root.dataset.colourTheme === palette) return;
     if (root.dataset.colourTheme && root.dataset.colourTheme !== palette) {
       root.classList.add('palette-transition');

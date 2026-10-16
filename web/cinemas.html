@@ -304,13 +304,13 @@
     }
   </style>
 <link rel="stylesheet" href="assets/css/cinema-polish.css?v=5"><script src="assets/js/cinema-environment.js?v=2"></script></head>
-<body>
+<body><a class="skip-link" href="#main-content">Skip to content</a><aside class="data-notice" aria-label="Data information">Example cinema guide: showtimes, prices and discounts are sample data. Confirm details with the cinema. Food plans stay on this device.</aside>
 
   <!-- Navigation Bar -->
   <nav class="navbar" aria-label="Main navigation"><a href="index.html" class="nav-brand"><span class="nav-logo" aria-hidden="true">🍿</span><span class="nav-brand-text">CineBite</span></a><div class="nav-links"><a href="index.html" class="nav-link">Home</a><a href="movies.html" class="nav-link">Movies</a><a href="cinemas.html" class="nav-link active" aria-current="page">Cinemas</a><a href="menu.html" class="nav-link">Food menu</a><a href="optimizer.html" class="nav-link">Snack planner</a><a href="deals.html" class="nav-link">Food deals</a></div><div class="nav-right"><a href="food-plan.html" class="nav-plan">Food plan <span aria-label="Selected items">(<span id="cart-count">0</span>)</span></a></div><span id="nav-live-cinema" hidden></span><span id="nav-tier-badge" hidden></span></nav>
 
   <!-- Page Container -->
-  <main class="page-container">
+  <main id="main-content" class="page-container">
 
     <!-- Page Header -->
     <div class="page-header">
@@ -449,7 +449,7 @@
           ? `<span class="badge badge-blue" style="font-size:0.7rem; font-weight:700;">📍 ${c.distance_km.toFixed(1)} km away</span>`
           : '';
 
-        const isCurrent = localStorage.getItem('cinebite_active_cinema_id') === c.id;
+        const isCurrent = window.CineBiteStorage.getItem('cinebite_active_cinema_id') === c.id;
 
         return `
           <div class="theater-card" style="${isCurrent ? 'border-color:rgba(168,85,247,0.5);' : ''}">
@@ -491,13 +491,13 @@
                   <button class="btn-primary" style="flex:1; font-size:0.78rem; padding:0.45rem 0.6rem; cursor:pointer;" onclick="selectTheater('${c.id}')">
                     ${isCurrent ? '✓ Active Theater' : 'Select Theater'}
                   </button>
-                  <a href="movies.html?cinema=${encodeURIComponent(c.id)}" class="btn-secondary" style="font-size:0.78rem; padding:0.45rem 0.65rem; text-decoration:none;" onclick="localStorage.setItem('cinebite_active_cinema_id', '${c.id}')">
+                  <a href="movies.html?cinema=${encodeURIComponent(c.id)}" class="btn-secondary" style="font-size:0.78rem; padding:0.45rem 0.65rem; text-decoration:none;" onclick="window.CineBiteStorage.setItem('cinebite_active_cinema_id', '${c.id}')">
                     🎬 Movies
                   </a>
-                  <a href="menu.html?cinema=${encodeURIComponent(c.id)}" class="btn-secondary" style="font-size:0.78rem; padding:0.45rem 0.65rem; text-decoration:none;" onclick="localStorage.setItem('cinebite_active_cinema_id', '${c.id}')">
+                  <a href="menu.html?cinema=${encodeURIComponent(c.id)}" class="btn-secondary" style="font-size:0.78rem; padding:0.45rem 0.65rem; text-decoration:none;" onclick="window.CineBiteStorage.setItem('cinebite_active_cinema_id', '${c.id}')">
                     🍿 Menu
                   </a>
-                  <a href="optimizer.html?cinema=${encodeURIComponent(c.id)}" class="btn-secondary" style="font-size:0.78rem; padding:0.45rem 0.65rem; text-decoration:none;" onclick="localStorage.setItem('cinebite_active_cinema_id', '${c.id}')">
+                  <a href="optimizer.html?cinema=${encodeURIComponent(c.id)}" class="btn-secondary" style="font-size:0.78rem; padding:0.45rem 0.65rem; text-decoration:none;" onclick="window.CineBiteStorage.setItem('cinebite_active_cinema_id', '${c.id}')">
                     ✨ Optimize
                   </a>
                   ${c.map_url ? `<a href="${c.map_url}" target="_blank" class="btn-secondary" style="font-size:0.78rem; padding:0.45rem 0.6rem; text-decoration:none;" title="Open in Google Maps">🗺️</a>` : ''}
@@ -510,7 +510,7 @@
     }
 
     function selectTheater(id) {
-      localStorage.setItem('cinebite_active_cinema_id', id);
+      window.CineBiteStorage.setItem('cinebite_active_cinema_id', id);
       renderCinemas();
     }
 
@@ -548,7 +548,7 @@
 
     function updateCartCount() {
       try {
-        const raw = localStorage.getItem('cinebite_cart');
+        const raw = window.CineBiteStorage.getItem('cinebite_cart');
         const items = raw ? JSON.parse(raw) : [];
         const count = items.reduce((s, i) => s + (i.quantity || 1), 0);
         const countEl = document.getElementById('cart-count');

@@ -2,7 +2,6 @@ package server
 
 import (
 	"net/http"
-	"time"
 )
 
 // Handler: Get Concessions for a Cinema (with constantly updating live pricing)
@@ -26,8 +25,7 @@ func (s *Server) handleGetConcessions(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
-	w.Header().Set("X-Live-Price-Feed", "active")
-	w.Header().Set("X-Prices-Updated-At", time.Now().Format("15:04:05"))
+	w.Header().Set("X-Live-Price-Feed", "example")
 	s.writeJSON(w, http.StatusOK, items)
 }
 
@@ -56,7 +54,7 @@ func (s *Server) handleGetLiveConcessions(w http.ResponseWriter, r *http.Request
 	ticker["cinema_ads"] = s.scraper.GetCinemaAds(cinema, items)
 
 	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
-	w.Header().Set("X-Live-Price-Feed", "active")
+	w.Header().Set("X-Live-Price-Feed", "example")
 	s.writeJSON(w, http.StatusOK, ticker)
 }
 

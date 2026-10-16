@@ -14,6 +14,10 @@ func (s *Server) handleListMovies(w http.ResponseWriter, r *http.Request) {
 
 	var movies []models.Movie
 	if cinemaID != "" {
+		if _, err := s.scraper.GetCinemaByID(cinemaID); err != nil {
+			s.handleError(w, err)
+			return
+		}
 		movies = s.movieEngine.GetMoviesByCinema(cinemaID)
 	} else if language != "" {
 		movies = s.movieEngine.GetMoviesByLanguage(language)
@@ -21,6 +25,15 @@ func (s *Server) handleListMovies(w http.ResponseWriter, r *http.Request) {
 		movies = s.movieEngine.GetAllMovies()
 	}
 
+	if language != "" && cinemaID != "" {
+		filtered := make([]models.Movie, 0)
+		for _, movie := range movies {
+			if strings.EqualFold(movie.Language, language) {
+				filtered = append(filtered, movie)
+			}
+		}
+		movies = filtered
+	}
 	syncStatus := s.movieEngine.GetSyncStatus()
 
 	// 1-hour browser & CDN caching header aligned with hourly sync engine
@@ -65,6 +78,10 @@ func (s *Server) handleGetCinemaMovies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if _, err := s.scraper.GetCinemaByID(cinemaID); err != nil {
+		s.handleError(w, err)
+		return
+	}
 	movies := s.movieEngine.GetMoviesByCinema(cinemaID)
 	syncStatus := s.movieEngine.GetSyncStatus()
 

@@ -1,7 +1,6 @@
 package scraper
 
 import (
-	"fmt"
 	"math"
 	"time"
 
@@ -87,85 +86,19 @@ func EnrichItemDiscounts(item models.ConcessionItem, foodLocation string) models
 // Movie theater candy bars dynamically update concession prices for flash deals, matinee slots,
 // and inventory optimization.
 func ApplyLiveDynamicPricing(rawItems []models.ConcessionItem, foodLoc string, now time.Time) []models.ConcessionItem {
-	tick := now.Unix() / 8 // new dynamic price cycle every 8 seconds
-	timestampStr := now.Format("15:04:05")
-
 	results := make([]models.ConcessionItem, len(rawItems))
-	for i, it := range rawItems {
-		item := it
+	for i, item := range rawItems {
 		if item.BasePrice <= 0 {
 			item.BasePrice = item.Price
 		}
-
-		// Calculate deterministic pseudo-random cycle for each item based on item ID and tick
-		var idSum int
-		for _, b := range []byte(item.ID) {
-			idSum += int(b)
-		}
-		cycle := (int(tick) + idSum) % 5
-
-		var dynamicPrice float64
-		var trend string
-		var flashText string
-
-		switch cycle {
-		case 0:
-			// Standard regular baseline price
-			dynamicPrice = item.BasePrice
-			trend = "stable"
-			flashText = "Standard Counter Rate"
-		case 1:
-			// Flash concession drop (-LKR 50 or ~6%)
-			diff := 50.0
-			if item.BasePrice < 600 {
-				diff = 30.0
-			}
-			dynamicPrice = item.BasePrice - diff
-			trend = "flash_drop"
-			flashText = fmt.Sprintf("⚡ FLASH CONCESSION DROP (-LKR %.0f)", diff)
-		case 2:
-			// Matinee / Happy Hour Special (-LKR 80 or ~8%)
-			diff := 80.0
-			if item.BasePrice < 700 {
-				diff = 40.0
-			}
-			dynamicPrice = item.BasePrice - diff
-			trend = "down"
-			flashText = fmt.Sprintf("📉 LIVE MATINEE SAVER (-LKR %.0f)", diff)
-		case 3:
-			// Quick snack counter booster (-LKR 30)
-			diff := 30.0
-			dynamicPrice = item.BasePrice - diff
-			trend = "down"
-			flashText = fmt.Sprintf("🎟️ LIVE PROMO TICK (-LKR %.0f)", diff)
-		case 4:
-			// Category specific live discount
-			if item.Category == models.CategoryPopcorn {
-				dynamicPrice = item.BasePrice - 40.0
-				trend = "down"
-				flashText = "🍿 POPCORN RUSH DISCOUNT (-LKR 40)"
-			} else {
-				dynamicPrice = item.BasePrice
-				trend = "stable"
-				flashText = "Active Concession Rate"
-			}
-		}
-
-		if dynamicPrice <= 0 {
-			dynamicPrice = item.BasePrice
-		}
-
-		item.Price = dynamicPrice
-		item.PriceTrend = trend
-		item.PriceChangeLKR = math.Round((dynamicPrice-item.BasePrice)*100) / 100
-		item.FlashDealText = flashText
-		item.LastPriceUpdate = timestampStr
-		item.LiveTickID = tick
-
-		// Recompute all food promotional discounts on the live dynamic price
+		item.Price = item.BasePrice
+		item.PriceTrend = "stable"
+		item.PriceChangeLKR = 0
+		item.FlashDealText = "Example menu price — confirm with cinema"
+		item.LastPriceUpdate = ""
+		item.LiveTickID = 0
 		results[i] = EnrichItemDiscounts(item, foodLoc)
 	}
-
 	return results
 }
 
@@ -178,11 +111,11 @@ func (s *RegionalScraper) GetLiveConcessionTicker(cinema models.Cinema) map[stri
 	return map[string]interface{}{
 		"cinema_id":            cinema.ID,
 		"cinema_name":          cinema.Name,
-		"live_pricing_active":  true,
+		"live_pricing_active":  false,
 		"tick_id":              tick,
 		"updated_at":           now.Format("15:04:05"),
 		"next_update_in_sec":   secondsUntilNextTick,
 		"update_interval_sec":  8,
-		"dynamic_engine_state": "ACTIVE_MATINEE_FLASH_FEED",
+		"dynamic_engine_state": "EXAMPLE_CATALOG",
 	}
 }

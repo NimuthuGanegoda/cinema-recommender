@@ -401,13 +401,13 @@
     }
   </style>
 <link rel="stylesheet" href="assets/css/cinema-polish.css?v=5"><script src="assets/js/cinema-environment.js?v=2"></script></head>
-<body>
+<body><a class="skip-link" href="#main-content">Skip to content</a><aside class="data-notice" aria-label="Data information">Example cinema guide: showtimes, prices and discounts are sample data. Confirm details with the cinema. Food plans stay on this device.</aside>
 
   <!-- Navigation Bar -->
   <nav class="navbar" aria-label="Main navigation"><a href="index.html" class="nav-brand"><span class="nav-logo" aria-hidden="true">🍿</span><span class="nav-brand-text">CineBite</span></a><div class="nav-links"><a href="index.html" class="nav-link">Home</a><a href="movies.html" class="nav-link active" aria-current="page">Movies</a><a href="cinemas.html" class="nav-link">Cinemas</a><a href="menu.html" class="nav-link">Food menu</a><a href="optimizer.html" class="nav-link">Snack planner</a><a href="deals.html" class="nav-link">Food deals</a></div><div class="nav-right"><a href="food-plan.html" class="nav-plan">Food plan <span aria-label="Selected items">(<span id="cart-count">0</span>)</span></a></div><span id="nav-live-cinema" hidden></span><span id="nav-tier-badge" hidden></span></nav>
 
   <!-- Page Container -->
-  <main class="page-container">
+  <main id="main-content" class="page-container">
 
     <!-- Header & Hourly Sync Banner -->
     <div class="page-header">
@@ -491,7 +491,7 @@
     const client = new CinemaClient();
     let movies = [];
     let cinemas = [];
-    let selectedCinemaId = localStorage.getItem('cinebite_active_cinema_id') || '';
+    let selectedCinemaId = window.CineBiteStorage.getItem('cinebite_active_cinema_id') || '';
     let currentFilter = 'all';
     let searchQuery = '';
 
@@ -502,7 +502,7 @@
       const urlSearch = urlParams.get('search');
       if (urlCinema) {
         selectedCinemaId = urlCinema;
-        localStorage.setItem('cinebite_active_cinema_id', urlCinema);
+        window.CineBiteStorage.setItem('cinebite_active_cinema_id', urlCinema);
       }
       if (urlLang) {
         currentFilter = urlLang;
@@ -555,7 +555,7 @@
 
     function onTheaterChange(val) {
       selectedCinemaId = val;
-      localStorage.setItem('cinebite_active_cinema_id', val);
+      window.CineBiteStorage.setItem('cinebite_active_cinema_id', val);
       updateNavTheaterName();
       fetchMovies();
     }
@@ -581,7 +581,7 @@
       if (search) search.value = '';
       searchQuery = '';
       setLanguageFilter('all');
-      localStorage.removeItem('cinebite_active_cinema_id');
+      window.CineBiteStorage.removeItem('cinebite_active_cinema_id');
       updateNavTheaterName();
       fetchMovies();
     }
@@ -714,7 +714,7 @@
 
     function updateCartCount() {
       try {
-        const raw = localStorage.getItem('cinebite_cart');
+        const raw = window.CineBiteStorage.getItem('cinebite_cart');
         const items = raw ? JSON.parse(raw) : [];
         const count = items.reduce((s, i) => s + (i.quantity || 1), 0);
         const countEl = document.getElementById('cart-count');

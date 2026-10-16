@@ -28,7 +28,7 @@ class CinemaClient {
  async request(path,body){
   const method=body===undefined?'GET':'POST';
   if(document.querySelector('meta[name="cinebite-runtime"]')?.content==='server'){
-    const response=await fetch(this.baseUrl+path,{method,headers:body===undefined?{}:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body),cache:'no-store'});
+    const response=await fetch(this.baseUrl+path,{method,headers:body===undefined?{}:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body),cache:'no-store',signal:AbortSignal.timeout(15000)});
     const result=await response.json().catch(()=>null);
     if(!response.ok)throw new Error(result?.error||'Could not complete this request.');
     return result;

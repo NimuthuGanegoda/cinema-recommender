@@ -17,5 +17,4 @@ var (
 
 	// ErrInvalidPartySize is returned when party size is less than 1.
 	ErrInvalidPartySize = errors.New("party size must be at least 1")
-
 )

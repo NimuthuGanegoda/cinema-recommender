@@ -1,3 +1,5 @@
+> Historical API notes. For the university edition, runtime routes in `internal/server/routes.go` and validation in the handlers are authoritative. Recommendation responses additionally include `algorithm`, `budget_remaining_lkr` and `explanation`. Promo codes do not bypass membership eligibility. All catalog and promotion data is illustrative.
+
 # Cinema Recommender REST API Reference 📡
 
 > Complete, OpenAPI-aligned HTTP API specification for client integrations.

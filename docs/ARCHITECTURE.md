@@ -1,132 +1,46 @@
-# System Architecture Specification 🍏🍿
+# CineBite architecture — university edition
 
-> Engineered with the architectural principles, clarity, and precision expected of Apple system designers.
+CineBite is a cinema discovery and food-budget planning prototype for Sri Lanka. The recommender is deterministic and rule based. Catalogs, prices, promotions and schedules are example data. The `scraper` package name is historical; it does not establish a verified live provider integration.
 
----
-
-## 🏛️ Executive Summary
-
-
----
-
-## 📐 High-Level Topology & Data Flow
-
-```
-                                  [ Moviegoers / Cashiers ]
-                                             │
-                       ┌─────────────────────┴─────────────────────┐
-                       │                                           │
-             [ Desktop Web Portal ]                       [ Mobile PWA Shell ]
-           (Apple HIG Glassmorphism)                    (Touch Haptic Simulator)
-                       │                                           │
-                       └─────────────────────┬─────────────────────┘
-                                             │ HTTP / REST (JSON)
-                                             ▼
-                     ┌───────────────────────────────────────────────┐
-                     │            HTTP Edge Router & Mux             │
-                     │          (Go 1.22+ ServeMux Routing)          │
-                     └───────┬───────────────┬───────────────┬───────┘
-                             │               │               │
-               ┌─────────────┘               │               └─────────────┐
-               ▼                             ▼                             ▼
-     ┌───────────────────┐         ┌───────────────────┐         ┌───────────────────┐
-     │ (Geo & Registry)  │         │(Cart & Heuristic) │         │ (Sri Lankan Pay)  │
-     └─────────┬─────────┘         └─────────┬─────────┘         └─────────┬─────────┘
-               │                             │                             │
-               ▼                             ▼                             ▼
-     ┌───────────────────┐         ┌───────────────────┐         ┌───────────────────┐
-     │                   │         │                   │         │                   │
-     │ ├── registry.go   │         │ ├── optimizer.go  │         │ ├── methods.go    │
-     │ ├── pricing.go    │         │ ├── upsell.go     │         │ ├── bnpl.go       │
-     │ └── ads.go        │         └───────────────────┘         └───────────────────┘
-     └───────────────────┘                   │
-                                             ▼
-                                   ┌───────────────────┐
-                                   │ `internal/models` │
-                                   │                   │
-                                   │ ├── cinema.go     │
-                                   │ ├── concession.go │
-                                   │ ├── promotion.go  │
-                                   │ ├── recommend.go  │
-                                   │ ├── ad.go         │
-                                   │ └── errors.go     │
-                                   └───────────────────┘
+```mermaid
+flowchart TD
+  UI["Responsive HTML, CSS and JavaScript"] --> Client["Runtime client"]
+  Client --> HTTP["Go HTTP handlers"]
+  Client --> WASM["Go WebAssembly worker"]
+  HTTP --> Engine["Shared recommendation engine"]
+  WASM --> Engine
+  HTTP --> Catalog["Example catalog and cached menus"]
+  WASM --> Catalog
+  UI --> Local["Device-local food plan"]
 ```
 
----
+## Responsibilities
 
-## 📦 Package Architecture & File Responsibilities
+| Component | Responsibility | Boundary |
+| --- | --- | --- |
+| `web` | Shared responsive pages and assets | Food plan is local browser state |
+| `internal/server` | JSON decoding, validation, routing, response headers and limits | No user accounts or payment processing |
+| `pkg/scraper` | Registered cinema catalog, menus, movie refresh lifecycle | Refresh does not mean externally verified data |
+| `pkg/recommender` | Category selection, promotion eligibility, totals and budget enforcement | No learned model or global optimum proof |
+| `internal/models` | Shared request and result structures | Legacy aliases retained for compatibility |
+| `cmd/api` | Native server and CLI | Native executable is platform-specific |
+| `cmd/browser` | WASM entry point | Requires matching runtime assets |
 
-Every Go source file in this repository strictly adheres to the **Single Responsibility Principle (SRP)**:
+## Recommendation procedure
 
-### 1. `internal/models` (Domain Entities & Value Objects)
-| File | Responsibility |
-| :--- | :--- |
-| [`cinema.go`](file:///e:/Github/cinema-recommender/internal/models/cinema.go) | Movie theater entity, regional location metadata, coordinates, and nearby food spots. |
-| [`concession.go`](file:///e:/Github/cinema-recommender/internal/models/concession.go) | Concession food/beverage catalog items, categories, price trends, and discount breakdowns. |
-| [`promotion.go`](file:///e:/Github/cinema-recommender/internal/models/promotion.go) | Scope Privilege Club loyalty tiers, promotion rules, and savings calculations. |
-| [`recommendation.go`](file:///e:/Github/cinema-recommender/internal/models/recommendation.go) | Recommendation request/result DTOs and cart evaluation payloads. |
-| [`ad.go`](file:///e:/Github/cinema-recommender/internal/models/ad.go) | Cinema lobby screen promotional advertisements and combo deal models. |
-| [`errors.go`](file:///e:/Github/cinema-recommender/internal/models/errors.go) | Sentinel domain errors (`ErrColomboExcluded`, `ErrCinemaNotFound`, `ErrEmptyCart`, etc.). |
-| [`models.go`](file:///e:/Github/cinema-recommender/internal/models/models.go) | Package documentation and architectural index. |
+1. Default a zero party size to two and a nonpositive engine budget to LKR 1,500 per person. The HTTP boundary rejects negative budgets and party sizes.
+2. Remove unavailable items from category candidates. Sort popcorn, beverages, snacks and combos by price.
+3. Prefer an affordable combo below 85% of budget; otherwise start with popcorn and attempt drinks and snacks. Drinks are capped at four by this heuristic.
+4. Evaluate each single-item top-up using the actual requested tier and promo code. Accept a top-up only if the final basket becomes cheaper.
+5. Evaluate eligible discounts. If the final amount exceeds the budget, remove the most expensive selected item and recalculate until it fits.
+6. If empty, try the cheapest individually affordable in-stock item. Return an explanation and budget remaining.
 
-### 2. `pkg/scraper` (Outstation Ingestion & Telemetry)
-| File | Responsibility |
-| :--- | :--- |
-| [`scraper.go`](file:///e:/Github/cinema-recommender/pkg/scraper/scraper.go) | Scraper lifecycle, thread-safe memory caching, and Colombo exclusion policy enforcement. |
-| [`registry.go`](file:///e:/Github/cinema-recommender/pkg/scraper/registry.go) | Central registry of out-of-Colombo theater circuits (Kandy, Galle, Gampaha, Kurunegala, etc.). |
-| [`geo.go`](file:///e:/Github/cinema-recommender/pkg/scraper/geo.go) | Haversine trigonometric formula for GPS distance calculation and proximity sorting. |
-| [`pricing.go`](file:///e:/Github/cinema-recommender/pkg/scraper/pricing.go) | Real-time dynamic pricing simulation (8-second tick cycle) and multi-channel discount attachment. |
-| [`feed_parser.go`](file:///e:/Github/cinema-recommender/pkg/scraper/feed_parser.go) | Regional concession feeds and raw HTML table/div scraping parser. |
-| [`ads.go`](file:///e:/Github/cinema-recommender/pkg/scraper/ads.go) | Dynamic lobby screen promotional advertisements generator for combo deals. |
+This is a category heuristic with repair, not a knapsack solver. Given n menu items, p promotion rules and k selected items, sorting is O(n log n), top-up evaluation is O(n(k+p)), and worst-case repeated repair is O(k(k+p)). Working storage is O(n+k). The value score is descriptive and does not drive selection.
 
-### 3. `pkg/recommender` (Knapsack Heuristic & Promotion Engine)
-| File | Responsibility |
-| :--- | :--- |
-| [`recommender.go`](file:///e:/Github/cinema-recommender/pkg/recommender/recommender.go) | Engine coordinator, promotion retrieval, and context-aware campaign matching. |
-| [`optimizer.go`](file:///e:/Github/cinema-recommender/pkg/recommender/optimizer.go) | Bounded knapsack heuristic algorithm maximizing snack value while respecting party budget. |
-| [`cart.go`](file:///e:/Github/cinema-recommender/pkg/recommender/cart.go) | Basket discount evaluator and multi-tier promotion calculator. |
-| [`upsell.go`](file:///e:/Github/cinema-recommender/pkg/recommender/upsell.go) | Threshold-gap intelligence advising users how to reach the next discount milestone. |
-| [`promotions.go`](file:///e:/Github/cinema-recommender/pkg/recommender/promotions.go) | Scope Privilege Club campaign specifications (`SCOPE-PLATINUM`, `SCOPE-COMBO30`, etc.). |
+## Discount rules
 
-| File | Responsibility |
-| :--- | :--- |
+Codes select a campaign; they do not confer membership eligibility. Exactly one eligible campaign with the largest discount is applied. Thresholds are inclusive in code. Percentage discounts have caps; totals are rounded to two decimals. Membership is a selectable demo input, not authenticated entitlement. Production would require trusted membership verification and provider-backed offers. Currency currently uses float64 and rounding; integer minor units would be a useful future change.
 
-### 5. `internal/server` (HTTP REST Delivery & Middleware)
-| File | Responsibility |
-| :--- | :--- |
-| [`server.go`](file:///e:/Github/cinema-recommender/internal/server/server.go) | Server struct, timeout configuration, graceful shutdown, and JSON response helpers. |
-| [`routes.go`](file:///e:/Github/cinema-recommender/internal/server/routes.go) | Go 1.22+ pattern-matched route registration. |
-| [`middleware.go`](file:///e:/Github/cinema-recommender/internal/server/middleware.go) | Latency logging, CORS headers, and panic recovery middleware. |
-| [`handlers_cinema.go`](file:///e:/Github/cinema-recommender/internal/server/handlers_cinema.go) | Cinema listing and geolocation lookup endpoints. |
-| [`handlers_concession.go`](file:///e:/Github/cinema-recommender/internal/server/handlers_concession.go) | Concessions, live dynamic rate feeds, and lobby screen ads endpoints. |
-| [`handlers_recommend.go`](file:///e:/Github/cinema-recommender/internal/server/handlers_recommend.go) | AI knapsack recommendation and cart evaluation endpoints. |
-| [`handlers_static.go`](file:///e:/Github/cinema-recommender/internal/server/handlers_static.go) | Web UI, Mobile PWA, manifest, service worker, and health check endpoints. |
+## Design tradeoffs
 
----
-
-## 🧮 Algorithmic Specifications
-
-### 1. Bounded Knapsack Heuristic Optimization
-Given:
-- Cinema concession items $I = \{i_1, i_2, \dots, i_n\}$ with prices $P(i)$ and categories $C(i)$
-- Party size $S \ge 1$
-- User budget $B > 0$
-- Loyalty tier $T \in \{\text{Standard}, \text{Student}, \text{Silver}, \text{Gold}, \text{Platinum}\}$
-
-The optimizer selects a balanced subset $I^* \subseteq I$ satisfying:
-1. **Core Snacking Balance**: $\sum_{i \in I^*} \mathbb{I}_{C(i) = \text{Popcorn}} \ge 1$ and $\sum_{i \in I^*} \mathbb{I}_{C(i) = \text{Beverage}} \ge \min(S, 4)$.
-2. **Threshold Bridging**: If $\text{gap} = \text{Target} - \sum P(i) \le 400\text{ LKR}$, an incremental item is added if the resulting discount $\Delta D > P(\text{item})$, maximizing net customer savings.
-
-### 2. Haversine Spherical Distance
-Distance between coordinates $(\phi_1, \lambda_1)$ and $(\phi_2, \lambda_2)$ is evaluated via:
-$$d = 2R \cdot \arcsin\left(\sqrt{\sin^2\left(\frac{\Delta \phi}{2}\right) + \cos(\phi_1)\cos(\phi_2)\sin^2\left(\frac{\Delta \lambda}{2}\right)}\right)$$
-where $R = 6371.0\text{ km}$.
-
-- `Tag 00`: Format Indicator (`01`)
-- `Tag 01`: Point of Initiation (`12` = Dynamic QR)
-- `Tag 52`: Merchant Category Code (`7832` = Motion Picture Theaters)
-- `Tag 53`: Transaction Currency (`144` = Sri Lankan Rupee LKR)
-- `Tag 54`: Transaction Amount
-- `Tag 58`: Country Code (`LK`)
-- `Tag 62`: Reference Data (Order ID)
+Shared Go code reduces server/browser business-rule drift. WASM increases download size and startup cost. In-memory catalogs and local food plans simplify a university demonstration but provide no multi-device persistence. No usability study, recommendation-quality study, or production scalability result is claimed.

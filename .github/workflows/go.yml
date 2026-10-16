@@ -1,28 +1,24 @@
-# This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
-
-name: Go
-
+name: Quality gates
 on:
   push:
-    branches: [ "main" ]
+    branches: [main, master]
   pull_request:
-    branches: [ "main" ]
-
+permissions:
+  contents: read
 jobs:
-
-  build:
+  verify:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version-file: go.mod
-
-    - name: Build
-      run: go build -v ./...
-
-    - name: Test
-      run: go test -v ./...
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+      - run: test -z "$(gofmt -l cmd internal pkg)"
+      - run: go mod verify
+      - run: go vet ./...
+      - run: go test -race -count=1 -coverprofile=coverage.out ./...
+      - run: go build -trimpath ./cmd/api
+      - run: go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+      - run: ./scripts/package-browser.sh
+      - run: python3 scripts/check-web.py
+      - run: docker build -t cinebite:test .

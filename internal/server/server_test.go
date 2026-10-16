@@ -344,8 +344,8 @@ func TestCORSOptionsPreflight(t *testing.T) {
 	if w.Code != http.StatusOK {
 		t.Fatalf("expected status 200 on OPTIONS preflight, got %d", w.Code)
 	}
-	if w.Header().Get("Access-Control-Allow-Origin") != "*" {
-		t.Fatal("expected Access-Control-Allow-Origin header")
+	if w.Header().Get("Access-Control-Allow-Origin") != "" {
+		t.Fatal("expected no cross-origin permission without an Origin")
 	}
 }
 
@@ -375,8 +375,8 @@ func TestLiveConcessionsEndpoint(t *testing.T) {
 	if wStd.Code != http.StatusOK {
 		t.Fatalf("expected status 200, got %d", wStd.Code)
 	}
-	if wStd.Header().Get("X-Live-Price-Feed") != "active" {
-		t.Fatalf("expected X-Live-Price-Feed: active header")
+	if wStd.Header().Get("X-Live-Price-Feed") != "example" {
+		t.Fatalf("expected sample-data feed header")
 	}
 
 	// 2. Check /live endpoint
@@ -392,8 +392,8 @@ func TestLiveConcessionsEndpoint(t *testing.T) {
 		t.Fatalf("failed to decode /live response: %v", err)
 	}
 
-	if liveData["live_pricing_active"] != true {
-		t.Fatalf("expected live_pricing_active=true")
+	if liveData["live_pricing_active"] != false {
+		t.Fatalf("expected live_pricing_active=false")
 	}
 	if liveData["items"] == nil {
 		t.Fatalf("expected items array in live response")

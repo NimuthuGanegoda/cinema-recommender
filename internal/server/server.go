@@ -13,10 +13,11 @@ import (
 
 // Config contains server runtime configurations.
 type Config struct {
-	Port         string
-	ReadTimeout  time.Duration
-	WriteTimeout time.Duration
-	IdleTimeout  time.Duration
+	Port           string
+	ReadTimeout    time.Duration
+	WriteTimeout   time.Duration
+	IdleTimeout    time.Duration
+	AllowedOrigins []string
 }
 
 // Server encapsulates the HTTP multiplexer, middlewares, and services.
@@ -53,14 +54,16 @@ func NewServer(cfg Config, sc *scraper.RegionalScraper, recEngine *recommender.E
 	mux := http.NewServeMux()
 	s.registerRoutes(mux)
 
-	handler := s.recoveryMiddleware(s.corsMiddleware(s.loggingMiddleware(mux)))
+	handler := s.securityMiddleware(s.loggingMiddleware(s.recoveryMiddleware(s.corsMiddleware(mux))))
 
 	s.httpServer = &http.Server{
-		Addr:         cfg.Port,
-		Handler:      handler,
-		ReadTimeout:  cfg.ReadTimeout,
-		WriteTimeout: cfg.WriteTimeout,
-		IdleTimeout:  cfg.IdleTimeout,
+		Addr:              cfg.Port,
+		ReadHeaderTimeout: 5 * time.Second,
+		MaxHeaderBytes:    32 << 10,
+		Handler:           handler,
+		ReadTimeout:       cfg.ReadTimeout,
+		WriteTimeout:      cfg.WriteTimeout,
+		IdleTimeout:       cfg.IdleTimeout,
 	}
 
 	return s
@@ -120,6 +123,6 @@ func (s *Server) handleError(w http.ResponseWriter, err error) {
 	}
 
 	s.writeJSON(w, http.StatusInternalServerError, map[string]string{
-		"error": err.Error(),
+		"error": "internal server error",
 	})
 }

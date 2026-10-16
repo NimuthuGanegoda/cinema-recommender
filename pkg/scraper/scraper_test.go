@@ -196,7 +196,7 @@ func TestEveryFoodHasDiscounts(t *testing.T) {
 	}
 }
 
-func TestLivePriceUpdatesConstantly(t *testing.T) {
+func TestExamplePricesRemainStable(t *testing.T) {
 	s := NewRegionalScraper()
 
 	cinema, err := s.GetCinemaByID("KND-KCC")
@@ -205,8 +205,8 @@ func TestLivePriceUpdatesConstantly(t *testing.T) {
 	}
 
 	ticker := s.GetLiveConcessionTicker(cinema)
-	if ticker["live_pricing_active"] != true {
-		t.Fatalf("expected live_pricing_active to be true")
+	if ticker["live_pricing_active"] != false {
+		t.Fatalf("expected example pricing to be identified")
 	}
 
 	// Verify price calculation at two different time points (tick 0 vs tick 1)
@@ -230,8 +230,8 @@ func TestLivePriceUpdatesConstantly(t *testing.T) {
 		if it.BasePrice <= 0 || it.Price <= 0 {
 			t.Errorf("expected positive base and dynamic prices for %s", it.Name)
 		}
-		if it.LastPriceUpdate == "" {
-			t.Errorf("expected LastPriceUpdate timestamp for %s", it.Name)
+		if it.LastPriceUpdate != "" {
+			t.Errorf("must not imply verified price updates for %s", it.Name)
 		}
 		if it.PriceTrend == "" {
 			t.Errorf("expected PriceTrend for %s", it.Name)
@@ -247,8 +247,8 @@ func TestLivePriceUpdatesConstantly(t *testing.T) {
 		}
 	}
 
-	if !hasDifferentState {
-		t.Fatalf("expected dynamic pricing engine to advance live tick and update prices")
+	if hasDifferentState {
+		t.Fatalf("example prices must not change with the clock")
 	}
 }
 

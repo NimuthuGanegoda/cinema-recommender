@@ -6,7 +6,7 @@ type CinemaAd struct {
 	CinemaID        string   `json:"cinema_id,omitempty"`
 	Title           string   `json:"title"`
 	Subtitle        string   `json:"subtitle"`
-	BadgeText       string   `json:"badge_text"` // e.g. "HOT COMBO DEAL", "LOBBY EXCLUSIVE", "FLASH MATINEE AD"
+	BadgeText       string   `json:"badge_text"`    // e.g. "HOT COMBO DEAL", "LOBBY EXCLUSIVE", "FLASH MATINEE AD"
 	DiscountText    string   `json:"discount_text"` // e.g. "Save LKR 720 (30% OFF)", "Combo Price LKR 1,680"
 	PromoCode       string   `json:"promo_code,omitempty"`
 	TargetItemID    string   `json:"target_item_id,omitempty"`

@@ -3,6 +3,7 @@ package server
 import (
 	"io/fs"
 	"net/http"
+	"path"
 	"strings"
 )
 
@@ -24,6 +25,13 @@ func (s *Server) registerRoutes(mux *http.ServeMux) {
 					return
 				}
 			}
+			name := strings.TrimPrefix(path.Clean(r.URL.Path), "/")
+			allowed := strings.HasPrefix(name, "assets/") || strings.HasPrefix(name, "data/")
+			info, err := fs.Stat(uiAssets, name)
+			if !allowed || err != nil || info.IsDir() {
+				http.NotFound(w, r)
+				return
+			}
 			fileServer.ServeHTTP(w, r)
 		})
 	}
@@ -39,6 +47,10 @@ func (s *Server) registerRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /manifest.json", s.handleManifest)
 	mux.HandleFunc("GET /sw.js", s.handleServiceWorker)
 	mux.HandleFunc("GET /favicon.ico", s.handleFavicon)
+
+	mux.HandleFunc("GET /api/", func(w http.ResponseWriter, r *http.Request) {
+		s.writeJSON(w, 404, map[string]string{"error": "API endpoint not found"})
+	})
 
 	// Health Check
 	mux.HandleFunc("GET /health", s.handleHealth)

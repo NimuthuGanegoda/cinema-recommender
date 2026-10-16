@@ -87,3 +87,25 @@ func TestMovieSyncEngine_StartStop(t *testing.T) {
 	time.Sleep(50 * time.Millisecond)
 	engine.Stop()
 }
+
+func TestConcurrentMovieLifecycle(t *testing.T) {
+	for i := 0; i < 20; i++ {
+		engine := NewMovieSyncEngine()
+		engine.syncInterval = time.Microsecond
+		engine.Start(context.Background())
+		done := make(chan struct{})
+		go func() {
+			for j := 0; j < 20; j++ {
+				engine.ForceSync()
+				engine.GetAllMovies()
+			}
+			close(done)
+		}()
+		engine.Stop()
+		<-done
+		engine.Start(context.Background()) // stopping is terminal; no ticker may restart
+		if engine.ticker != nil {
+			t.Fatal("stopped engine restarted")
+		}
+	}
+}

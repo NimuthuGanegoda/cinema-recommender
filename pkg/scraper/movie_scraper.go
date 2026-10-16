@@ -31,7 +31,7 @@ func NewMovieSyncEngine() *MovieSyncEngine {
 		syncInterval: 1 * time.Hour,
 		syncCount:    1,
 		stopChan:     make(chan struct{}),
-		source:       "Scope Cinemas Sri Lanka & EAP Films Real-Time Telemetry Feed",
+		source:       "Example catalog — not verified cinema schedules",
 	}
 	engine.movies = generateAuthenticMovies(now)
 	return engine
@@ -40,11 +40,18 @@ func NewMovieSyncEngine() *MovieSyncEngine {
 // Start begins the 1-hour recurring background sync routine.
 func (e *MovieSyncEngine) Start(ctx context.Context) {
 	e.mu.Lock()
+	select {
+	case <-e.stopChan:
+		e.mu.Unlock()
+		return
+	default:
+	}
 	if e.ticker != nil {
 		e.mu.Unlock()
 		return
 	}
 	e.ticker = time.NewTicker(e.syncInterval)
+	ticker := e.ticker
 	e.mu.Unlock()
 
 	go func() {
@@ -55,7 +62,7 @@ func (e *MovieSyncEngine) Start(ctx context.Context) {
 				return
 			case <-e.stopChan:
 				return
-			case <-e.ticker.C:
+			case <-ticker.C:
 				e.performHourlySync()
 			}
 		}

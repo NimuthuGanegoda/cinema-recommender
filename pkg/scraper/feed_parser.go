@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"cinema-recommender/internal/models"
-	"github.com/gocolly/colly/v2"
 )
 
 // scrapeByCity executes concession scraping pipelines tuned for regional suppliers and theater concessions.
@@ -177,72 +176,8 @@ func (s *RegionalScraper) ScrapeRawConcessionFeed(cinemaID string, rawHTML strin
 	return items, nil
 }
 
-// ScrapeLiveUberEatsMenu uses Colly to extract concession menus from an Uber Eats store page.
+// ScrapeLiveUberEatsMenu is retained for source compatibility. A provider integration
+// must be explicitly implemented and authorized before fetching external menus.
 func (s *RegionalScraper) ScrapeLiveUberEatsMenu(cinemaID, url string) ([]models.ConcessionItem, error) {
-	if url == "" {
-		return nil, fmt.Errorf("%w: Uber Eats URL cannot be empty", ErrInvalidInput)
-	}
-
-	c := colly.NewCollector(
-		colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"),
-	)
-
-	var items []models.ConcessionItem
-	var parseErr error
-	itemIdx := 1
-
-	// Uber Eats standard menu item container (data-test="store-item")
-	c.OnHTML(`li[data-test="store-item"]`, func(e *colly.HTMLElement) {
-		name := e.ChildText(`span[data-test="store-item-name"]`)
-		desc := e.ChildText(`span[data-test="store-item-description"]`)
-		priceStr := e.ChildText(`span[data-test="store-item-price"]`) // format: "Rs. 1,200.00"
-
-		if name != "" && priceStr != "" {
-			cleanPrice := strings.ReplaceAll(priceStr, "Rs.", "")
-			cleanPrice = strings.ReplaceAll(cleanPrice, ",", "")
-			cleanPrice = strings.TrimSpace(cleanPrice)
-			priceVal, err := strconv.ParseFloat(cleanPrice, 64)
-			if err == nil {
-				category := models.CategorySnack
-				nameLower := strings.ToLower(name)
-				if strings.Contains(nameLower, "popcorn") {
-					category = models.CategoryPopcorn
-				} else if strings.Contains(nameLower, "coke") || strings.Contains(nameLower, "pepsi") || strings.Contains(nameLower, "drink") {
-					category = models.CategoryBeverage
-				} else if strings.Contains(nameLower, "combo") {
-					category = models.CategoryCombo
-				}
-
-				items = append(items, models.ConcessionItem{
-					ID:          fmt.Sprintf("%s-UE-%02d", cinemaID, itemIdx),
-					CinemaID:    cinemaID,
-					Name:        name,
-					Category:    category,
-					Price:       priceVal,
-					Description: desc,
-					InStock:     true,
-				})
-				itemIdx++
-			}
-		}
-	})
-
-	c.OnError(func(r *colly.Response, err error) {
-		parseErr = fmt.Errorf("colly scrape failed with status %d: %w", r.StatusCode, err)
-	})
-
-	err := c.Visit(url)
-	if err != nil {
-		return nil, fmt.Errorf("failed to visit Uber Eats URL: %w", err)
-	}
-
-	if parseErr != nil {
-		return nil, parseErr
-	}
-
-	if len(items) == 0 {
-		return nil, fmt.Errorf("no items extracted; page might be protected by Cloudflare or structure changed")
-	}
-
-	return items, nil
+	return nil, fmt.Errorf("live menu provider is not configured; use the example catalog")
 }

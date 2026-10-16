@@ -2,7 +2,7 @@
   "status": "success",
   "sync_interval": "1h",
   "sync_interval_seconds": 3600,
-  "source": "Scope Cinemas Sri Lanka & EAP Films Real-Time Telemetry Feed",
+  "source": "Example catalog — not verified cinema schedules",
   "last_synced_at": "2026-10-13T01:12:28.112Z",
   "next_sync_at": "2026-10-13T02:12:28.112Z",
   "total_movies": 12,
@@ -454,5 +454,6 @@
       "concession_tip": "Best paired with Brioche Beef Hotdog & Kochchi Dipping Sauce",
       "last_updated": "2026-10-02 09:00:00 UTC"
     }
-  ]
+  ],
+  "data_mode": "example"
 }

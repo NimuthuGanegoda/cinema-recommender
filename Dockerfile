@@ -1,34 +1,17 @@
-# ==========================================
-# Multi-Stage Apple-Caliber Docker Build
-# ==========================================
-
-# Stage 1: Build binary
-FROM golang:1.24-alpine AS builder
-
+# Go major tag tracks supported security releases; pin a tested digest in your deployment.
+FROM golang:1-alpine AS builder
 WORKDIR /src
-
-# Cache dependencies
-COPY go.mod ./
-RUN go mod download
-
-# Copy source tree
+COPY go.mod go.sum ./
+RUN go mod download && go mod verify
 COPY . .
+RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /cinebite ./cmd/api
 
-# Compile optimized static binary
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
-    -ldflags="-s -w -X main.version=2.0.0" \
-    -o /app/cinema-recommender ./cmd/api
-
-# Stage 2: Minimal runtime image
-FROM alpine:3.20
-
-RUN apk --no-cache add ca-certificates tzdata
-
+FROM alpine:3
+RUN apk --no-cache add ca-certificates tzdata && addgroup -S cinebite && adduser -S -G cinebite -u 10001 cinebite
 WORKDIR /app
-
-# Copy binary from builder
-COPY --from=builder /app/cinema-recommender /app/cinema-recommender
-
+COPY --from=builder /cinebite /app/cinebite
+USER 10001:10001
+ENV PORT=:8080 TZ=Asia/Colombo
 EXPOSE 8080
-
-ENTRYPOINT ["/app/cinema-recommender", "-server", "-port", ":8080"]
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s CMD wget -qO- http://127.0.0.1:8080/health || exit 1
+ENTRYPOINT ["/app/cinebite", "-server"]

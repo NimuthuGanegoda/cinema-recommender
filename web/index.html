@@ -855,7 +855,7 @@
     }
   </style>
 <link rel="stylesheet" href="assets/css/cinema-polish.css?v=5"><script src="assets/js/cinema-environment.js?v=2"></script></head>
-<body>
+<body><a class="skip-link" href="#main-content">Skip to content</a><aside class="data-notice" aria-label="Data information">Example cinema guide: showtimes, prices and discounts are sample data. Confirm details with the cinema. Food plans stay on this device.</aside><div id="main-content" tabindex="-1"></div>
 
   <!-- ============================================================
        NAVBAR
@@ -1291,7 +1291,7 @@
       document.getElementById('cinemas-count').textContent = cinemas.length;
       renderCinemaCards();
 
-      const savedCinemaId = localStorage.getItem('cinebite_active_cinema_id');
+      const savedCinemaId = window.CineBiteStorage.getItem('cinebite_active_cinema_id');
       const initial = (savedCinemaId && cinemas.find(c => c.id === savedCinemaId)) || (cinemas.length > 0 ? cinemas[0] : null);
       if (initial) selectCinema(initial);
     }
@@ -1343,7 +1343,7 @@
     /* ── Select Cinema ─────────────────────────────── */
     async function selectCinema(cinema) {
       activeCinema = cinema;
-      localStorage.setItem('cinebite_active_cinema_id', cinema.id);
+      window.CineBiteStorage.setItem('cinebite_active_cinema_id', cinema.id);
       renderCinemaCards();
 
       const cinemaImg = cinema.image || (cinema.name.toLowerCase().includes('imax') ? 'assets/images/cinema-imax.jpg' : (cinema.screens >= 4 ? 'assets/images/cinema-multiplex.jpg' : 'assets/images/cinema-heritage.jpg'));
@@ -1774,7 +1774,7 @@
       const totalItems = cart.reduce((s, i) => s + (i.quantity || 1), 0);
       const cartCountEl = document.getElementById('cart-count');
       if (cartCountEl) cartCountEl.textContent = totalItems;
-      localStorage.setItem('cinebite_cart', JSON.stringify(cart));
+      window.CineBiteStorage.setItem('cinebite_cart', JSON.stringify(cart));
 
       if (cart.length === 0) { if (bar) bar.style.display = 'none'; return; }
       if (bar) bar.style.display = 'flex';
@@ -1787,7 +1787,7 @@
 
     function initCartFromStorage() {
       try {
-        const raw = localStorage.getItem('cinebite_cart');
+        const raw = window.CineBiteStorage.getItem('cinebite_cart');
         if (raw) {
           cart = JSON.parse(raw);
           updateCart();

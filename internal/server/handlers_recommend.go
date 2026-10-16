@@ -1,10 +1,7 @@
 package server
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
-	"strings"
 
 	"cinema-recommender/internal/models"
 )
@@ -18,8 +15,19 @@ func (s *Server) handleListPromotions(w http.ResponseWriter, r *http.Request) {
 // Handler: Recommend Optimal Bundle
 func (s *Server) handleRecommend(w http.ResponseWriter, r *http.Request) {
 	var req models.RecommendationRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		s.writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid JSON payload: " + err.Error()})
+	if !s.decodeJSON(w, r, &req) {
+		return
+	}
+	if req.BudgetLKR < 0 || req.BudgetLKR > 1000000 || req.PartySize < 0 || req.PartySize > 50 {
+		s.writeJSON(w, 400, map[string]string{"error": "budget must be 0–1000000 LKR and party size 0–50; zero uses defaults"})
+		return
+	}
+	if len(req.PreferredCategories) > 0 || len(req.DietaryPreferences) > 0 {
+		s.writeJSON(w, 400, map[string]string{"error": "category and dietary filtering are not supported; do not use suggestions for allergy decisions"})
+		return
+	}
+	if !validTier(req.PrivilegeTier) || !validTier(req.RedopayTier) {
+		s.writeJSON(w, 400, map[string]string{"error": "invalid membership tier"})
 		return
 	}
 
@@ -40,12 +48,8 @@ func (s *Server) handleRecommend(w http.ResponseWriter, r *http.Request) {
 		}
 		cinemas, err := s.scraper.GetCinemasByCity(req.City)
 		if err != nil || len(cinemas) == 0 {
-			cinema = models.Cinema{
-				ID:        fmt.Sprintf("GEN-%s", strings.ToUpper(req.City)),
-				Name:      fmt.Sprintf("Regional Cinema %s", req.City),
-				City:      req.City,
-				IsOutside: true,
-			}
+			s.writeJSON(w, 404, map[string]string{"error": "no registered cinema for this city"})
+			return
 		} else {
 			cinema = cinemas[0]
 		}
@@ -77,9 +81,24 @@ func (s *Server) handleRecommend(w http.ResponseWriter, r *http.Request) {
 // Handler: Evaluate Custom User Cart
 func (s *Server) handleEvaluateCart(w http.ResponseWriter, r *http.Request) {
 	var req models.CartEvaluationRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		s.writeJSON(w, http.StatusBadRequest, map[string]string{"error": "malformed JSON payload: " + err.Error()})
+	if !s.decodeJSON(w, r, &req) {
 		return
+	}
+	if len(req.Items) > 100 {
+		s.writeJSON(w, 400, map[string]string{"error": "cart may contain at most 100 lines"})
+		return
+	}
+	if !validTier(req.PrivilegeTier) || !validTier(req.RedopayTier) {
+		s.writeJSON(w, 400, map[string]string{"error": "invalid membership tier"})
+		return
+	}
+	total := 0
+	for _, item := range req.Items {
+		total += item.Quantity
+		if item.Quantity < 1 || item.Quantity > 99 || total > 500 {
+			s.writeJSON(w, 400, map[string]string{"error": "quantities must be 1–99 with at most 500 items in total"})
+			return
+		}
 	}
 
 	if req.CinemaID == "" {
@@ -106,7 +125,12 @@ func (s *Server) handleEvaluateCart(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, cartItem := range req.Items {
-		if original, found := itemMap[cartItem.ItemID]; found {
+		original, found := itemMap[cartItem.ItemID]
+		if !found || !original.InStock {
+			s.writeJSON(w, 400, map[string]string{"error": "unknown or unavailable cart item: " + cartItem.ItemID})
+			return
+		}
+		if found {
 			qty := cartItem.Quantity
 			if qty <= 0 {
 				qty = 1

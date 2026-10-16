@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Snack Planner · CineBite Sri Lanka</title>
-  <meta name="description" content="Intelligent knapsack concession bundle optimizer for moviegoers in Sri Lanka. Maximize snack value, unlock VIP discount tiers, and minimize counter spend.">
+  <meta name="description" content="Category-based snack budget planner for moviegoers in Sri Lanka. Compare example discounts and build a snack plan within your food budget.">
   <meta name="theme-color" content="#06060b">
   <meta property="og:title" content="Snack Planner · CineBite Sri Lanka">
-  <meta property="og:description" content="Intelligent knapsack concession bundle optimizer. Maximize snack value, unlock VIP discount tiers, and minimize counter spend.">
+  <meta property="og:description" content="Category-based snack budget planner. Compare example discounts and build a snack plan within your food budget.">
   <meta property="og:image" content="assets/images/combo.jpg">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Snack Planner · CineBite Sri Lanka">
-  <meta name="twitter:description" content="Intelligent knapsack concession bundle optimizer for cinema snacks across Sri Lanka.">
+  <meta name="twitter:description" content="Category-based snack budget planner for cinema snacks across Sri Lanka.">
   <meta name="twitter:image" content="assets/images/combo.jpg">
   <link rel="icon" type="image/jpeg" href="assets/images/app-icon.jpg">
   <link rel="apple-touch-icon" href="assets/images/app-icon.jpg">
@@ -276,13 +276,13 @@
     }
   </style>
 <link rel="stylesheet" href="assets/css/cinema-polish.css?v=5"><script src="assets/js/cinema-environment.js?v=2"></script></head>
-<body>
+<body><a class="skip-link" href="#main-content">Skip to content</a><aside class="data-notice" aria-label="Data information">Example cinema guide: showtimes, prices and discounts are sample data. Confirm details with the cinema. Food plans stay on this device.</aside>
 
   <!-- Navigation Bar -->
   <nav class="navbar" aria-label="Main navigation"><a href="index.html" class="nav-brand"><span class="nav-logo" aria-hidden="true">🍿</span><span class="nav-brand-text">CineBite</span></a><div class="nav-links"><a href="index.html" class="nav-link">Home</a><a href="movies.html" class="nav-link">Movies</a><a href="cinemas.html" class="nav-link">Cinemas</a><a href="menu.html" class="nav-link">Food menu</a><a href="optimizer.html" class="nav-link active" aria-current="page">Snack planner</a><a href="deals.html" class="nav-link">Food deals</a></div><div class="nav-right"><a href="food-plan.html" class="nav-plan">Food plan <span aria-label="Selected items">(<span id="cart-count">0</span>)</span></a></div><span id="nav-live-cinema" hidden></span><span id="nav-tier-badge" hidden></span></nav>
 
   <!-- Page Container -->
-  <main class="page-container">
+  <main id="main-content" class="page-container">
 
     <!-- Header -->
     <div class="page-header">
@@ -317,14 +317,14 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Choose a cinema</label>
+          <label class="form-label" for="opt-cinema">Choose a cinema</label>
           <select id="opt-cinema" class="input-field" onchange="onCinemaChange(this.value)">
             <!-- Populated via JS -->
           </select>
         </div>
 
         <div class="form-group">
-          <label class="form-label">Your food budget (LKR)</label>
+          <label class="form-label" for="opt-budget">Your food budget (LKR)</label>
           <input type="number" id="opt-budget" class="input-field" value="2500" step="100" min="500" max="15000">
           <div class="quick-budget-row">
             <button class="quick-btn" onclick="setBudget(1500)">LKR 1,500</button>
@@ -412,7 +412,7 @@
   <script>
     const client = new CinemaClient();
     let cinemas = [];
-    let activeCinemaId = localStorage.getItem('cinebite_active_cinema_id') || 'CMB-CCC';
+    let activeCinemaId = window.CineBiteStorage.getItem('cinebite_active_cinema_id') || 'CMB-CCC';
     let partySize = 2;
     let privilegeTier = 'Standard';
     let lastResult = null;
@@ -449,7 +449,7 @@
 
       if (cinema) {
         activeCinemaId = cinema;
-        localStorage.setItem('cinebite_active_cinema_id', cinema);
+        window.CineBiteStorage.setItem('cinebite_active_cinema_id', cinema);
         const sel = document.getElementById('opt-cinema');
         if (sel) sel.value = cinema;
       }
@@ -505,7 +505,7 @@
 
     function onCinemaChange(val) {
       activeCinemaId = val;
-      localStorage.setItem('cinebite_active_cinema_id', val);
+      window.CineBiteStorage.setItem('cinebite_active_cinema_id', val);
       runOptimizer();
     }
 
@@ -595,6 +595,7 @@
             `).join('')}
           </div>
 
+          <p id="recommendation-explanation" role="status" style="line-height:1.6; color:var(--cb-text-secondary);"></p>
           <!-- Pricing & Savings Breakdown Card -->
           <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:var(--r-md); padding:1.2rem; margin-bottom:1.5rem;">
             <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--cb-text-secondary); margin-bottom:0.4rem;">
@@ -612,7 +613,7 @@
           </div>
 
           <div class="results-note" style="background:rgba(168,85,247,0.12); border:1px solid rgba(168,85,247,0.3); border-radius:var(--r-sm); padding:0.75rem 1rem; font-size:0.8rem; color:rgba(255,255,255,0.9); margin-bottom:1.5rem; line-height:1.4;">
-            💡 ${res.message || res.upsell_advice || 'Optimized for maximum value satisfaction within your concession budget.'}
+            💡 ${res.message || res.upsell_advice || 'Category-based suggestion within your food budget.'}
             ${res.next_tier_upsell ? `<div style="margin-top:0.35rem; color:var(--cb-purple-light); font-weight:600;">${res.next_tier_upsell}</div>` : ''}
           </div>
 
@@ -626,6 +627,7 @@
           </div>
         </div>
       `;
+      document.getElementById('recommendation-explanation').textContent = res.explanation || 'Category-based suggestion; a globally optimal bundle is not guaranteed.';
     }
 
     function addBundleToCart(redirect = false) {
@@ -634,7 +636,7 @@
         alert('No bundle items available to add.');
         return;
       }
-      const raw = localStorage.getItem('cinebite_cart');
+      const raw = window.CineBiteStorage.getItem('cinebite_cart');
       let cart = raw ? JSON.parse(raw) : [];
 
       items.forEach(it => {
@@ -646,7 +648,7 @@
         }
       });
 
-      localStorage.setItem('cinebite_cart', JSON.stringify(cart));
+      window.CineBiteStorage.setItem('cinebite_cart', JSON.stringify(cart));
       updateCartCount();
 
       if (redirect) {
@@ -693,7 +695,7 @@
 
     function updateCartCount() {
       try {
-        const raw = localStorage.getItem('cinebite_cart');
+        const raw = window.CineBiteStorage.getItem('cinebite_cart');
         const items = raw ? JSON.parse(raw) : [];
         const count = items.reduce((s, i) => s + (i.quantity || 1), 0);
         const countEl = document.getElementById('cart-count');

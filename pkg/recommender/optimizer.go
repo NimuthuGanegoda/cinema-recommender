@@ -7,7 +7,8 @@ import (
 	"cinema-recommender/internal/models"
 )
 
-// RecommendOptimalBundle generates a value-maximizing concession bundle for a movie party within budget.
+// RecommendOptimalBundle builds a budget-constrained category heuristic.
+// The legacy function name does not imply a globally optimal solution.
 func (e *Engine) RecommendOptimalBundle(
 	cinema models.Cinema,
 	availableItems []models.ConcessionItem,
@@ -116,13 +117,13 @@ func (e *Engine) RecommendOptimalBundle(
 	}
 
 	// Check if adding one small item would unlock a significantly higher promotion tier
-	selected = e.optimizeForPromotionThreshold(selected, availableItems, currentSubtotal)
-
-	// Resolve member tier
 	tier := req.PrivilegeTier
 	if tier == "" {
 		tier = req.RedopayTier
 	}
+	selected = e.optimizeForPromotionThreshold(cinema, selected, availableItems, req.PromoCode, tier)
+
+	// Resolve member tier
 
 	// Evaluate final deal
 	res := e.EvaluateCart(cinema, selected, req.PromoCode, tier)
@@ -152,6 +153,9 @@ func (e *Engine) RecommendOptimalBundle(
 		}
 	}
 	res.PartySize = partySize
+	res.Algorithm = "category-heuristic-v2"
+	res.BudgetRemaining = round(budget - res.FinalTotal)
+	res.Explanation = fmt.Sprintf("Category-based suggestion for %d people. Final cost LKR %.2f is within the LKR %.2f food budget; LKR %.2f remains. Promotions are example rules. This heuristic does not guarantee the best possible bundle or one drink per person.", partySize, res.FinalTotal, budget, res.BudgetRemaining)
 
 	// Compute value score (coverage of party requirements & savings efficiency)
 	res.ValueScore = calculateValueScore(res, partySize)
@@ -159,33 +163,26 @@ func (e *Engine) RecommendOptimalBundle(
 	return res, nil
 }
 
-// optimizeForPromotionThreshold checks if adding a low-cost item bridges the gap to unlock higher savings.
-func (e *Engine) optimizeForPromotionThreshold(
-	currentItems []models.ConcessionItem,
-	availableItems []models.ConcessionItem,
-	subtotal float64,
-) []models.ConcessionItem {
-	thresholds := []float64{1000.00, 1800.00, 2000.00, 2200.00, 2800.00}
-
-	for _, target := range thresholds {
-		gap := target - subtotal
-		// If gap is between LKR 50 and LKR 400, adding a small drink/snack actually increases net savings!
-		if gap > 0 && gap <= 400 {
-			var candidate models.ConcessionItem
-			candidateFound := false
-			for _, item := range availableItems {
-				if item.Price >= gap && item.Price <= gap+350 {
-					candidate = item
-					candidateFound = true
-					break
-				}
-			}
-			if candidateFound {
-				currentItems = append(currentItems, candidate)
-				break
-			}
+// optimizeForPromotionThreshold adds an item only when the actual eligible
+// promotion makes the entire basket cheaper. Thresholds come from the rules.
+func (e *Engine) optimizeForPromotionThreshold(cinema models.Cinema, currentItems, availableItems []models.ConcessionItem, code string, tier models.PrivilegeTier) []models.ConcessionItem {
+	baseline := e.EvaluateCart(cinema, currentItems, code, tier)
+	bestTotal := baseline.FinalTotal
+	var best *models.ConcessionItem
+	for i := range availableItems {
+		item := &availableItems[i]
+		if !item.InStock || item.Price <= 0 {
+			continue
+		}
+		candidate := append(append([]models.ConcessionItem(nil), currentItems...), *item)
+		result := e.EvaluateCart(cinema, candidate, code, tier)
+		if result.FinalTotal < bestTotal {
+			bestTotal = result.FinalTotal
+			best = item
 		}
 	}
-
+	if best != nil {
+		return append(currentItems, *best)
+	}
 	return currentItems
 }

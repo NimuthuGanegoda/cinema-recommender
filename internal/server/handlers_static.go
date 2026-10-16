@@ -102,6 +102,7 @@ func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	cinemas := s.scraper.GetRegisteredCinemas()
 	s.writeJSON(w, http.StatusOK, map[string]interface{}{
 		"status":            "healthy",
+		"data_mode":         "example",
 		"service":           "cinema-food-beverage-recommender",
 		"version":           "2.0.0",
 		"regional_theaters": len(cinemas),

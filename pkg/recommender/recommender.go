@@ -61,12 +61,12 @@ func (e *Engine) BestPromotionWithContext(
 		}
 
 		// Tier eligibility check
-		if promo.EligibleTier != "" && promo.EligibleTier != tier && cleanCode == "" {
+		if promo.EligibleTier != "" && promo.EligibleTier != tier {
 			continue
 		}
 
 		// Item combo requirement check
-		if promo.RequiresCombo && items != nil && (!hasPopcorn || !hasBeverage) {
+		if promo.RequiresCombo && (!hasPopcorn || !hasBeverage) {
 			continue
 		}
 

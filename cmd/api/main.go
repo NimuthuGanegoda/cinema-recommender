@@ -21,7 +21,7 @@ import (
 func main() {
 	var (
 		serverMode  = flag.Bool("server", false, "Start the HTTP REST API & Web UI server")
-		port        = flag.String("port", ":8080", "Port for HTTP server (e.g. :8080)")
+		port        = flag.String("port", envOr("PORT", ":8080"), "Port for HTTP server (e.g. :8080)")
 		city        = flag.String("city", "Kandy", "Target regional cinema city (outside Colombo)")
 		budget      = flag.Float64("budget", 2500.00, "Concession budget in LKR")
 		partySize   = flag.Int("party", 2, "Number of moviegoers in the party")
@@ -62,7 +62,7 @@ func main() {
 func printBanner() {
 	fmt.Println("================================================================================")
 	fmt.Println("🎬 CINEBITE • SRI LANKA CINEMA CONCESSION RECOMMENDER 🍿🥤")
-	fmt.Println("   Universal Cinema Concession Discovery & CinePass VIP Discount Engine")
+	fmt.Println("   University prototype — example data and promotional rules")
 	fmt.Println("================================================================================")
 }
 
@@ -80,7 +80,7 @@ func runCLIRecommendation(
 	// Validate location (must be outside Colombo)
 	if err := sc.ValidateLocation(cityName); err != nil {
 		fmt.Printf("❌ Rejection Policy Triggered: %v\n", err)
-		fmt.Println("💡 Reminder: This service strictly targets outstation circuits (Kandy, Gampaha, Galle, Kurunegala, Negombo, etc.)")
+		fmt.Println("💡 Reminder: Choose a supported cinema city (Kandy, Gampaha, Galle, Kurunegala, Negombo, etc.)")
 		return
 	}
 
@@ -96,10 +96,10 @@ func runCLIRecommendation(
 	// Scrape concessions
 	items, err := sc.ScrapeCinemaConcessions(targetCinema)
 	if err != nil {
-		fmt.Printf("❌ Scraping error: %v\n", err)
+		fmt.Printf("❌ Catalog error: %v\n", err)
 		return
 	}
-	fmt.Printf("✅ Scraped %d live concession items.\n", len(items))
+	fmt.Printf("✅ Loaded %d example concession items.\n", len(items))
 
 	// Run optimization
 	req := models.RecommendationRequest{
@@ -119,7 +119,7 @@ func runCLIRecommendation(
 	}
 
 	fmt.Println("\n--------------------------------------------------------------------------------")
-	fmt.Printf("🍿 VALUE-OPTIMIZED CONCESSION BUNDLE (Party of %d | Budget: LKR %.2f)\n", partySize, budget)
+	fmt.Printf("🍿 CATEGORY-BASED SNACK SUGGESTION (Party of %d | Budget: LKR %.2f)\n", partySize, budget)
 	fmt.Println("--------------------------------------------------------------------------------")
 	for idx, it := range result.SelectedItems {
 		fmt.Printf("   [%d] %-32s | %-10s | LKR %7.2f\n", idx+1, it.Name, it.Category, it.Price)
@@ -127,7 +127,7 @@ func runCLIRecommendation(
 
 	fmt.Println("--------------------------------------------------------------------------------")
 	fmt.Printf("   Original Menu Subtotal:        LKR %8.2f\n", result.OriginalTotal)
-	fmt.Printf("   Scope Privilege Pass Savings: -LKR %8.2f (%s)\n", result.DiscountAmount, result.AppliedPromo)
+	fmt.Printf("   Example Promotion Savings: -LKR %8.2f (%s)\n", result.DiscountAmount, result.AppliedPromo)
 	fmt.Printf("   👉 Estimated Food Cost: LKR %8.2f\n", result.FinalTotal)
 	fmt.Println("--------------------------------------------------------------------------------")
 	fmt.Printf("   💡 %s\n", result.Message)
@@ -155,7 +155,7 @@ func displayCinemas(sc *scraper.RegionalScraper) {
 
 func displayPromotions(recEngine *recommender.Engine) {
 	promos := recEngine.GetAvailablePromotions()
-	fmt.Printf("\n👑 Active Scope Privilege Concession Promotions (%d campaigns):\n", len(promos))
+	fmt.Printf("\n👑 Example Concession Promotions (%d campaigns):\n", len(promos))
 	fmt.Printf("%-18s | %-8s | %-14s | %s\n", "Promo Code", "Type", "Min Spend", "Description")
 	fmt.Println("--------------------------------------------------------------------------------")
 	for _, p := range promos {
@@ -167,12 +167,16 @@ func displayPromotions(recEngine *recommender.Engine) {
 
 func runHTTPServer(port string, sc *scraper.RegionalScraper, recEngine *recommender.Engine) {
 	cfg := server.Config{
-		Port:         port,
-		ReadTimeout:  15 * time.Second,
-		WriteTimeout: 15 * time.Second,
-		IdleTimeout:  60 * time.Second,
+		Port:           port,
+		AllowedOrigins: strings.FieldsFunc(os.Getenv("ALLOWED_ORIGINS"), func(r rune) bool { return r == ',' || r == ' ' }),
+		ReadTimeout:    15 * time.Second,
+		WriteTimeout:   15 * time.Second,
+		IdleTimeout:    60 * time.Second,
 	}
 
+	if !strings.Contains(port, ":") {
+		cfg.Port = ":" + port
+	}
 	srv := server.NewServer(cfg, sc, recEngine)
 
 	stopChan := make(chan os.Signal, 1)
@@ -210,4 +214,11 @@ func runHTTPServer(port string, sc *scraper.RegionalScraper, recEngine *recommen
 	}
 
 	fmt.Println("✅ Server exited cleanly.")
+}
+
+func envOr(key, fallback string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return fallback
 }

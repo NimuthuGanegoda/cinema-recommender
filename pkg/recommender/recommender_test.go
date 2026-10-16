@@ -80,7 +80,7 @@ func TestPlatinumAndStudentTiers(t *testing.T) {
 	}
 
 	// Verify legacy SCOPE- alias compatibility
-	resAlias := eng.EvaluateCart(cinema, platItems, "SCOPE-PLATINUM", models.TierStandard)
+	resAlias := eng.EvaluateCart(cinema, platItems, "SCOPE-PLATINUM", models.TierPlatinum)
 	if resAlias.AppliedPromo != "CINE-PLATINUM" {
 		t.Fatalf("expected SCOPE-PLATINUM alias to map to CINE-PLATINUM, got %s", resAlias.AppliedPromo)
 	}
@@ -109,7 +109,7 @@ func TestRecommendOptimalBundle(t *testing.T) {
 	if len(result.SelectedItems) == 0 {
 		t.Fatal("expected selected items in recommended bundle")
 	}
-	if result.FinalTotal > req.BudgetLKR*1.20 {
+	if result.FinalTotal > req.BudgetLKR {
 		t.Fatalf("recommended total LKR %.2f exceeded budget constraint significantly", result.FinalTotal)
 	}
 	if result.ValueScore <= 0 {
