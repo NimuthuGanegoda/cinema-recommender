@@ -3,8 +3,8 @@
   "sync_interval": "1h",
   "sync_interval_seconds": 3600,
   "source": "Example catalog — not verified cinema schedules",
-  "last_synced_at": "2026-11-21T22:58:01.592Z",
-  "next_sync_at": "2026-11-21T23:58:01.592Z",
+  "last_synced_at": "2026-11-22T02:58:56.962Z",
+  "next_sync_at": "2026-11-22T03:58:56.962Z",
   "total_movies": 12,
   "total_cinemas_covered": 13,
   "movies": [
